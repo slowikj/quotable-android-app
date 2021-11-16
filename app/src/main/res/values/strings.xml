@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Quotable App</string>
+    <string name="retry">retry</string>
 </resources>
