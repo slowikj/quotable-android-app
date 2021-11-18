@@ -2,6 +2,7 @@ package com.example.quotableapp
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -61,6 +62,14 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launchWhenCreated {
             quotesAdapter.loadStateFlow.debounce(Duration.milliseconds(500)).collect { loadStates ->
                 binding.swipeToRefresh.isRefreshing = loadStates.refresh is LoadState.Loading
+
+                if (loadStates.refresh is LoadState.Error) {
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.error_occurred),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }

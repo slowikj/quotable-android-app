@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Quotable App</string>
     <string name="retry">retry</string>
+
+    <string name="error_occurred"> Error has been occurred </string>
 </resources>
