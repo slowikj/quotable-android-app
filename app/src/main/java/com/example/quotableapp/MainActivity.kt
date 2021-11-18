@@ -5,6 +5,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quotableapp.databinding.ActivityMainBinding
 import com.example.quotableapp.quotesadapter.QuotesAdapter
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     private val quotesAdapter = QuotesAdapter()
 
+    @ExperimentalPagingApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)

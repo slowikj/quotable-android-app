@@ -1,9 +1,12 @@
 package com.example.quotableapp.data.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.example.quotableapp.data.networking.model.QuoteDTO
 
+@Entity(tableName = "quotes")
 data class Quote(
-    val id: String,
+    @PrimaryKey val id: String,
     val content: String,
     val author: String,
     val authorSlug: String,
