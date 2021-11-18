@@ -43,6 +43,8 @@ class QuotesRemoteMediator(
 
         val responseDTO = remoteService.fetchQuotes(newLoadKey, state.config.pageSize)
 
+        delay(2000)
+
         Log.d(
             this::class.java.name,
             "newLoadKey: $newLoadKey, resultsSize: ${responseDTO.results.size}"
