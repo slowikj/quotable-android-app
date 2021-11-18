@@ -71,4 +71,8 @@ dependencies {
     implementation "androidx.room:room-ktx:2.4.0-beta02"
     implementation "androidx.room:room-paging:2.4.0-beta02"
     kapt "androidx.room:room-compiler:2.4.0-beta02"
+
+    // CardView
+    implementation "androidx.cardview:cardview:1.0.0"
+
 }
