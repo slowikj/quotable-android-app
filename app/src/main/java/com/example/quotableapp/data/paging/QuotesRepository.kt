@@ -17,7 +17,7 @@ class QuotesRepository(
     @ExperimentalPagingApi
     fun fetchQuotes(): Flow<PagingData<Quote>> =
         Pager(
-            config = PagingConfig(pageSize = 7, enablePlaceholders = true),
+            config = PagingConfig(pageSize = 7, enablePlaceholders = true, initialLoadSize = 7, prefetchDistance = 2),
             remoteMediator = QuotesRemoteMediator(quotesDatabase, quotesService),
             pagingSourceFactory = { quotesDatabase.quotes().getQuotes() }
         ).flow

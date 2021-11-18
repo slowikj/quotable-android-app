@@ -1,18 +1,28 @@
 package com.example.quotableapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quotableapp.databinding.ActivityMainBinding
 import com.example.quotableapp.quotesadapter.QuotesAdapter
 import com.example.quotableapp.quotesadapter.QuotesLoadingAdapter
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
+@FlowPreview
+@ExperimentalTime
+@ExperimentalPagingApi
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: QuotesViewModel by viewModels()
@@ -21,20 +31,36 @@ class MainActivity : AppCompatActivity() {
 
     private val quotesAdapter = QuotesAdapter()
 
-    @ExperimentalPagingApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setupBinding()
+        setupQuotesAdapter()
+        setupPullToRefresh()
+    }
+
+    private fun setupBinding() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+    }
 
-        binding.rvQuotes.adapter = quotesAdapter.withLoadStateHeaderAndFooter(
-            header = QuotesLoadingAdapter { quotesAdapter.retry() },
+    private fun setupQuotesAdapter() {
+        binding.rvQuotes.adapter = quotesAdapter.withLoadStateFooter(
             footer = QuotesLoadingAdapter { quotesAdapter.retry() }
         )
 
         lifecycleScope.launch {
             viewModel.fetchQuotes().collectLatest {
                 quotesAdapter.submitData(it)
+            }
+        }
+    }
+
+    private fun setupPullToRefresh() {
+        binding.swipeToRefresh.setOnRefreshListener { quotesAdapter.refresh() }
+
+        lifecycleScope.launchWhenCreated {
+            quotesAdapter.loadStateFlow.debounce(Duration.milliseconds(500)).collect { loadStates ->
+                binding.swipeToRefresh.isRefreshing = loadStates.refresh is LoadState.Loading
             }
         }
     }

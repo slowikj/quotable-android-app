@@ -47,7 +47,7 @@ class QuotesRemoteMediator(
 
         Log.d(
             this::class.java.name,
-            "newLoadKey: $newLoadKey, resultsSize: ${responseDTO.results.size}"
+            "newLoadKey: $newLoadKey, resultsSize: ${responseDTO.results.size}, totalPages: ${responseDTO.totalPages}"
         )
 
         updateLocalDatabase(loadType, responseDTO, newLoadKey)
