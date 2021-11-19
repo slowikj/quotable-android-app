@@ -17,6 +17,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -60,17 +61,24 @@ class MainActivity : AppCompatActivity() {
         binding.swipeToRefresh.setOnRefreshListener { quotesAdapter.refresh() }
 
         lifecycleScope.launchWhenCreated {
-            quotesAdapter.loadStateFlow.debounce(Duration.milliseconds(500)).collect { loadStates ->
-                binding.swipeToRefresh.isRefreshing = loadStates.refresh is LoadState.Loading
+            quotesAdapter
+                .loadStateFlow
+                .distinctUntilChangedBy { it.refresh }
+                .collectLatest { loadStates ->
+                    binding.swipeToRefresh.isRefreshing = loadStates.refresh is LoadState.Loading
 
-                if (loadStates.refresh is LoadState.Error) {
-                    Toast.makeText(
-                        applicationContext,
-                        getString(R.string.error_occurred),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    if (loadStates.refresh is LoadState.Error) {
+                        showErrorToast()
+                    }
                 }
-            }
         }
+    }
+
+    private fun showErrorToast() {
+        Toast.makeText(
+            applicationContext,
+            getString(R.string.error_occurred),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
