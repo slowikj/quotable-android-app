@@ -21,4 +21,7 @@ interface QuotesDao {
 
     @Query("SELECT COUNT(*) from quotes")
     suspend fun getSize(): Int
+
+    @Query("SELECT lastUpdated from quotes ORDER BY lastUpdated DESC LIMIT 1")
+    suspend fun lastUpdated(): Long?
 }

@@ -13,12 +13,29 @@ import com.example.quotableapp.data.model.toModel
 import com.example.quotableapp.data.networking.QuotesService
 import com.example.quotableapp.data.networking.model.QuotesResponseDTO
 import kotlinx.coroutines.delay
+import java.util.concurrent.TimeUnit
 
 @ExperimentalPagingApi
 class QuotesRemoteMediator(
     private val database: QuotesDatabase,
     private val remoteService: QuotesService
 ) : RemoteMediator<Int, Quote>() {
+
+    companion object {
+        private val CACHE_TIMEOUT = TimeUnit.MILLISECONDS.convert(30, TimeUnit.SECONDS)
+    }
+
+    override suspend fun initialize(): InitializeAction {
+        val quotesLastUpdated: Long = database.quotes().lastUpdated() ?: 0
+
+        return if (System.currentTimeMillis() - quotesLastUpdated > CACHE_TIMEOUT) {
+            Log.d(this::class.java.name, "needs refresh")
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            InitializeAction.SKIP_INITIAL_REFRESH
+        }
+    }
+
 
     override suspend fun load(loadType: LoadType, state: PagingState<Int, Quote>): MediatorResult {
         return try {

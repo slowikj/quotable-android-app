@@ -10,7 +10,8 @@ data class Quote(
     val content: String,
     val author: String,
     val authorSlug: String,
-    val tags: List<String>
+    val tags: List<String>,
+    val lastUpdated: Long
 ) {
 }
 
@@ -19,5 +20,6 @@ fun QuoteDTO.toModel() = Quote(
     content = content,
     author = author,
     authorSlug = authorSlug,
-    tags = tags
+    tags = tags,
+    lastUpdated = System.currentTimeMillis()
 )
