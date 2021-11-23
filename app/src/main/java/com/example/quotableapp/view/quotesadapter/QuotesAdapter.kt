@@ -1,4 +1,4 @@
-package com.example.quotableapp.quotesadapter
+package com.example.quotableapp.view.quotesadapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,7 +11,7 @@ import com.example.quotableapp.databinding.ItemQuoteBinding
 class QuotesAdapter : PagingDataAdapter<Quote, QuotesAdapter.ViewHolder>(itemDifferentiator) {
 
     companion object {
-        val itemDifferentiator = object : DiffUtil.ItemCallback<Quote>() {
+        private val itemDifferentiator = object : DiffUtil.ItemCallback<Quote>() {
             override fun areItemsTheSame(oldItem: Quote, newItem: Quote): Boolean {
                 return oldItem.id == newItem.id
             }

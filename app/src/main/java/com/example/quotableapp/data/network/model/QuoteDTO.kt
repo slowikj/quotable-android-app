@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.networking.model
+package com.example.quotableapp.data.network.model
 
 import com.google.gson.annotations.SerializedName
 

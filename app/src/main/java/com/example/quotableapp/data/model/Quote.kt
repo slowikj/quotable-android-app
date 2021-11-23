@@ -2,7 +2,7 @@ package com.example.quotableapp.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.quotableapp.data.networking.model.QuoteDTO
+import com.example.quotableapp.data.network.model.QuoteDTO
 
 @Entity(tableName = "quotes")
 data class Quote(

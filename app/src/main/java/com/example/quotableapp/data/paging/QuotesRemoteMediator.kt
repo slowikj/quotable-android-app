@@ -10,8 +10,8 @@ import com.example.quotableapp.data.db.QuotesDatabase
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.model.RemoteKey
 import com.example.quotableapp.data.model.toModel
-import com.example.quotableapp.data.networking.QuotesService
-import com.example.quotableapp.data.networking.model.QuotesResponseDTO
+import com.example.quotableapp.data.network.QuotesService
+import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
 

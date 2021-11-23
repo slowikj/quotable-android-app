@@ -1,25 +1,22 @@
-package com.example.quotableapp
+package com.example.quotableapp.view
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
-import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.quotableapp.viewmodel.QuotesViewModel
+import com.example.quotableapp.R
 import com.example.quotableapp.databinding.ActivityMainBinding
-import com.example.quotableapp.quotesadapter.QuotesAdapter
-import com.example.quotableapp.quotesadapter.QuotesLoadingAdapter
+import com.example.quotableapp.view.quotesadapter.QuotesAdapter
+import com.example.quotableapp.view.quotesadapter.QuotesLoadingAdapter
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.launch
-import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 @FlowPreview

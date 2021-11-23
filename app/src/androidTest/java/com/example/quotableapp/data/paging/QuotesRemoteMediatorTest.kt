@@ -2,9 +2,9 @@ package com.example.quotableapp.data.paging
 
 import androidx.paging.*
 import com.example.quotableapp.data.DataTestUtil
-import com.example.quotableapp.data.networking.QuotesService
-import com.example.quotableapp.data.networking.model.QuoteDTO
-import com.example.quotableapp.data.networking.model.QuotesResponseDTO
+import com.example.quotableapp.data.network.QuotesService
+import com.example.quotableapp.data.network.model.QuoteDTO
+import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.runBlocking
 import org.junit.Test

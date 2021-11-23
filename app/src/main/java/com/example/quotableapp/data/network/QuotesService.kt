@@ -1,6 +1,6 @@
-package com.example.quotableapp.data.networking
+package com.example.quotableapp.data.network
 
-import com.example.quotableapp.data.networking.model.QuotesResponseDTO
+import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import retrofit2.http.GET
 import retrofit2.http.Query
 
