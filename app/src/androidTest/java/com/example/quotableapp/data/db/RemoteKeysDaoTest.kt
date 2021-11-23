@@ -1,12 +1,11 @@
 package com.example.quotableapp.data.db
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.quotableapp.data.DataTestUtil
 import com.example.quotableapp.data.db.dao.RemoteKeysDao
 import com.example.quotableapp.data.model.RemoteKey
 import kotlinx.coroutines.runBlocking
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,9 +18,13 @@ class RemoteKeysDaoTest {
 
     @Before
     fun setup() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(context, QuotesDatabase::class.java).build()
+        db = DataTestUtil.prepareInMemoryDatabase()
         remoteKeysDao = db.remoteKeys()
+    }
+
+    @After
+    fun teardown() {
+        db.close()
     }
 
     @Test

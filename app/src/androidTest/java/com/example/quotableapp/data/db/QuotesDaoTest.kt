@@ -1,9 +1,7 @@
 package com.example.quotableapp.data.db
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.quotableapp.data.DataTestUtil
 import com.example.quotableapp.data.db.dao.QuotesDao
 import com.example.quotableapp.data.model.Quote
 import kotlinx.coroutines.runBlocking
@@ -20,8 +18,7 @@ class QuotesDaoTest {
 
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(context, QuotesDatabase::class.java).build()
+        db = DataTestUtil.prepareInMemoryDatabase()
         quotesDao = db.quotes()
     }
 
