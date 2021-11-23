@@ -6,12 +6,12 @@ import com.example.quotableapp.data.networking.model.QuoteDTO
 
 @Entity(tableName = "quotes")
 data class Quote(
-    @PrimaryKey val id: String,
-    val content: String,
-    val author: String,
-    val authorSlug: String,
-    val tags: List<String>,
-    val lastUpdated: Long
+    @PrimaryKey val id: String = "",
+    val content: String = "",
+    val author: String = "",
+    val authorSlug: String = "",
+    val tags: List<String> = emptyList(),
+    val lastUpdated: Long = System.currentTimeMillis()
 ) {
 }
 
