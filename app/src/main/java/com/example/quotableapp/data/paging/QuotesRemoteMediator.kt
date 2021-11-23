@@ -36,7 +36,6 @@ class QuotesRemoteMediator(
         }
     }
 
-
     override suspend fun load(loadType: LoadType, state: PagingState<Int, Quote>): MediatorResult {
         return try {
             fetchQuotes(loadType, state)
