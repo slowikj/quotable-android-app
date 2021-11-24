@@ -7,11 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
-import com.example.quotableapp.viewmodel.QuotesViewModel
 import com.example.quotableapp.R
 import com.example.quotableapp.databinding.ActivityMainBinding
 import com.example.quotableapp.view.quotesadapter.QuotesAdapter
 import com.example.quotableapp.view.quotesadapter.QuotesLoadingAdapter
+import com.example.quotableapp.viewmodel.QuotesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
@@ -22,6 +22,7 @@ import kotlin.time.ExperimentalTime
 @FlowPreview
 @ExperimentalTime
 @ExperimentalPagingApi
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: QuotesViewModel by viewModels()
