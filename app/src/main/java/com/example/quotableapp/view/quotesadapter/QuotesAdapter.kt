@@ -35,10 +35,7 @@ class QuotesAdapter : PagingDataAdapter<Quote, QuotesAdapter.ViewHolder>(itemDif
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(quote: Quote?) {
-            with(binding) {
-                author.text = quote?.author ?: ""
-                content.text = quote?.content ?: ""
-            }
+            binding.model = quote
         }
     }
 }
