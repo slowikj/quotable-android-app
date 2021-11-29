@@ -2,17 +2,17 @@ package com.example.quotableapp.view
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.quotableapp.databinding.MainActivityBinding
+import com.example.quotableapp.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: MainActivityBinding
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = MainActivityBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
     }
 

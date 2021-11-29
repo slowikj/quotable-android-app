@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import com.example.quotableapp.R
-import com.example.quotableapp.databinding.AllQuotesFragmentBinding
+import com.example.quotableapp.databinding.FragmentAllQuotesBinding
 import com.example.quotableapp.view.quotesadapter.QuotesAdapter
 import com.example.quotableapp.view.quotesadapter.QuotesLoadingAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +29,7 @@ class AllQuotesFragment : Fragment() {
 
     private val viewModel: QuotesViewModel by activityViewModels()
 
-    private lateinit var binding: AllQuotesFragmentBinding
+    private lateinit var binding: FragmentAllQuotesBinding
 
     private val quotesAdapter = QuotesAdapter()
 
@@ -38,7 +38,7 @@ class AllQuotesFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = AllQuotesFragmentBinding.inflate(layoutInflater)
+        binding = FragmentAllQuotesBinding.inflate(layoutInflater)
         return binding.root
     }
 
