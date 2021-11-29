@@ -1,4 +1,4 @@
-package com.example.quotableapp.viewmodel
+package com.example.quotableapp.view.allquotes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
