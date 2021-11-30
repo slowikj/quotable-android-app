@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
@@ -27,7 +27,7 @@ import kotlin.time.ExperimentalTime
 @AndroidEntryPoint
 class AllQuotesFragment : Fragment() {
 
-    private val viewModel: QuotesViewModel by activityViewModels()
+    private val viewModel: QuotesViewModel by viewModels()
 
     private lateinit var binding: FragmentAllQuotesBinding
 
@@ -37,7 +37,7 @@ class AllQuotesFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentAllQuotesBinding.inflate(layoutInflater)
         return binding.root
     }
