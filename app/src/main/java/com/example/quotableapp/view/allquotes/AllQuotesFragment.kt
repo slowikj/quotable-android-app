@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import com.example.quotableapp.R
@@ -63,17 +65,20 @@ class AllQuotesFragment : Fragment() {
     private fun setupPullToRefresh() {
         binding.swipeToRefresh.setOnRefreshListener { quotesAdapter.refresh() }
 
-        lifecycleScope.launchWhenCreated {
-            quotesAdapter
-                .loadStateFlow
-                .distinctUntilChangedBy { it.refresh }
-                .collectLatest { loadStates ->
-                    binding.swipeToRefresh.isRefreshing = loadStates.refresh is LoadState.Loading
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                quotesAdapter
+                    .loadStateFlow
+                    .distinctUntilChangedBy { it.refresh }
+                    .collectLatest { loadStates ->
+                        binding.swipeToRefresh.isRefreshing =
+                            loadStates.refresh is LoadState.Loading
 
-                    if (loadStates.refresh is LoadState.Error) {
-                        showErrorToast()
+                        if (loadStates.refresh is LoadState.Error) {
+                            showErrorToast()
+                        }
                     }
-                }
+            }
         }
     }
 
