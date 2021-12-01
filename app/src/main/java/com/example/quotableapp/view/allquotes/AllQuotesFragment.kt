@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.whenStarted
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import com.example.quotableapp.R
@@ -66,7 +67,7 @@ class AllQuotesFragment : Fragment() {
         binding.swipeToRefresh.setOnRefreshListener { quotesAdapter.refresh() }
 
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+            whenStarted {
                 quotesAdapter
                     .loadStateFlow
                     .distinctUntilChangedBy { it.refresh }
