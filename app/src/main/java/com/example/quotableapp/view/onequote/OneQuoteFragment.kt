@@ -1,15 +1,12 @@
 package com.example.quotableapp.view.onequote
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.navArgs
 import com.example.quotableapp.databinding.OneQuoteFragmentBinding
-import com.example.quotableapp.view.allquotes.AllQuotesFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,4 +27,10 @@ class OneQuoteFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.quote.observe(viewLifecycleOwner) {
+            binding.letterIcon.letter = if (it.author.isNotEmpty()) it.author[0].toString() else "?"
+        }
+    }
 }

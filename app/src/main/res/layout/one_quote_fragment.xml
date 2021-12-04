@@ -40,36 +40,33 @@
                 <LinearLayout
                     android:id="@+id/vertical_quote_bar"
                     android:layout_width="5dp"
-                    android:layout_height="200dp"
+                    android:layout_height="0dp"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="32dp"
                     android:background="@color/white"
                     android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="@+id/content"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="@id/content" />
 
                 <TextView
                     android:id="@+id/content"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
                     style="@style/TextAppearance.AppCompat.Medium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="24dp"
                     android:text="@{viewModel.quote.content}"
                     android:textColor="@color/white"
-                    app:layout_constraintBottom_toTopOf="@+id/letter_icon"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/vertical_quote_bar"
-                    app:layout_constraintTop_toTopOf="@+id/vertical_quote_bar"
-                    tools:text="Lorem ipsum lorem ipsum" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum" />
 
                 <LinearLayout
                     android:id="@+id/horizontal_quote_bar_left"
                     android:layout_width="24dp"
                     android:layout_height="2dp"
-                    android:layout_margin="8dp"
                     android:background="@color/colorAccent"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="@+id/author"
@@ -83,7 +80,6 @@
                     android:id="@+id/horizontal_quote_bar_right"
                     android:layout_width="24dp"
                     android:layout_height="2dp"
-                    android:layout_margin="8dp"
                     android:background="@color/colorAccent"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="@+id/author"
@@ -96,30 +92,33 @@
                     android:id="@+id/letter_icon"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="8dp"
                     app:layout_constraintBottom_toTopOf="@+id/author"
                     app:layout_constraintEnd_toEndOf="@+id/author"
                     app:layout_constraintStart_toStartOf="@+id/author"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.95"
-                    app:mli_shape_type="round_rect"
-                    app:mli_shape_color="@color/colorAccent"
-                    app:mli_letter="AS"
+                    app:layout_constraintTop_toBottomOf="@+id/content"
+                    app:mli_letter_color="@color/white"
                     app:mli_letters_number="2"
-                    app:mli_letter_color="@color/white"/>
+                    app:mli_shape_color="@color/colorAccent"
+                    app:mli_shape_type="circle" />
 
                 <TextView
                     android:id="@+id/author"
+                    style="@style/TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
                     android:text="@{viewModel.quote.author}"
                     android:textColor="@color/colorAccent"
-                    style="@style/TextAppearance.AppCompat.Small"
-                    app:layout_constraintBottom_toBottomOf="@+id/vertical_quote_bar"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/horizontal_quote_bar_right"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/horizontal_quote_bar_left"
-                    app:layout_constraintTop_toBottomOf="@+id/vertical_quote_bar"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0"
                     tools:text="Author" />
 
                 <androidx.constraintlayout.widget.Group
