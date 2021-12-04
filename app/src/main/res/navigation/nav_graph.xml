@@ -7,5 +7,19 @@
     <fragment
         android:id="@+id/allQuotesFragment"
         android:name="com.example.quotableapp.view.allquotes.AllQuotesFragment"
-        android:label="AllQuotesFragment" />
+        android:label="AllQuotesFragment" >
+        <action
+            android:id="@+id/showOneQuote"
+            app:destination="@id/oneQuoteFragment">
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/oneQuoteFragment"
+        android:name="com.example.quotableapp.view.onequote.OneQuoteFragment"
+        android:label="OneQuoteFragment">
+        <argument
+            android:name="quoteId"
+            app:argType="string"/>
+    </fragment>
 </navigation>

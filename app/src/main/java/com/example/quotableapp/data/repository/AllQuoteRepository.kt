@@ -1,4 +1,4 @@
-package com.example.quotableapp.data
+package com.example.quotableapp.data.repository
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
@@ -11,7 +11,7 @@ import com.example.quotableapp.data.paging.QuotesRemoteMediator
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class QuotesRepository @Inject constructor(
+class AllQuoteRepository @Inject constructor(
     private val quotesService: QuotesService,
     private val quotesDatabase: QuotesDatabase
 ) {

@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.whenStarted
+import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import com.example.quotableapp.R
+import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentAllQuotesBinding
 import com.example.quotableapp.view.quotesadapter.QuotesAdapter
 import com.example.quotableapp.view.quotesadapter.QuotesLoadingAdapter
@@ -30,11 +30,16 @@ import kotlin.time.ExperimentalTime
 @AndroidEntryPoint
 class AllQuotesFragment : Fragment() {
 
-    private val viewModel: QuotesViewModel by viewModels()
+    private val viewModelAll: AllQuotesViewModel by viewModels()
 
     private lateinit var binding: FragmentAllQuotesBinding
 
-    private val quotesAdapter = QuotesAdapter()
+    private val quotesAdapter = QuotesAdapter(onItemClick = { showQuote(it) })
+
+    private fun showQuote(quote: Quote) {
+        val action = AllQuotesFragmentDirections.showOneQuote(quote.id)
+        findNavController().navigate(action)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,7 +62,7 @@ class AllQuotesFragment : Fragment() {
         )
 
         lifecycleScope.launch {
-            viewModel.fetchQuotes().collectLatest {
+            viewModelAll.fetchQuotes().collectLatest {
                 quotesAdapter.submitData(it)
             }
         }

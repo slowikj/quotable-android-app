@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.quotableapp.view.onequote.OneQuoteViewModel" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardCornerRadius="16dp"
+        tools:context=".view.onequote.OneQuoteFragment">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/vertical_quote_bar"
+                android:layout_width="3dp"
+                android:layout_height="300dp"
+                android:layout_margin="8dp"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/content"
+                android:text="@{viewModel.quote.content}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/letter_icon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/vertical_quote_bar"
+                app:layout_constraintTop_toTopOf="@+id/vertical_quote_bar"
+                tools:text="Lorem ipsum lorem ipsum" />
+
+            <LinearLayout
+                android:id="@+id/horizontal_quote_bar_left"
+                android:layout_width="24dp"
+                android:layout_height="2dp"
+                android:layout_margin="8dp"
+                android:background="@color/colorAccent"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="@+id/author"
+                app:layout_constraintEnd_toStartOf="@+id/author"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/author" />
+
+            <LinearLayout
+                android:id="@+id/horizontal_quote_bar_right"
+                android:layout_width="24dp"
+                android:layout_height="2dp"
+                android:layout_margin="8dp"
+                android:background="@color/colorAccent"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="@+id/author"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/author"
+                app:layout_constraintTop_toTopOf="@+id/author" />
+
+            <com.github.ivbaranov.mli.MaterialLetterIcon
+                android:id="@+id/letter_icon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/author"
+                app:layout_constraintEnd_toEndOf="@+id/author"
+                app:layout_constraintStart_toStartOf="@+id/author"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.95"
+                app:mli_letter="A"
+                app:mli_letter_color="@color/colorAccent"
+                app:mli_letter_size="8"
+                app:mli_letters_number="1"
+                app:mli_shape_color="@color/white" />
+
+            <TextView
+                android:id="@+id/author"
+                android:text="@{viewModel.quote.author}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:textColor="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="@+id/vertical_quote_bar"
+                app:layout_constraintEnd_toStartOf="@+id/horizontal_quote_bar_right"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/horizontal_quote_bar_left"
+                app:layout_constraintTop_toBottomOf="@+id/vertical_quote_bar"
+                tools:text="Author" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="horizontal_quote_bar_left,author,horizontal_quote_bar_right" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</layout>
