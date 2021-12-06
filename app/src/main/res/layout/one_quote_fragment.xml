@@ -2,6 +2,7 @@
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".view.onequote.OneQuoteFragment">
 
@@ -10,6 +11,18 @@
         <variable
             name="viewModel"
             type="com.example.quotableapp.view.onequote.OneQuoteViewModel" />
+
+        <variable
+            name="stateHandler"
+            type="com.example.quotableapp.view.onequote.OneQuoteFragment.StateHandler" />
+
+        <import type="android.view.View" />
+
+        <import type="com.example.quotableapp.view.onequote.OneQuoteViewModel.State"/>
+
+        <import type="com.example.quotableapp.view.onequote.OneQuoteViewModel.State.Loading"/>
+
+        <import type="com.example.quotableapp.view.onequote.OneQuoteViewModel.State.Data"/>
     </data>
 
 
@@ -18,129 +31,29 @@
         android:layout_height="match_parent"
         android:background="@color/colorPrimary">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
+        <include
+            android:id="@+id/quote_layout"
+            layout="@layout/quote_card_details"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintVertical_bias="0.5"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            app:cardBackgroundColor="#22FFFFFF"
-            app:cardCornerRadius="48dp"
-            app:cardElevation="@dimen/cardview_compat_inset_shadow"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintVertical_bias="0.5"
+            bind:model="@{stateHandler.getDataOrNull(viewModel.state)}"
+            android:visibility="@{viewModel.state instanceof Data ? View.VISIBLE : View.GONE}"/>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_tags"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    tools:listitem="@layout/item_tag"
-                    android:layout_margin="16dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:orientation="horizontal"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
-                <LinearLayout
-                    android:id="@+id/vertical_quote_bar"
-                    android:layout_width="3dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="32dp"
-                    android:background="@color/white"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="@+id/content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/content" />
-
-                <TextView
-                    android:id="@+id/content"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="24dp"
-                    android:text="@{viewModel.quote.content}"
-                    android:textColor="@color/white"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/vertical_quote_bar"
-                    app:layout_constraintTop_toBottomOf="@id/rv_tags"
-                    tools:text="Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum" />
-
-                <LinearLayout
-                    android:id="@+id/horizontal_quote_bar_left"
-                    android:layout_width="24dp"
-                    android:layout_height="2dp"
-                    android:background="@color/colorAccent"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="@+id/author"
-                    app:layout_constraintEnd_toStartOf="@+id/author"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/author" />
-
-                <LinearLayout
-                    android:id="@+id/horizontal_quote_bar_right"
-                    android:layout_width="24dp"
-                    android:layout_height="2dp"
-                    android:background="@color/colorAccent"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="@+id/author"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/author"
-                    app:layout_constraintTop_toTopOf="@+id/author" />
-
-                <com.github.ivbaranov.mli.MaterialLetterIcon
-                    android:id="@+id/letter_icon"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintBottom_toTopOf="@+id/author"
-                    app:layout_constraintEnd_toEndOf="@+id/author"
-                    app:layout_constraintStart_toStartOf="@+id/author"
-                    app:layout_constraintTop_toBottomOf="@+id/content"
-                    app:mli_letter_color="@color/white"
-                    app:mli_letters_number="2"
-                    app:mli_shape_color="@color/colorAccent"
-                    app:mli_shape_type="circle" />
-
-                <TextView
-                    android:id="@+id/author"
-                    style="@style/TextAppearance.AppCompat.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="@{viewModel.quote.author}"
-                    android:textColor="@color/colorAccent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/horizontal_quote_bar_right"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/horizontal_quote_bar_left"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0"
-                    tools:text="Author" />
-
-                <androidx.constraintlayout.widget.Group
-                    android:id="@+id/group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:constraint_referenced_ids="horizontal_quote_bar_left,author,horizontal_quote_bar_right" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5"
+            android:visibility="@{viewModel.state instanceof Loading ? View.VISIBLE : View.GONE}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
