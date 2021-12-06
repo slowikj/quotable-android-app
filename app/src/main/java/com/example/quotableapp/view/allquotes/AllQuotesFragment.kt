@@ -34,7 +34,7 @@ class AllQuotesFragment : Fragment() {
 
     private lateinit var binding: FragmentAllQuotesBinding
 
-    private val quotesAdapter = QuotesAdapter(onItemClick = { showQuote(it) })
+    private val quotesAdapter = QuotesAdapter(onItemClick = { viewModel.onClick(it) })
 
     private fun showQuote(quote: Quote) {
         val action = AllQuotesFragmentDirections.showOneQuote(quote.id)
@@ -54,6 +54,26 @@ class AllQuotesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupQuotesAdapter()
         setupPullToRefresh()
+
+        setupActionHandler()
+    }
+
+    private fun setupActionHandler() {
+        viewModel.actions.observe(viewLifecycleOwner) {
+            when (it) {
+                is AllQuotesViewModel.Action.Navigation -> handleNavigation(it)
+                is AllQuotesViewModel.Action.Error -> showErrorToast()
+                is AllQuotesViewModel.Action.CopyToClipboard -> TODO()
+                is AllQuotesViewModel.Action.InvalidateQuotes -> TODO()
+            }
+        }
+    }
+
+    private fun handleNavigation(action: AllQuotesViewModel.Action.Navigation) {
+        when (action) {
+            is AllQuotesViewModel.Action.Navigation.ToQuotesOfAuthor -> TODO()
+            is AllQuotesViewModel.Action.Navigation.ToDetails -> showQuote(action.quote)
+        }
     }
 
     private fun setupQuotesAdapter() {

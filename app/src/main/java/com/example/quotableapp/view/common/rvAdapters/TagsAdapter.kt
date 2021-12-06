@@ -1,4 +1,4 @@
-package com.example.quotableapp.view.common
+package com.example.quotableapp.view.common.rvAdapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

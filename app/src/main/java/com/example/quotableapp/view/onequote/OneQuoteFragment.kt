@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.quotableapp.databinding.OneQuoteFragmentBinding
-import com.example.quotableapp.view.common.TagsAdapter
+import com.example.quotableapp.view.common.rvAdapters.TagsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
