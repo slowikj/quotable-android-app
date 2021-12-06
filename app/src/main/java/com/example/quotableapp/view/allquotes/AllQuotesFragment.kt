@@ -30,7 +30,7 @@ import kotlin.time.ExperimentalTime
 @AndroidEntryPoint
 class AllQuotesFragment : Fragment() {
 
-    private val viewModelAll: AllQuotesViewModel by viewModels()
+    private val viewModel: AllQuotesViewModel by viewModels()
 
     private lateinit var binding: FragmentAllQuotesBinding
 
@@ -62,7 +62,7 @@ class AllQuotesFragment : Fragment() {
         )
 
         lifecycleScope.launch {
-            viewModelAll.fetchQuotes().collectLatest {
+            viewModel.fetchQuotes().collectLatest {
                 quotesAdapter.submitData(it)
             }
         }
