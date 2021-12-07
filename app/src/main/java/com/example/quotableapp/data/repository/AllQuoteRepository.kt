@@ -20,10 +20,10 @@ class AllQuoteRepository @Inject constructor(
     fun fetchQuotes(): Flow<PagingData<Quote>> =
         Pager(
             config = PagingConfig(
-                pageSize = 7,
+                pageSize = 30,
                 enablePlaceholders = true,
-                initialLoadSize = 7,
-                prefetchDistance = 2
+                initialLoadSize = 30,
+                prefetchDistance = 10
             ),
             remoteMediator = QuotesRemoteMediator(quotesDatabase, quotesService),
             pagingSourceFactory = { quotesDatabase.quotes().getQuotes() }
