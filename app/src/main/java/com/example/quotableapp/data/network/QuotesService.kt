@@ -8,7 +8,7 @@ import retrofit2.http.Query
 
 interface QuotesService {
 
-    @GET("quotes")
+    @GET("quotes?sortBy=dateAdded?order=asc")
     suspend fun fetchQuotes(
         @Query("page") page: Int,
         @Query("limit") limit: Int
