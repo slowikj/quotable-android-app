@@ -42,7 +42,7 @@
 
                 <TextView
                     android:id="@+id/content"
-                    style="@style/TextAppearance.AppCompat.Medium"
+                    style="@style/TextAppearance.AppCompat.Body2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
@@ -54,7 +54,7 @@
 
                 <TextView
                     android:id="@+id/author"
-                    style="@style/TextAppearance.AppCompat.Small"
+                    style="@style/TextAppearance.AppCompat.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
