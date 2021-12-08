@@ -22,7 +22,7 @@ class QuotesRemoteMediator(
 ) : RemoteMediator<Int, Quote>() {
 
     companion object {
-        private val CACHE_TIMEOUT = TimeUnit.MILLISECONDS.convert(30, TimeUnit.SECONDS)
+        private val CACHE_TIMEOUT = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
     }
 
     override suspend fun initialize(): InitializeAction {
