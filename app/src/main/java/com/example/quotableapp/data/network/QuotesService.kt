@@ -18,4 +18,18 @@ interface QuotesService {
     suspend fun fetchQuote(
         @Path("id") id: String
     ): QuoteDTO
+
+    @GET("quotes")
+    suspend fun fetchQuotesOfAuthor(
+        @Query("author") author: String,
+        @Query("page") page: Int,
+        @Query("limit") limit: Int
+    ): QuotesResponseDTO
+
+    @GET("quotes")
+    suspend fun fetchQuotesOfTag(
+        @Query("tags") tag: String,
+        @Query("page") page: Int,
+        @Query("limit") limit: Int
+    ): QuotesResponseDTO
 }

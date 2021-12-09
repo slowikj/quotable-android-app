@@ -1,4 +1,4 @@
-package com.example.quotableapp.view.quotesadapter
+package com.example.quotableapp.view.quoteslist.quotesadapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.ItemQuoteBinding
 
-class QuotesAdapter(private val onItemClick: (Quote) -> Unit) :
+class QuotesAdapter(
+    private val onClickHandler: ViewHolder.OnClickHandler
+) :
     PagingDataAdapter<Quote, QuotesAdapter.ViewHolder>(itemDifferentiator) {
 
     companion object {
@@ -31,18 +33,31 @@ class QuotesAdapter(private val onItemClick: (Quote) -> Unit) :
         val layoutInflater = LayoutInflater.from(parent.context)
         return ViewHolder(
             binding = ItemQuoteBinding.inflate(layoutInflater, parent, false),
-            onItemClick = onItemClick
+            onClickHandler = onClickHandler
         )
     }
 
     class ViewHolder(
         private val binding: ItemQuoteBinding,
-        private val onItemClick: (Quote) -> Unit
+        private val onClickHandler: OnClickHandler
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(quote: Quote?) {
             binding.model = quote
-            binding.root.setOnClickListener { quote?.let { onItemClick(it) } }
+
+            quote?.let {
+                binding.author.setOnClickListener { onClickHandler.onAuthor(quote) }
+                itemView.setOnClickListener { onClickHandler.onItem(quote) }
+            }
+        }
+
+        interface OnClickHandler {
+
+            fun onItem(quote: Quote)
+
+            fun onAuthor(quote: Quote)
+
+            fun onTag(tag: String)
         }
     }
 }

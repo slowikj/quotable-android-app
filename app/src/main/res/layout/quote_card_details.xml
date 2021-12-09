@@ -129,15 +129,7 @@
                     app:layout_constraintVertical_bias="1.0"
                     tools:text="Author" />
 
-                <androidx.constraintlayout.widget.Group
-                    android:id="@+id/group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:constraint_referenced_ids="horizontal_quote_bar_left,author,horizontal_quote_bar_right" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 </layout>

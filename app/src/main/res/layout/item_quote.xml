@@ -45,12 +45,12 @@
                     style="@style/TextAppearance.AppCompat.Body2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:text="@{model.content}"
                     android:textColor="@color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/guideline_right"
                     app:layout_constraintTop_toBottomOf="@id/image_quote"
-                    tools:text="Lorem ipsum lorem ipsum"
-                    android:text="@{model.content}"/>
+                    tools:text="Lorem ipsum lorem ipsum" />
 
                 <TextView
                     android:id="@+id/author"
@@ -58,13 +58,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:text="@{model.author}"
                     android:textColor="@color/colorAccent"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/content"
-                    tools:text="Author"
-                    android:text="@{model.author}"/>
+                    tools:text="Author" />
 
                 <LinearLayout
                     android:id="@+id/author_line_left"
@@ -111,6 +111,12 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     app:layout_constraintGuide_begin="32dp" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/author_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="author" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

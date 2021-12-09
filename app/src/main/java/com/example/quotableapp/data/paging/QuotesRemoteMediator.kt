@@ -14,10 +14,11 @@ import com.example.quotableapp.data.network.QuotesService
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @ExperimentalPagingApi
-class QuotesRemoteMediator(
-    private val database: QuotesDatabase,
+class QuotesRemoteMediator @Inject constructor(
+    val database: QuotesDatabase,
     private val remoteService: QuotesService
 ) : RemoteMediator<Int, Quote>() {
 
@@ -56,18 +57,8 @@ class QuotesRemoteMediator(
             LoadType.REFRESH -> null
         }
         val newLoadKey: Int = (lastLoadKey ?: 0) + 1
-
         val responseDTO = remoteService.fetchQuotes(newLoadKey, state.config.pageSize)
-
-        delay(2000)
-
-        Log.d(
-            this::class.java.name,
-            "newLoadKey: $newLoadKey, resultsSize: ${responseDTO.results.size}, totalPages: ${responseDTO.totalPages}"
-        )
-
         updateLocalDatabase(loadType, responseDTO, newLoadKey)
-
         return MediatorResult.Success(
             endOfPaginationReached = responseDTO.page == responseDTO.totalPages
         )
@@ -87,9 +78,6 @@ class QuotesRemoteMediator(
             database.remoteKeys()
                 .updateKey(RemoteKey(query = "", key = newLoadKey))
         }
-
-        Log.d(this::class.java.name, "quotes db size ${database.quotes().getSize()}")
-        Log.d(this::class.java.name, "remote keys size ${database.remoteKeys().getKeys().size}")
     }
 
     private suspend fun getLastRemoteKey(): Int? =

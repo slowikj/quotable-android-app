@@ -6,6 +6,7 @@ import com.example.quotableapp.data.repository.OneQuoteRepository
 import com.example.quotableapp.view.common.MutableSingleLiveEvent
 import com.example.quotableapp.view.common.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import hilt_aggregated_deps._com_example_quotableapp_view_MainActivity_GeneratedInjector
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,7 +26,7 @@ class OneQuoteViewModel @Inject constructor(
 
     sealed class Action {
         sealed class Navigation : Action() {
-            data class ToAuthorQuotes(val author: String) : Action()
+            data class ToAuthorQuotes(val authorSlug: String) : Action()
 
             data class ToTagQuotes(val tag: String) : Action()
         }
@@ -36,6 +37,8 @@ class OneQuoteViewModel @Inject constructor(
     companion object {
         const val QUOTE_ID = "quoteId"
     }
+
+    private var quote: Quote? = null
 
     private val quoteId: String = savedStateHandle[QUOTE_ID]!!
 
@@ -50,10 +53,15 @@ class OneQuoteViewModel @Inject constructor(
     }
 
     fun onRefresh() {
+        if (_state.value is State.Loading) return
+
         _state.postValue(State.Loading)
         viewModelScope.launch {
             runCatching { oneQuoteRepository.fetchQuote(quoteId) }
-                .onSuccess { _state.postValue(State.Data(it)) }
+                .onSuccess {
+                    quote = it
+                    _state.postValue(State.Data(it))
+                }
                 .onFailure {
                     _state.postValue(State.Error)
                     _action.postValue(Action.ShowError)
@@ -62,11 +70,13 @@ class OneQuoteViewModel @Inject constructor(
     }
 
     fun onAuthorClick() {
-        // TODO
+        quote?.let {
+            _action.postValue(Action.Navigation.ToAuthorQuotes(it.authorSlug))
+        }
     }
 
     fun onTagClick(tag: String) {
-        // TODO
+        _action.postValue(Action.Navigation.ToTagQuotes(tag))
     }
 
     fun onLike() {

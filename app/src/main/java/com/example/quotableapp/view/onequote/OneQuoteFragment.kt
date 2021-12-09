@@ -26,7 +26,7 @@ class OneQuoteFragment : Fragment() {
 
     private lateinit var binding: OneQuoteFragmentBinding
 
-    private val tagsAdapter = TagsAdapter()
+    private val tagsAdapter = TagsAdapter(onClick = { viewModel.onTagClick(it) })
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +45,11 @@ class OneQuoteFragment : Fragment() {
         binding.quoteLayout.rvTags.adapter = tagsAdapter
         viewModel.state.observe(viewLifecycleOwner) { handle(it) }
         viewModel.action.observe(viewLifecycleOwner) { handle(it) }
+
+        binding.quoteLayout.apply {
+            author.setOnClickListener { viewModel.onAuthorClick() }
+            letterIcon.setOnClickListener { viewModel.onAuthorClick() }
+        }
     }
 
     private fun handle(state: OneQuoteViewModel.State) {
@@ -58,7 +63,19 @@ class OneQuoteFragment : Fragment() {
         // TODO
         when (action) {
             is OneQuoteViewModel.Action.ShowError -> showErrorToast()
+            is OneQuoteViewModel.Action.Navigation.ToAuthorQuotes -> showAuthorFragment(action.authorSlug)
+            is OneQuoteViewModel.Action.Navigation.ToTagQuotes -> showQuotesOfTag(action.tag)
         }
+    }
+
+    private fun showQuotesOfTag(tag: String) {
+        val action = OneQuoteFragmentDirections.showTagQuotes(tag)
+        findNavController().navigate(action)
+    }
+
+    private fun showAuthorFragment(authorSlug: String) {
+        val action = OneQuoteFragmentDirections.showAuthor(authorSlug)
+        findNavController().navigate(action)
     }
 
     private fun handleValidData(state: OneQuoteViewModel.State.Data) {

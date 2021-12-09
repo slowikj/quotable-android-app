@@ -1,4 +1,4 @@
-package com.example.quotableapp.view.allquotes
+package com.example.quotableapp.view.author
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.databinding.FragmentAllQuotesBinding
+import com.example.quotableapp.databinding.FragmentAuthorBinding
 import com.example.quotableapp.view.quoteslist.QuotesListFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
@@ -20,11 +20,11 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 @FlowPreview
 @AndroidEntryPoint
-class AllQuotesFragment() : QuotesListFragment<AllQuotesViewModel>() {
+class AuthorFragment : QuotesListFragment<AuthorViewModel>() {
 
-    private lateinit var binding: FragmentAllQuotesBinding
+    override val listViewModel: AuthorViewModel by viewModels()
 
-    override val listViewModel: AllQuotesViewModel by viewModels()
+    private lateinit var binding: FragmentAuthorBinding
 
     override val rvQuotes: RecyclerView
         get() = binding.rvQuotes
@@ -37,22 +37,20 @@ class AllQuotesFragment() : QuotesListFragment<AllQuotesViewModel>() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAllQuotesBinding.inflate(inflater)
+        binding = FragmentAuthorBinding.inflate(inflater)
         return binding.root
     }
 
     override fun showQuote(quote: Quote) {
-        val action = AllQuotesFragmentDirections.showOneQuote(quote.id)
+        val action = AuthorFragmentDirections.showOneQuote(quote.id)
         findNavController().navigate(action)
     }
 
     override fun showAuthorFragment(authorSlug: String) {
-        val action = AllQuotesFragmentDirections.showAuthor(authorSlug)
-        findNavController().navigate(action)
     }
 
     override fun showQuotesOfTag(tag: String) {
-        val action = AllQuotesFragmentDirections.showTagQuotes(tag)
+        val action = AuthorFragmentDirections.showTagQuotes(tag)
         findNavController().navigate(action)
     }
 }
