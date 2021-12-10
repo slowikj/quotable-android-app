@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @ExperimentalPagingApi
 @HiltViewModel
-class AllQuotesViewModel
+class AllQuotesListViewModel
 @Inject constructor(
     quotesListRepository: AllQuotesRepository,
     savedStateHandle: SavedStateHandle

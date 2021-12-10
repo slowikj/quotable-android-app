@@ -20,9 +20,9 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 @FlowPreview
 @AndroidEntryPoint
-class AuthorFragment : QuotesListFragment<AuthorViewModel>() {
+class AuthorFragment : QuotesListFragment<AuthorQuotesViewModel>() {
 
-    override val listViewModel: AuthorViewModel by viewModels()
+    override val listViewModel: AuthorQuotesViewModel by viewModels()
 
     private lateinit var binding: FragmentAuthorBinding
 

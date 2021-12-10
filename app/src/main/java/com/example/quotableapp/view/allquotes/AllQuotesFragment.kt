@@ -20,11 +20,11 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 @FlowPreview
 @AndroidEntryPoint
-class AllQuotesFragment() : QuotesListFragment<AllQuotesViewModel>() {
+class AllQuotesFragment() : QuotesListFragment<AllQuotesListViewModel>() {
 
     private lateinit var binding: FragmentAllQuotesBinding
 
-    override val listViewModel: AllQuotesViewModel by viewModels()
+    override val listViewModel: AllQuotesListViewModel by viewModels()
 
     override val rvQuotes: RecyclerView
         get() = binding.rvQuotes

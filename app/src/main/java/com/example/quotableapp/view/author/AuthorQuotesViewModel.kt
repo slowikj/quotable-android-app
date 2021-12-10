@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @ExperimentalPagingApi
 @HiltViewModel
-class AuthorViewModel @Inject constructor(
+class AuthorQuotesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     quotesOfAuthorRepository: QuotesOfAuthorRepository
 ) : QuotesListViewModel(savedStateHandle, quotesOfAuthorRepository) {
