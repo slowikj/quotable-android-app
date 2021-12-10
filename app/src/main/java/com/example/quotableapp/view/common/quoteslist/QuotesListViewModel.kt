@@ -1,4 +1,4 @@
-package com.example.quotableapp.view.quoteslist
+package com.example.quotableapp.view.common.quoteslist
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

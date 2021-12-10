@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.quotableapp.databinding.FragmentOneQuoteBinding
-import com.example.quotableapp.view.common.rvAdapters.TagsAdapter
+import com.example.quotableapp.view.common.TagsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -60,7 +60,6 @@ class OneQuoteFragment : Fragment() {
     }
 
     private fun handle(action: OneQuoteViewModel.Action) {
-        // TODO
         when (action) {
             is OneQuoteViewModel.Action.ShowError -> showErrorToast()
             is OneQuoteViewModel.Action.Navigation.ToAuthorQuotes -> showAuthorFragment(action.authorSlug)

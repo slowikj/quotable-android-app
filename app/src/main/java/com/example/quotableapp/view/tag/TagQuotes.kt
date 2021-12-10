@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentTagQuotesBinding
-import com.example.quotableapp.view.quoteslist.QuotesListFragment
+import com.example.quotableapp.view.common.quoteslist.QuotesListFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlin.time.ExperimentalTime

@@ -1,4 +1,4 @@
-package com.example.quotableapp.view.quoteslist
+package com.example.quotableapp.view.common.quoteslist
 
 import android.os.Bundle
 import android.view.View
@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.view.quoteslist.quotesadapter.QuotesAdapter
-import com.example.quotableapp.view.quoteslist.quotesadapter.QuotesLoadingAdapter
+import com.example.quotableapp.view.common.quoteslist.quotesadapter.QuotesAdapter
+import com.example.quotableapp.view.common.quoteslist.quotesadapter.QuotesLoadingAdapter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
@@ -106,9 +106,9 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
 
     protected abstract fun showQuote(quote: Quote)
 
-    abstract fun showAuthorFragment(authorSlug: String)
+    protected abstract fun showAuthorFragment(authorSlug: String)
 
-    abstract fun showQuotesOfTag(tag: String)
+    protected abstract fun showQuotesOfTag(tag: String)
 
     private fun showErrorToast() {
         Toast.makeText(

@@ -3,7 +3,7 @@ package com.example.quotableapp.view.author
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.data.repository.quoteslist.QuotesOfAuthorRepository
-import com.example.quotableapp.view.quoteslist.QuotesListViewModel
+import com.example.quotableapp.view.common.quoteslist.QuotesListViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

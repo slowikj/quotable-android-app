@@ -5,7 +5,7 @@
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/fragment_all_quotes.xml" value="0.2755208333333333" />
-        <entry key="app/src/main/res/layout/fragment_author.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_author.xml" value="0.14" />
         <entry key="app/src/main/res/layout/fragment_one_quote.xml" value="0.23333333333333334" />
         <entry key="app/src/main/res/layout/fragment_quotes_list.xml" value="0.3333333333333333" />
         <entry key="app/src/main/res/layout/fragment_tag_quotes.xml" value="0.2640625" />
