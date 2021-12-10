@@ -37,7 +37,10 @@ class AuthorFragment : QuotesListFragment<AuthorViewModel>() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAuthorBinding.inflate(inflater)
+        binding = FragmentAuthorBinding.inflate(inflater).apply {
+            lifecycleOwner = this@AuthorFragment.viewLifecycleOwner
+            authorName = listViewModel.keyword
+        }
         return binding.root
     }
 
