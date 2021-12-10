@@ -4,14 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="model"
             type="com.example.quotableapp.data.model.Quote" />
+
+        <variable
+            name="onClickHandler"
+            type="com.example.quotableapp.view.common.quoteslist.quotesadapter.QuotesAdapter.ViewHolder.OnClickHandler" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{() -> onClickHandler.onItem(model)}"
         tools:background="@color/colorPrimary"
         tools:paddingBottom="16dp">
 
@@ -61,6 +67,7 @@
                     android:text="@{model.author}"
                     android:textColor="@color/colorAccent"
                     android:textStyle="bold"
+                    android:onClick="@{() -> onClickHandler.onAuthor(model)}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/content"

@@ -44,11 +44,7 @@ class QuotesAdapter(
 
         fun bind(quote: Quote?) {
             binding.model = quote
-
-            quote?.let {
-                binding.author.setOnClickListener { onClickHandler.onAuthor(quote) }
-                itemView.setOnClickListener { onClickHandler.onItem(quote) }
-            }
+            binding.onClickHandler = onClickHandler
         }
 
         interface OnClickHandler {
