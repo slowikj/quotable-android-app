@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.example.quotableapp.databinding.OneQuoteFragmentBinding
+import com.example.quotableapp.databinding.FragmentOneQuoteBinding
 import com.example.quotableapp.view.common.rvAdapters.TagsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,7 +24,7 @@ class OneQuoteFragment : Fragment() {
 
     private val viewModel: OneQuoteViewModel by viewModels()
 
-    private lateinit var binding: OneQuoteFragmentBinding
+    private lateinit var binding: FragmentOneQuoteBinding
 
     private val tagsAdapter = TagsAdapter(onClick = { viewModel.onTagClick(it) })
 
@@ -32,7 +32,7 @@ class OneQuoteFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = OneQuoteFragmentBinding.inflate(inflater).apply {
+        binding = FragmentOneQuoteBinding.inflate(inflater).apply {
             viewModel = this@OneQuoteFragment.viewModel
             lifecycleOwner = this@OneQuoteFragment.viewLifecycleOwner
             stateHandler = StateHandler
