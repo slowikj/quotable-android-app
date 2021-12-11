@@ -9,13 +9,13 @@ import com.example.quotableapp.data.paging.QuotesRemoteMediator
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+
 @ExperimentalPagingApi
 class AllQuotesRepository @Inject constructor(
     private val remoteMediator: QuotesRemoteMediator,
     private val pagingConfig: PagingConfig
 ) : QuotesListRepository {
 
-    @ExperimentalPagingApi
     override fun fetchQuotes(keyword: String): Flow<PagingData<Quote>> =
         Pager(
             config = pagingConfig,

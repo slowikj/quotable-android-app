@@ -2,7 +2,8 @@ package com.example.quotableapp.view.author
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.ExperimentalPagingApi
-import com.example.quotableapp.data.repository.quoteslist.QuotesOfAuthorRepository
+import com.example.quotableapp.data.repository.quoteslist.QuotesListRepository
+import com.example.quotableapp.di.QuotesType
 import com.example.quotableapp.view.common.quoteslist.QuotesListViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -11,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthorQuotesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    quotesOfAuthorRepository: QuotesOfAuthorRepository
+    @QuotesType.OfAuthor quotesOfAuthorRepository: QuotesListRepository
 ) : QuotesListViewModel(savedStateHandle, quotesOfAuthorRepository) {
 
     companion object {

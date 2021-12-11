@@ -6,7 +6,6 @@ import com.example.quotableapp.data.repository.OneQuoteRepository
 import com.example.quotableapp.view.common.MutableSingleLiveEvent
 import com.example.quotableapp.view.common.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import hilt_aggregated_deps._com_example_quotableapp_view_MainActivity_GeneratedInjector
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
