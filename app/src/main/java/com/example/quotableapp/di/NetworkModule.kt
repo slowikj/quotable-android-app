@@ -1,5 +1,6 @@
 package com.example.quotableapp.di
 
+import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.QuotesService
 import dagger.Module
 import dagger.Provides
@@ -28,6 +29,10 @@ object NetworkModule {
     @Provides
     fun getQuotesService(@DefaultRetrofitClient retrofitClient: Retrofit): QuotesService =
         retrofitClient.create(QuotesService::class.java)
+
+    @Provides
+    fun getAuthorsService(@DefaultRetrofitClient retrofitClient: Retrofit): AuthorsService =
+        retrofitClient.create(AuthorsService::class.java)
 
     @Provides
     @DefaultRetrofitClient

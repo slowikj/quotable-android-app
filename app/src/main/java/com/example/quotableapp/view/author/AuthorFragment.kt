@@ -24,6 +24,8 @@ class AuthorFragment : QuotesListFragment<AuthorQuotesViewModel>() {
 
     override val listViewModel: AuthorQuotesViewModel by viewModels()
 
+    private val authorDetailsViewModel: AuthorDetailsViewModel by viewModels()
+
     private lateinit var binding: FragmentAuthorBinding
 
     override val rvQuotes: RecyclerView
@@ -38,8 +40,8 @@ class AuthorFragment : QuotesListFragment<AuthorQuotesViewModel>() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAuthorBinding.inflate(inflater).apply {
-            lifecycleOwner = this@AuthorFragment.viewLifecycleOwner
-            authorName = listViewModel.keyword
+            collapsingToolbar.authorDetailsViewModel = authorDetailsViewModel
+            collapsingToolbar.lifecycleOwner = this@AuthorFragment.viewLifecycleOwner
         }
         return binding.root
     }
