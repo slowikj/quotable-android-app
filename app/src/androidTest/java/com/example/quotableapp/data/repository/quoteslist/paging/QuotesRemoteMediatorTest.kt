@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.paging
+package com.example.quotableapp.data.repository.quoteslist.paging
 
 import androidx.paging.*
 import com.example.quotableapp.data.DataTestUtil

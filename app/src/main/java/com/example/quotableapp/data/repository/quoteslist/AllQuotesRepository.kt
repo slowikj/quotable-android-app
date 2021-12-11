@@ -5,7 +5,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.paging.QuotesRemoteMediator
+import com.example.quotableapp.data.repository.quoteslist.paging.QuotesRemoteMediator
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
