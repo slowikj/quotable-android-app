@@ -14,7 +14,7 @@ import dagger.hilt.components.SingletonComponent
 object DatabaseModule {
 
     @Provides
-    fun getQuotesDatabase(@ApplicationContext context: Context) =
+    fun getQuotesDatabase(@ApplicationContext context: Context): QuotesDatabase =
         Room.databaseBuilder(context, QuotesDatabase::class.java, "quotes.db")
             .build()
 }

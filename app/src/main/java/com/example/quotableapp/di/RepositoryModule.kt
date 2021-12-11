@@ -11,6 +11,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 
 annotation class QuotesType {
@@ -27,6 +28,10 @@ annotation class QuotesType {
     annotation class All
 }
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class CacheTimeout
+
 @Module
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
@@ -39,6 +44,11 @@ object RepositoryModule {
             initialLoadSize = 30,
             prefetchDistance = 10
         )
+
+    @Provides
+    @CacheTimeout
+    fun provideRemoteMediatorCacheTimeoutMilliseconds(): Long =
+        TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
 
     @Module
     @InstallIn(SingletonComponent::class)

@@ -1,6 +1,5 @@
 package com.example.quotableapp.data.paging
 
-import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -12,25 +11,20 @@ import com.example.quotableapp.data.model.RemoteKey
 import com.example.quotableapp.data.model.toModel
 import com.example.quotableapp.data.network.QuotesService
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
-import kotlinx.coroutines.delay
-import java.util.concurrent.TimeUnit
+import com.example.quotableapp.di.CacheTimeout
 import javax.inject.Inject
 
 @ExperimentalPagingApi
 class QuotesRemoteMediator @Inject constructor(
     val database: QuotesDatabase,
-    private val remoteService: QuotesService
+    private val remoteService: QuotesService,
+    @CacheTimeout private val cacheTimeoutMilliseconds: Long
 ) : RemoteMediator<Int, Quote>() {
-
-    companion object {
-        private val CACHE_TIMEOUT = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
-    }
 
     override suspend fun initialize(): InitializeAction {
         val quotesLastUpdated: Long = database.quotes().lastUpdated() ?: 0
 
-        return if (System.currentTimeMillis() - quotesLastUpdated > CACHE_TIMEOUT) {
-            Log.d(this::class.java.name, "needs refresh")
+        return if (System.currentTimeMillis() - quotesLastUpdated > cacheTimeoutMilliseconds) {
             InitializeAction.LAUNCH_INITIAL_REFRESH
         } else {
             InitializeAction.SKIP_INITIAL_REFRESH
