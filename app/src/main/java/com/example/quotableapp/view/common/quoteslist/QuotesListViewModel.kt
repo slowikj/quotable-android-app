@@ -10,7 +10,9 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.quoteslist.QuotesListRepository
 import com.example.quotableapp.view.common.MutableSingleLiveEvent
 import com.example.quotableapp.view.common.SingleLiveEvent
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 
 @ExperimentalPagingApi
 abstract class QuotesListViewModel constructor(
@@ -36,13 +38,13 @@ abstract class QuotesListViewModel constructor(
     }
 
     private val _actions: MutableSingleLiveEvent<Action> = MutableSingleLiveEvent()
-
     val actions: SingleLiveEvent<Action> = _actions
 
     abstract val keyword: String
 
     fun fetchQuotes(): Flow<PagingData<Quote>> = quotesRepository
         .fetchQuotes(keyword = keyword)
+        .flowOn(Dispatchers.IO)
         .cachedIn(viewModelScope)
 
     fun onItemClick(quote: Quote) {
