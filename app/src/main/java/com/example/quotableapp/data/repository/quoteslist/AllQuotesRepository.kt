@@ -9,7 +9,6 @@ import com.example.quotableapp.data.repository.quoteslist.paging.QuotesRemoteMed
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-
 @ExperimentalPagingApi
 class AllQuotesRepository @Inject constructor(
     private val remoteMediator: QuotesRemoteMediator,
