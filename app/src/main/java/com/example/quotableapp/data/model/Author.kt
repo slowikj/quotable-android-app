@@ -1,6 +1,7 @@
 package com.example.quotableapp.data.model
 
 import com.example.quotableapp.data.network.model.AuthorDTO
+import com.example.quotableapp.di.NetworkModule
 
 data class Author(
     val link: String,
@@ -11,7 +12,8 @@ data class Author(
     val quoteCount: Int,
     val slug: String,
     val dateAdded: String,
-    val dateModified: String
+    val dateModified: String,
+    val photoUrl: String
 )
 
 fun AuthorDTO.toModel(): Author =
@@ -24,5 +26,6 @@ fun AuthorDTO.toModel(): Author =
         quoteCount = quoteCount,
         slug = slug,
         dateAdded = dateAdded,
-        dateModified = dateModified
+        dateModified = dateModified,
+        photoUrl = NetworkModule.getAuthorPhotoUrl(slug)
     )

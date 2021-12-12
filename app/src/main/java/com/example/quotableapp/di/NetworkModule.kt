@@ -20,6 +20,10 @@ annotation class DefaultRetrofitClient
 @Retention(AnnotationRetention.BINARY)
 annotation class DefaultOkHttpClient
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AuthorPhotoUrl
+
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
@@ -33,6 +37,11 @@ object NetworkModule {
     @Provides
     fun getAuthorsService(@DefaultRetrofitClient retrofitClient: Retrofit): AuthorsService =
         retrofitClient.create(AuthorsService::class.java)
+
+    @Provides
+    @AuthorPhotoUrl
+    fun getAuthorPhotoUrl(authorSlug: String, size: Int = 200) =
+        "https://images.quotable.dev/profile/$size/$authorSlug.jpg"
 
     @Provides
     @DefaultRetrofitClient
@@ -50,3 +59,4 @@ object NetworkModule {
             .addInterceptor(HttpLoggingInterceptor().apply { setLevel(HttpLoggingInterceptor.Level.BODY) })
             .build()
 }
+
