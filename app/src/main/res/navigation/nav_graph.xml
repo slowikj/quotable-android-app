@@ -49,7 +49,7 @@
     </fragment>
     <fragment
         android:id="@+id/tagQuotes"
-        android:name="com.example.quotableapp.view.tag.TagQuotes"
+        android:name="com.example.quotableapp.view.tag.TagQuotesFragment"
         android:label="TagQuotes">
         <argument
             android:name="tag"

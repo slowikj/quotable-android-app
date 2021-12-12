@@ -20,11 +20,13 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 @FlowPreview
 @AndroidEntryPoint
-class TagQuotes : QuotesListFragment<TagQuotesListViewModel>() {
+class TagQuotesFragment : QuotesListFragment<TagQuotesListViewModel>() {
 
     private lateinit var binding: FragmentTagQuotesBinding
 
     override val listViewModel: TagQuotesListViewModel by viewModels()
+
+    private val tagDetailsViewModel: TagDetailsViewModel by viewModels()
 
     override val rvQuotes: RecyclerView
         get() = binding.rvQuotes
@@ -37,22 +39,25 @@ class TagQuotes : QuotesListFragment<TagQuotesListViewModel>() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentTagQuotesBinding.inflate(inflater)
+        binding = FragmentTagQuotesBinding.inflate(inflater).apply {
+            lifecycleOwner = this@TagQuotesFragment.viewLifecycleOwner
+            tagName = tagDetailsViewModel.tagName
+        }
         return binding.root
     }
 
     override fun showAuthorFragment(authorSlug: String) {
-        val action = TagQuotesDirections.showAuthor(authorSlug)
+        val action = TagQuotesFragmentDirections.showAuthor(authorSlug)
         findNavController().navigate(action)
     }
 
     override fun showQuote(quote: Quote) {
-        val action = TagQuotesDirections.showOneQuote(quote.id)
+        val action = TagQuotesFragmentDirections.showOneQuote(quote.id)
         findNavController().navigate(action)
     }
 
     override fun showQuotesOfTag(tag: String) {
-        val action = TagQuotesDirections.showTagQuotes(tag)
+        val action = TagQuotesFragmentDirections.showTagQuotes(tag)
         findNavController().navigate(action)
     }
 
