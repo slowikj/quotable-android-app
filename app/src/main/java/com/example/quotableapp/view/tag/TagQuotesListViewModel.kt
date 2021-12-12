@@ -21,4 +21,10 @@ class TagQuotesListViewModel @Inject constructor(
 
     override val keyword: String
         get() = savedStateHandle[TAG_ID]!!
+
+    override fun onTagClick(tag: String) {
+        if (tag != keyword) {
+            _actions.postValue(Action.Navigation.ToQuotesOfTag(tag))
+        }
+    }
 }

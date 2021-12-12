@@ -27,7 +27,6 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
-            android:padding="8dp"
             app:cardBackgroundColor="#22FFFFFF"
             app:cardCornerRadius="4dp">
 
@@ -36,25 +35,35 @@
                 android:layout_height="wrap_content"
                 android:padding="16dp">
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_tags"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:listitem="@layout/item_tag" />
+
                 <ImageView
                     android:id="@+id/image_quote"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/ic_quote"
-                    app:layout_constraintBottom_toTopOf="@id/guideline_end"
-                    app:layout_constraintEnd_toStartOf="@id/guideline_right"
-                    app:layout_constraintStart_toEndOf="@id/guideline_left"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:scaleType="fitStart"
+                    app:layout_constraintTop_toBottomOf="@id/rv_tags"
+                    app:layout_constraintStart_toStartOf="parent"/>
 
                 <TextView
                     android:id="@+id/content"
                     style="@style/TextAppearance.AppCompat.Body2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:text="@{model.content}"
                     android:textColor="@color/white"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/guideline_right"
+                    app:layout_constraintStart_toStartOf="@+id/image_quote"
                     app:layout_constraintTop_toBottomOf="@id/image_quote"
                     tools:text="Lorem ipsum lorem ipsum" />
 
@@ -65,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="@{model.author}"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="@color/white"
                     android:textStyle="bold"
                     android:onClick="@{() -> onClickHandler.onAuthor(model)}"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -78,7 +87,7 @@
                     android:layout_width="24dp"
                     android:layout_height="1dp"
                     android:layout_marginEnd="8dp"
-                    android:background="@color/colorAccent"
+                    android:background="@color/white"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="@+id/author"
                     app:layout_constraintEnd_toStartOf="@+id/author"
@@ -90,41 +99,12 @@
                     android:layout_width="24dp"
                     android:layout_height="1dp"
                     android:layout_marginStart="8dp"
-                    android:background="@color/colorAccent"
+                    android:background="@color/white"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="@+id/author"
                     app:layout_constraintStart_toEndOf="@+id/author"
                     app:layout_constraintTop_toTopOf="@+id/author"
                     app:layout_constraintVertical_bias="0.5" />
-
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline_left"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_begin="0dp" />
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline_right"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_begin="32dp" />
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline_end"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layout_constraintGuide_begin="32dp" />
-
-                <androidx.constraintlayout.widget.Group
-                    android:id="@+id/author_group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:constraint_referenced_ids="author" />
-
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>

@@ -37,7 +37,7 @@ abstract class QuotesListViewModel constructor(
         object Error : Action()
     }
 
-    private val _actions: MutableSingleLiveEvent<Action> = MutableSingleLiveEvent()
+    protected val _actions: MutableSingleLiveEvent<Action> = MutableSingleLiveEvent()
     val actions: SingleLiveEvent<Action> = _actions
 
     abstract val keyword: String
@@ -47,15 +47,15 @@ abstract class QuotesListViewModel constructor(
         .flowOn(Dispatchers.IO)
         .cachedIn(viewModelScope)
 
-    fun onItemClick(quote: Quote) {
+    open fun onItemClick(quote: Quote) {
         _actions.postValue(Action.Navigation.ToDetails(quote))
     }
 
-    fun onAuthorClick(quote: Quote) {
+    open fun onAuthorClick(quote: Quote) {
         _actions.postValue(Action.Navigation.ToQuotesOfAuthor(quote.authorSlug))
     }
 
-    fun onTagClick(tag: String) {
+    open fun onTagClick(tag: String) {
         _actions.postValue(Action.Navigation.ToQuotesOfTag(tag))
     }
 

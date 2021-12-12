@@ -60,5 +60,8 @@
         <action
             android:id="@+id/showOneQuote"
             app:destination="@id/oneQuoteFragment" />
+        <action
+            android:id="@+id/showTagQuotes"
+            app:destination="@id/tagQuotes" />
     </fragment>
 </navigation>

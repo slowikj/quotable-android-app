@@ -46,7 +46,7 @@
                     loadImage="@{authorDetailsViewModel.author.photoUrl}"
                     android:layout_width="200dp"
                     android:layout_height="200dp"
-                    android:layout_margin="15dp"
+                    android:layout_margin="16dp"
                     android:scaleType="centerCrop"
                     tools:src="@drawable/ic_quote"
                     app:layout_collapseMode="parallax"
