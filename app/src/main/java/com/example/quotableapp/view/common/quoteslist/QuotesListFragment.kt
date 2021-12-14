@@ -77,7 +77,7 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
             footer = QuotesLoadingAdapter { quotesAdapter.retry() }
         )
 
-        lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             listViewModel.fetchQuotes().collectLatest {
                 quotesAdapter.submitData(it)
             }
@@ -87,7 +87,7 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
     private fun setupPullToRefresh() {
         swipeToRefresh.setOnRefreshListener { listViewModel.onRefresh() }
 
-        lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             whenStarted {
                 quotesAdapter
                     .loadStateFlow
