@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.quoteslist.QuotesListRepository
 import com.example.quotableapp.view.common.MutableSingleLiveEvent
@@ -17,7 +18,8 @@ import kotlinx.coroutines.flow.flowOn
 @ExperimentalPagingApi
 abstract class QuotesListViewModel constructor(
     protected val savedStateHandle: SavedStateHandle,
-    protected val quotesRepository: QuotesListRepository
+    protected val quotesRepository: QuotesListRepository,
+    protected val dispatchers: CoroutineDispatchers
 ) : ViewModel() {
 
     sealed class Action {
@@ -44,7 +46,7 @@ abstract class QuotesListViewModel constructor(
 
     fun fetchQuotes(): Flow<PagingData<Quote>> = quotesRepository
         .fetchQuotes(keyword = keyword)
-        .flowOn(Dispatchers.IO)
+        .flowOn(dispatchers.IO)
         .cachedIn(viewModelScope)
 
     open fun onItemClick(quote: Quote) {

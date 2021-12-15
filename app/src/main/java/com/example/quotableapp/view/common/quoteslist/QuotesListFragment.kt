@@ -2,21 +2,19 @@ package com.example.quotableapp.view.common.quoteslist
 
 import android.os.Bundle
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.whenStarted
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
-import com.example.quotableapp.view.common.quoteslist.quotesadapter.QuotesAdapter
-import com.example.quotableapp.view.common.quoteslist.quotesadapter.QuotesLoadingAdapter
+import com.example.quotableapp.view.common.DefaultLoadingAdapter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
@@ -54,6 +52,7 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        rvQuotes.layoutManager = LinearLayoutManager(context)
         setupQuotesAdapter()
         setupPullToRefresh()
         setupActionHandler()
@@ -80,7 +79,7 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
 
     private fun setupQuotesAdapter() {
         rvQuotes.adapter = quotesAdapter.withLoadStateFooter(
-            footer = QuotesLoadingAdapter { quotesAdapter.retry() }
+            footer = DefaultLoadingAdapter { quotesAdapter.retry() }
         )
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {

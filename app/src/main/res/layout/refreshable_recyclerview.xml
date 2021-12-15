@@ -19,8 +19,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_quotes"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            android:layout_height="match_parent" />
     </FrameLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

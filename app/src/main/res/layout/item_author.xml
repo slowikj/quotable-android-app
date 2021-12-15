@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="model"
+            type="com.example.quotableapp.data.model.Author" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/appCompatImageView"
+            loadImage="@{model.photoUrl}"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="h,1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_quote" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/author_background"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="#99000000"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1" />
+
+        <TextView
+            android:id="@+id/author_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{model.name}"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/author_background"
+            app:layout_constraintEnd_toEndOf="@+id/author_background"
+            app:layout_constraintStart_toStartOf="@+id/author_background"
+            app:layout_constraintTop_toTopOf="@+id/author_background"
+            tools:text="Author name" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -12,6 +12,6 @@ interface RemoteKeysDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateKey(remoteKey: RemoteKey)
 
-    @Query("SELECT * from remote_keys")
-    suspend fun getKeys(): List<RemoteKey>
+    @Query("SELECT * from remote_keys where type = :type and `query` = :query")
+    suspend fun getKeys(type: RemoteKey.Type, query: String = ""): List<RemoteKey>
 }

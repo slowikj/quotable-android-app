@@ -1,4 +1,4 @@
-package com.example.quotableapp.view.common.quoteslist.quotesadapter
+package com.example.quotableapp.view.common
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,8 +8,8 @@ import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quotableapp.databinding.ItemLoadingBinding
 
-class QuotesLoadingAdapter(private val retry: () -> Unit) :
-    LoadStateAdapter<QuotesLoadingAdapter.ViewHolder>() {
+class DefaultLoadingAdapter(private val retry: () -> Unit) :
+    LoadStateAdapter<DefaultLoadingAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, loadState: LoadState) {
         holder.bind(loadState)

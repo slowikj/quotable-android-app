@@ -11,7 +11,7 @@
 
         <variable
             name="onClickHandler"
-            type="com.example.quotableapp.view.common.quoteslist.quotesadapter.QuotesAdapter.ViewHolder.OnClickHandler" />
+            type="com.example.quotableapp.view.common.quoteslist.QuotesAdapter.ViewHolder.OnClickHandler" />
     </data>
 
     <LinearLayout
@@ -41,18 +41,18 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:listitem="@layout/item_tag" />
 
                 <ImageView
                     android:id="@+id/image_quote"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/ic_quote"
                     android:scaleType="fitStart"
-                    app:layout_constraintTop_toBottomOf="@id/rv_tags"
-                    app:layout_constraintStart_toStartOf="parent"/>
+                    android:src="@drawable/ic_quote"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/rv_tags" />
 
                 <TextView
                     android:id="@+id/content"
@@ -73,10 +73,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:onClick="@{() -> onClickHandler.onAuthor(model)}"
                     android:text="@{model.author}"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:onClick="@{() -> onClickHandler.onAuthor(model)}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/content"

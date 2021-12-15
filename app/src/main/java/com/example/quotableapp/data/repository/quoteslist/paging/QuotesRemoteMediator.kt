@@ -23,7 +23,11 @@ class QuotesRemoteMediator @Inject constructor(
 ) : RemoteMediator<Int, QuoteEntity>() {
 
     override suspend fun initialize(): InitializeAction {
-        val quotesLastUpdated: Long = database.quotes().lastUpdated() ?: 0
+        val quotesLastUpdated: Long = database
+            .remoteKeys()
+            .getKeys(RemoteKey.Type.QUOTE)
+            .firstOrNull()
+            ?.lastUpdated ?: 0
 
         return if (System.currentTimeMillis() - quotesLastUpdated > cacheTimeoutMilliseconds) {
             InitializeAction.LAUNCH_INITIAL_REFRESH
@@ -74,12 +78,13 @@ class QuotesRemoteMediator @Inject constructor(
                 database.quotes().deleteAll()
             }
             database.quotes().add(responseDTO.results.map { quoteConverters.toDb(it) })
-
-            database.remoteKeys()
-                .updateKey(RemoteKey(query = "", key = newLoadKey))
+            database.remoteKeys().updateKey(prepareRemoteKey(newLoadKey))
         }
     }
 
+    private fun prepareRemoteKey(newLoadKey: Int) =
+        RemoteKey(type = RemoteKey.Type.QUOTE, query = "", key = newLoadKey)
+
     private suspend fun getLastRemoteKey(): Int? =
-        database.remoteKeys().getKeys().lastOrNull()?.key
+        database.remoteKeys().getKeys(RemoteKey.Type.QUOTE).lastOrNull()?.key
 }

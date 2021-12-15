@@ -8,5 +8,13 @@ import retrofit2.http.Query
 interface AuthorsService {
 
     @GET("/authors")
-    suspend fun fetchAuthor(@Query("slug") authorSlug: String): Response<AuthorsResponseDTO>
+    suspend fun fetchAuthor(
+        @Query("slug") authorSlug: String
+    ): Response<AuthorsResponseDTO>
+
+    @GET("/authors")
+    suspend fun fetchAuthors(
+        @Query("page") page: Int,
+        @Query("limit") limit: Int
+    ): Response<AuthorsResponseDTO>
 }

@@ -3,8 +3,9 @@ package com.example.quotableapp.view.author
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.data.repository.AuthorsRepository
+import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.view.common.uistate.UiState
 import com.example.quotableapp.view.common.uistate.setData
 import com.example.quotableapp.view.common.uistate.setError
@@ -16,10 +17,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalPagingApi::class)
 typealias AuthorDetailsUiState = UiState<Author, AuthorDetailsViewModel.UiError>
 
 @HiltViewModel
-class AuthorDetailsViewModel @Inject constructor(
+@ExperimentalPagingApi
+class AuthorDetailsViewModel
+@Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val authorsRepository: AuthorsRepository
 ) : ViewModel() {

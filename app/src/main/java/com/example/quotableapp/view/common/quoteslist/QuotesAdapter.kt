@@ -1,4 +1,4 @@
-package com.example.quotableapp.view.common.quoteslist.quotesadapter
+package com.example.quotableapp.view.common.quoteslist
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
