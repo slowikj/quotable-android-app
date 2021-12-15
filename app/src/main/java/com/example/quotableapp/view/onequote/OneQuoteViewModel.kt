@@ -1,11 +1,14 @@
 package com.example.quotableapp.view.onequote
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.OneQuoteRepository
 import com.example.quotableapp.view.common.MutableSingleLiveEvent
 import com.example.quotableapp.view.common.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,12 +18,14 @@ class OneQuoteViewModel @Inject constructor(
     private val oneQuoteRepository: OneQuoteRepository
 ) : ViewModel() {
 
-    sealed class State {
-        object Error : State()
-
-        object Loading : State()
-
-        data class Data(val quote: Quote) : State()
+    data class UiState(
+        val isLoading: Boolean = false,
+        val data: Quote? = null,
+        val error: Error? = null
+    ) {
+        sealed class Error {
+            object IOError : Error()
+        }
     }
 
     sealed class Action {
@@ -37,44 +42,45 @@ class OneQuoteViewModel @Inject constructor(
         const val QUOTE_ID = "quoteId"
     }
 
-    private var quote: Quote? = null
-
     private val quoteId: String = savedStateHandle[QUOTE_ID]!!
 
-    private val _state: MutableLiveData<State> = MutableLiveData()
-    val state: LiveData<State> = _state
+    private val _state: MutableStateFlow<UiState> = MutableStateFlow(UiState())
+    val state: StateFlow<UiState> = _state.asStateFlow()
 
-    private val _action: MutableSingleLiveEvent<Action> = MutableSingleLiveEvent()
-    val action: SingleLiveEvent<Action> = _action
+    private val _action: MutableSharedFlow<Action> = MutableSharedFlow()
+    val action = _action.asSharedFlow()
 
     init {
         onRefresh()
     }
 
-    fun onRefresh() {
-        if (_state.value is State.Loading) return
+    private fun onRefresh() {
+        if (_state.value.isLoading) return
 
-        _state.postValue(State.Loading)
+        _state.value = _state.value.copy(isLoading = true)
         viewModelScope.launch {
             val res = oneQuoteRepository.fetchQuote(quoteId)
             res.onSuccess {
-                quote = it
-                _state.postValue(State.Data(it))
+                _state.value = _state.value.copy(isLoading = false, data = it)
             }.onFailure {
-                _state.postValue(State.Error)
-                _action.postValue(Action.ShowError)
+                _action.emit(Action.ShowError)
+                _state.value = _state.value.copy(isLoading = false, error = UiState.Error.IOError)
             }
         }
     }
 
     fun onAuthorClick() {
-        quote?.let {
-            _action.postValue(Action.Navigation.ToAuthorQuotes(it.authorSlug))
+        _state.value.data?.authorSlug?.let { authorSlug ->
+            viewModelScope.launch {
+                _action.emit(Action.Navigation.ToAuthorQuotes(authorSlug))
+            }
         }
     }
 
     fun onTagClick(tag: String) {
-        _action.postValue(Action.Navigation.ToTagQuotes(tag))
+        viewModelScope.launch {
+            _action.emit(Action.Navigation.ToTagQuotes(tag))
+        }
     }
 
     fun onLike() {

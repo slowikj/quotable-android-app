@@ -7,7 +7,7 @@
 
         <variable
             name="model"
-            type="com.example.quotableapp.view.onequote.OneQuoteViewModel.State.Data" />
+            type="com.example.quotableapp.view.onequote.OneQuoteViewModel.UiState" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,7 +62,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="24dp"
-                    android:text="@{model.quote.content}"
+                    android:text="@{model.data.content}"
                     android:textColor="@color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/vertical_quote_bar"
@@ -103,7 +103,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="32dp"
-                    android:text="@{model.quote.author}"
+                    android:text="@{model.data.author}"
                     android:textColor="@color/colorAccent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/horizontal_quote_bar_right"

@@ -12,17 +12,8 @@
             name="viewModel"
             type="com.example.quotableapp.view.onequote.OneQuoteViewModel" />
 
-        <variable
-            name="stateHandler"
-            type="com.example.quotableapp.view.onequote.OneQuoteFragment.StateHandler" />
 
         <import type="android.view.View" />
-
-        <import type="com.example.quotableapp.view.onequote.OneQuoteViewModel.State"/>
-
-        <import type="com.example.quotableapp.view.onequote.OneQuoteViewModel.State.Loading"/>
-
-        <import type="com.example.quotableapp.view.onequote.OneQuoteViewModel.State.Data"/>
     </data>
 
 
@@ -36,23 +27,23 @@
             layout="@layout/quote_card_details"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:visibility="@{(viewModel.state.loading || viewModel.state.data == null) ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5"
-            bind:model="@{stateHandler.getDataOrNull(viewModel.state)}"
-            android:visibility="@{viewModel.state instanceof Data ? View.VISIBLE : View.GONE}"/>
+            bind:model="@{viewModel.state}" />
 
         <ProgressBar
             android:id="@+id/progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="@{viewModel.state.loading ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5"
-            android:visibility="@{viewModel.state instanceof Loading ? View.VISIBLE : View.GONE}"/>
+            app:layout_constraintVertical_bias="0.5" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

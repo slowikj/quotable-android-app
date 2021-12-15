@@ -1,26 +1,28 @@
 package com.example.quotableapp.view.onequote
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentOneQuoteBinding
 import com.example.quotableapp.view.common.TagsAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
 class OneQuoteFragment : Fragment() {
-
-    object StateHandler {
-
-        fun getDataOrNull(state: OneQuoteViewModel.State?): OneQuoteViewModel.State.Data? =
-            state as? OneQuoteViewModel.State.Data
-    }
 
     private val viewModel: OneQuoteViewModel by viewModels()
 
@@ -35,7 +37,6 @@ class OneQuoteFragment : Fragment() {
         binding = FragmentOneQuoteBinding.inflate(inflater).apply {
             viewModel = this@OneQuoteFragment.viewModel
             lifecycleOwner = this@OneQuoteFragment.viewLifecycleOwner
-            stateHandler = StateHandler
         }
         return binding.root
     }
@@ -43,8 +44,11 @@ class OneQuoteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.quoteLayout.rvTags.adapter = tagsAdapter
-        viewModel.state.observe(viewLifecycleOwner) { handle(it) }
-        viewModel.action.observe(viewLifecycleOwner) { handle(it) }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            launch { viewModel.state.collectLatest { handle(it) } }
+            launch { viewModel.action.collect { handle(it) } }
+        }
 
         binding.quoteLayout.apply {
             author.setOnClickListener { viewModel.onAuthorClick() }
@@ -52,10 +56,9 @@ class OneQuoteFragment : Fragment() {
         }
     }
 
-    private fun handle(state: OneQuoteViewModel.State) {
-        // TODO
-        when (state) {
-            is OneQuoteViewModel.State.Data -> handleValidData(state)
+    private fun handle(state: OneQuoteViewModel.UiState) {
+        if (state.data != null) {
+            handleValidData(state.data)
         }
     }
 
@@ -77,14 +80,13 @@ class OneQuoteFragment : Fragment() {
         findNavController().navigate(action)
     }
 
-    private fun handleValidData(state: OneQuoteViewModel.State.Data) {
+    private fun handleValidData(quote: Quote) {
         binding.quoteLayout.letterIcon.letter =
-            if (state.quote.author.isNotEmpty()) state.quote.author[0].toString() else "?"
-        tagsAdapter.submitList(state.quote.tags)
+            if (quote.author.isNotEmpty()) quote.author[0].toString() else "?"
+        tagsAdapter.submitList(quote.tags)
     }
 
     private fun showErrorToast() {
         Toast.makeText(context, "Error occurred", Toast.LENGTH_SHORT).show()
-        findNavController().popBackStack()
     }
 }
