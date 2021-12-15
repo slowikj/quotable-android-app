@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentOneQuoteBinding
 import com.example.quotableapp.view.common.TagsAdapter
+import com.example.quotableapp.view.common.uistate.UiState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -56,7 +57,7 @@ class OneQuoteFragment : Fragment() {
         }
     }
 
-    private fun handle(state: OneQuoteViewModel.UiState) {
+    private fun handle(state: OneQuoteUiState) {
         if (state.data != null) {
             handleValidData(state.data)
         }

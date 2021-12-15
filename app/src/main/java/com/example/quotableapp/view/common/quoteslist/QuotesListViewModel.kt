@@ -59,10 +59,6 @@ abstract class QuotesListViewModel constructor(
         _actions.postValue(Action.Navigation.ToQuotesOfTag(tag))
     }
 
-    fun onLike(quote: Quote, like: Boolean) {
-        // TODO
-    }
-
     fun onCopyToClipboard(quote: Quote) {
         _actions.postValue(Action.CopyToClipboard(quote))
     }

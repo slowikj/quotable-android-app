@@ -7,7 +7,10 @@
 
         <variable
             name="model"
-            type="com.example.quotableapp.view.onequote.OneQuoteViewModel.UiState" />
+            type="com.example.quotableapp.view.common.uistate.UiState&lt;Quote, UiError&gt;" />
+        <import type="com.example.quotableapp.data.model.Quote"/>
+        <import type="com.example.quotableapp.view.onequote.OneQuoteViewModel"/>
+        <import type="com.example.quotableapp.view.onequote.OneQuoteViewModel.UiError"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

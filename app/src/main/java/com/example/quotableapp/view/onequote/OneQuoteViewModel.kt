@@ -1,16 +1,20 @@
 package com.example.quotableapp.view.onequote
 
-import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.OneQuoteRepository
-import com.example.quotableapp.view.common.MutableSingleLiveEvent
-import com.example.quotableapp.view.common.SingleLiveEvent
+import com.example.quotableapp.view.common.uistate.UiState
+import com.example.quotableapp.view.common.uistate.setData
+import com.example.quotableapp.view.common.uistate.setError
+import com.example.quotableapp.view.common.uistate.setLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+typealias OneQuoteUiState = UiState<Quote, OneQuoteViewModel.UiError>
 
 @HiltViewModel
 class OneQuoteViewModel @Inject constructor(
@@ -18,14 +22,8 @@ class OneQuoteViewModel @Inject constructor(
     private val oneQuoteRepository: OneQuoteRepository
 ) : ViewModel() {
 
-    data class UiState(
-        val isLoading: Boolean = false,
-        val data: Quote? = null,
-        val error: Error? = null
-    ) {
-        sealed class Error {
-            object IOError : Error()
-        }
+    sealed class UiError {
+        object IOError : UiError()
     }
 
     sealed class Action {
@@ -44,8 +42,9 @@ class OneQuoteViewModel @Inject constructor(
 
     private val quoteId: String = savedStateHandle[QUOTE_ID]!!
 
-    private val _state: MutableStateFlow<UiState> = MutableStateFlow(UiState())
-    val state: StateFlow<UiState> = _state.asStateFlow()
+    private val _state: MutableStateFlow<OneQuoteUiState> = MutableStateFlow(OneQuoteUiState())
+    val state: StateFlow<OneQuoteUiState> = _state.asStateFlow()
+
 
     private val _action: MutableSharedFlow<Action> = MutableSharedFlow()
     val action = _action.asSharedFlow()
@@ -57,15 +56,14 @@ class OneQuoteViewModel @Inject constructor(
     private fun onRefresh() {
         if (_state.value.isLoading) return
 
-        _state.value = _state.value.copy(isLoading = true)
+        _state.setLoading()
         viewModelScope.launch {
             val res = oneQuoteRepository.fetchQuote(quoteId)
-            res.onSuccess {
-                _state.value = _state.value.copy(isLoading = false, data = it)
-            }.onFailure {
-                _action.emit(Action.ShowError)
-                _state.value = _state.value.copy(isLoading = false, error = UiState.Error.IOError)
-            }
+            res.onSuccess { _state.setData(it) }
+                .onFailure {
+                    _action.emit(Action.ShowError)
+                    _state.setError(UiError.IOError)
+                }
         }
     }
 
@@ -83,11 +81,8 @@ class OneQuoteViewModel @Inject constructor(
         }
     }
 
-    fun onLike() {
-        // TODO
-    }
-
     fun onCopyToClipboard() {
         // TODO
     }
+
 }
