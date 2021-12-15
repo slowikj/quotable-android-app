@@ -56,15 +56,14 @@ class OneQuoteViewModel @Inject constructor(
 
         _state.postValue(State.Loading)
         viewModelScope.launch {
-            runCatching { oneQuoteRepository.fetchQuote(quoteId) }
-                .onSuccess {
-                    quote = it
-                    _state.postValue(State.Data(it))
-                }
-                .onFailure {
-                    _state.postValue(State.Error)
-                    _action.postValue(Action.ShowError)
-                }
+            val res = oneQuoteRepository.fetchQuote(quoteId)
+            res.onSuccess {
+                quote = it
+                _state.postValue(State.Data(it))
+            }.onFailure {
+                _state.postValue(State.Error)
+                _action.postValue(Action.ShowError)
+            }
         }
     }
 

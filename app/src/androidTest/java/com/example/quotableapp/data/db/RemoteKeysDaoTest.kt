@@ -3,7 +3,7 @@ package com.example.quotableapp.data.db
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.quotableapp.data.DataTestUtil
 import com.example.quotableapp.data.db.dao.RemoteKeysDao
-import com.example.quotableapp.data.model.RemoteKey
+import com.example.quotableapp.data.db.entities.RemoteKey
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before

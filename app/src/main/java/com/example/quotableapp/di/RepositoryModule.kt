@@ -2,6 +2,12 @@ package com.example.quotableapp.di
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
+import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DefaultCoroutineDispatchers
+import com.example.quotableapp.data.converters.AuthorConverters
+import com.example.quotableapp.data.converters.DefaultAuthorConverters
+import com.example.quotableapp.data.converters.DefaultQuoteConverters
+import com.example.quotableapp.data.converters.QuoteConverters
 import com.example.quotableapp.data.repository.quoteslist.AllQuotesRepository
 import com.example.quotableapp.data.repository.quoteslist.QuotesListRepository
 import com.example.quotableapp.data.repository.quoteslist.QuotesOfAuthorRepository
@@ -65,6 +71,15 @@ object RepositoryModule {
         @Binds
         @QuotesType.OfTag
         fun bindsQuotesOfTagRepository(repo: QuotesOfTagRepository): QuotesListRepository
+
+        @Binds
+        fun bindsCoroutineDispatchers(dispatchers: DefaultCoroutineDispatchers): CoroutineDispatchers
+
+        @Binds
+        fun bindsAuthorConverters(converters: DefaultAuthorConverters): AuthorConverters
+
+        @Binds
+        fun bindsQuoteConverters(converters: DefaultQuoteConverters): QuoteConverters
     }
 
 }

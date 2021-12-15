@@ -5,12 +5,12 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.quotableapp.data.db.dao.QuotesDao
 import com.example.quotableapp.data.db.dao.RemoteKeysDao
-import com.example.quotableapp.data.model.ConverterAdapters
-import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.model.RemoteKey
+import com.example.quotableapp.data.db.entities.ConverterAdapters
+import com.example.quotableapp.data.db.entities.QuoteEntity
+import com.example.quotableapp.data.db.entities.RemoteKey
 
 @Database(
-    entities = [Quote::class, RemoteKey::class],
+    entities = [QuoteEntity::class, RemoteKey::class],
     version = 1,
     exportSchema = false
 )

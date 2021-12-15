@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.model
+package com.example.quotableapp.data.db.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

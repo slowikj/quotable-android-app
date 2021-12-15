@@ -1,18 +1,18 @@
 package com.example.quotableapp.data.repository.quoteslist
 
-import androidx.paging.ExperimentalPagingApi
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
+import androidx.paging.*
+import com.example.quotableapp.data.converters.QuoteConverters
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.quoteslist.paging.QuotesRemoteMediator
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @ExperimentalPagingApi
 class AllQuotesRepository @Inject constructor(
     private val remoteMediator: QuotesRemoteMediator,
-    private val pagingConfig: PagingConfig
+    private val pagingConfig: PagingConfig,
+    private val quotesConverters: QuoteConverters
 ) : QuotesListRepository {
 
     override fun fetchQuotes(keyword: String): Flow<PagingData<Quote>> =
@@ -21,4 +21,5 @@ class AllQuotesRepository @Inject constructor(
             remoteMediator = remoteMediator,
             pagingSourceFactory = { remoteMediator.database.quotes().getQuotes() }
         ).flow
+            .map { pagingData -> pagingData.map { quotesConverters.toDomain(it) } }
 }

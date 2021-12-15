@@ -5,10 +5,11 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
+import com.example.quotableapp.data.converters.QuoteConverters
 import com.example.quotableapp.data.db.QuotesDatabase
+import com.example.quotableapp.data.db.entities.QuoteEntity
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.model.RemoteKey
-import com.example.quotableapp.data.model.toModel
+import com.example.quotableapp.data.db.entities.RemoteKey
 import com.example.quotableapp.data.network.QuotesService
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.di.CacheTimeout
@@ -18,8 +19,9 @@ import javax.inject.Inject
 class QuotesRemoteMediator @Inject constructor(
     val database: QuotesDatabase,
     private val remoteService: QuotesService,
-    @CacheTimeout private val cacheTimeoutMilliseconds: Long
-) : RemoteMediator<Int, Quote>() {
+    @CacheTimeout private val cacheTimeoutMilliseconds: Long,
+    private val quoteConverters: QuoteConverters
+) : RemoteMediator<Int, QuoteEntity>() {
 
     override suspend fun initialize(): InitializeAction {
         val quotesLastUpdated: Long = database.quotes().lastUpdated() ?: 0
@@ -31,7 +33,7 @@ class QuotesRemoteMediator @Inject constructor(
         }
     }
 
-    override suspend fun load(loadType: LoadType, state: PagingState<Int, Quote>): MediatorResult {
+    override suspend fun load(loadType: LoadType, state: PagingState<Int, QuoteEntity>): MediatorResult {
         return try {
             fetchQuotes(loadType, state)
         } catch (e: Exception) {
@@ -41,8 +43,8 @@ class QuotesRemoteMediator @Inject constructor(
 
     private suspend fun fetchQuotes(
         loadType: LoadType,
-        state: PagingState<Int, Quote>
-    ): MediatorResult.Success {
+        state: PagingState<Int, QuoteEntity>
+    ): MediatorResult {
         val lastLoadKey: Int? = when (loadType) {
             LoadType.APPEND -> getLastRemoteKey() ?: return MediatorResult.Success(
                 endOfPaginationReached = true
@@ -51,11 +53,13 @@ class QuotesRemoteMediator @Inject constructor(
             LoadType.REFRESH -> null
         }
         val newLoadKey: Int = (lastLoadKey ?: 0) + 1
-        val responseDTO = remoteService.fetchQuotes(newLoadKey, state.config.pageSize)
-        updateLocalDatabase(loadType, responseDTO, newLoadKey)
-        return MediatorResult.Success(
-            endOfPaginationReached = responseDTO.page == responseDTO.totalPages
-        )
+
+        return runCatching { remoteService.fetchQuotes(newLoadKey, state.config.pageSize) }
+            .mapCatching {
+                val dto = it.body()!!
+                updateLocalDatabase(loadType, dto, newLoadKey)
+                return@mapCatching MediatorResult.Success(endOfPaginationReached = dto.page == dto.totalPages)
+            }.getOrThrow()
     }
 
     private suspend fun updateLocalDatabase(
@@ -67,7 +71,7 @@ class QuotesRemoteMediator @Inject constructor(
             if (loadType == LoadType.REFRESH) {
                 database.quotes().deleteAll()
             }
-            database.quotes().add(responseDTO.results.map { it.toModel() })
+            database.quotes().add(responseDTO.results.map { quoteConverters.toDb(it) })
 
             database.remoteKeys()
                 .updateKey(RemoteKey(query = "", key = newLoadKey))

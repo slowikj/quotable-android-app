@@ -1,5 +1,6 @@
 package com.example.quotableapp.di
 
+import com.example.quotableapp.data.converters.AuthorPhotoUrlCreator
 import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.QuotesService
 import dagger.Module
@@ -20,10 +21,6 @@ annotation class DefaultRetrofitClient
 @Retention(AnnotationRetention.BINARY)
 annotation class DefaultOkHttpClient
 
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class AuthorPhotoUrl
-
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
@@ -39,9 +36,12 @@ object NetworkModule {
         retrofitClient.create(AuthorsService::class.java)
 
     @Provides
-    @AuthorPhotoUrl
-    fun getAuthorPhotoUrl(authorSlug: String, size: Int = 200) =
-        "https://images.quotable.dev/profile/$size/$authorSlug.jpg"
+    fun getAuthorUrlCreator(): AuthorPhotoUrlCreator = object : AuthorPhotoUrlCreator {
+        override fun create(authorSlug: String): String {
+            val size = 200
+            return "https://images.quotable.dev/profile/$size/$authorSlug.jpg"
+        }
+    }
 
     @Provides
     @DefaultRetrofitClient

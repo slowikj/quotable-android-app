@@ -1,6 +1,5 @@
 package com.example.quotableapp.view.author
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.repository.AuthorsRepository
@@ -25,7 +24,10 @@ class AuthorDetailsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _author.postValue(authorsRepository.fetchAuthor(authorSlug))
+            val res = authorsRepository.fetchAuthor(authorSlug)
+            res.onSuccess { _author.postValue(it) }
+                .onFailure { // TODO
+                }
         }
     }
 }
