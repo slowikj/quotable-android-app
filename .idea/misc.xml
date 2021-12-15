@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/empty_list.xml" value="0.2708333333333333" />
         <entry key="app/src/main/res/layout/fragment_all_quotes.xml" value="0.2755208333333333" />
         <entry key="app/src/main/res/layout/fragment_author.xml" value="0.14" />
         <entry key="app/src/main/res/layout/fragment_one_quote.xml" value="0.1626984126984127" />
@@ -17,6 +18,7 @@
         <entry key="app/src/main/res/layout/one_quote_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/layout/quote_card_details.xml" value="0.1168091168091168" />
         <entry key="app/src/main/res/layout/quote_fragment.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/refreshable_recyclerview.xml" value="0.1626984126984127" />
         <entry key="app/src/main/res/layout/tmp.xml" value="0.32382246376811596" />
         <entry key="app/src/main/res/layout/tmp_fragment.xml" value="0.33469202898550726" />
         <entry key="app/src/main/res/layout/toolbar_author_collapsing.xml" value="0.11357340720221606" />

@@ -2,7 +2,9 @@ package com.example.quotableapp.view.common.quoteslist
 
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.whenStarted
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Quote
+import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
 import com.example.quotableapp.view.common.quoteslist.quotesadapter.QuotesAdapter
 import com.example.quotableapp.view.common.quoteslist.quotesadapter.QuotesLoadingAdapter
 import kotlinx.coroutines.FlowPreview
@@ -41,9 +44,13 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
             }
         })
 
-    protected abstract val rvQuotes: RecyclerView
+    protected abstract val recyclerViewLayoutBinding: RefreshableRecyclerviewBinding
 
-    protected abstract val swipeToRefresh: SwipeRefreshLayout
+    protected val swipeToRefresh: SwipeRefreshLayout
+        get() = recyclerViewLayoutBinding.swipeToRefresh
+
+    protected val rvQuotes: RecyclerView
+        get() = recyclerViewLayoutBinding.rvQuotes
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

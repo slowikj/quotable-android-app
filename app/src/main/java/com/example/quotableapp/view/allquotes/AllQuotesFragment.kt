@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentAllQuotesBinding
+import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
 import com.example.quotableapp.view.common.quoteslist.QuotesListFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
@@ -20,17 +21,14 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 @FlowPreview
 @AndroidEntryPoint
-class AllQuotesFragment() : QuotesListFragment<AllQuotesListViewModel>() {
+class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
 
     private lateinit var binding: FragmentAllQuotesBinding
 
+    override val recyclerViewLayoutBinding: RefreshableRecyclerviewBinding
+        get() = binding.recyclerviewLayout
+
     override val listViewModel: AllQuotesListViewModel by viewModels()
-
-    override val rvQuotes: RecyclerView
-        get() = binding.rvQuotes
-
-    override val swipeToRefresh: SwipeRefreshLayout
-        get() = binding.swipeToRefresh
 
     override fun onCreateView(
         inflater: LayoutInflater,

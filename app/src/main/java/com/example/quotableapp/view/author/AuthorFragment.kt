@@ -7,10 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentAuthorBinding
+import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
 import com.example.quotableapp.view.common.quoteslist.QuotesListFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
@@ -28,11 +27,8 @@ class AuthorFragment : QuotesListFragment<AuthorQuotesViewModel>() {
 
     private lateinit var binding: FragmentAuthorBinding
 
-    override val rvQuotes: RecyclerView
-        get() = binding.rvQuotes
-
-    override val swipeToRefresh: SwipeRefreshLayout
-        get() = binding.swipeToRefresh
+    override val recyclerViewLayoutBinding: RefreshableRecyclerviewBinding
+        get() = binding.recyclerviewLayout
 
     override fun onCreateView(
         inflater: LayoutInflater,
