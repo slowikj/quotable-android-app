@@ -8,7 +8,6 @@ import androidx.room.withTransaction
 import com.example.quotableapp.data.converters.QuoteConverters
 import com.example.quotableapp.data.db.QuotesDatabase
 import com.example.quotableapp.data.db.entities.QuoteEntity
-import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.db.entities.RemoteKey
 import com.example.quotableapp.data.network.QuotesService
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
@@ -33,7 +32,10 @@ class QuotesRemoteMediator @Inject constructor(
         }
     }
 
-    override suspend fun load(loadType: LoadType, state: PagingState<Int, QuoteEntity>): MediatorResult {
+    override suspend fun load(
+        loadType: LoadType,
+        state: PagingState<Int, QuoteEntity>
+    ): MediatorResult {
         return try {
             fetchQuotes(loadType, state)
         } catch (e: Exception) {
@@ -54,12 +56,12 @@ class QuotesRemoteMediator @Inject constructor(
         }
         val newLoadKey: Int = (lastLoadKey ?: 0) + 1
 
-        return runCatching { remoteService.fetchQuotes(newLoadKey, state.config.pageSize) }
-            .mapCatching {
-                val dto = it.body()!!
-                updateLocalDatabase(loadType, dto, newLoadKey)
-                return@mapCatching MediatorResult.Success(endOfPaginationReached = dto.page == dto.totalPages)
-            }.getOrThrow()
+        val response = remoteService.fetchQuotes(newLoadKey, state.config.pageSize)
+        val dto = response.body()!!
+        updateLocalDatabase(loadType, dto, newLoadKey)
+        return MediatorResult.Success(
+            endOfPaginationReached = dto.page == dto.totalPages
+        )
     }
 
     private suspend fun updateLocalDatabase(

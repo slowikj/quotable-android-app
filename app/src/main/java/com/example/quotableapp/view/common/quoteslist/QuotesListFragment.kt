@@ -17,7 +17,6 @@ import com.example.quotableapp.view.common.quoteslist.quotesadapter.QuotesLoadin
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
 @FlowPreview

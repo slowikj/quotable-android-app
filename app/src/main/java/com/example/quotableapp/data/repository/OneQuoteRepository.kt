@@ -15,8 +15,10 @@ class OneQuoteRepository @Inject constructor(
 
     suspend fun fetchQuote(id: String): Result<Quote> {
         return withContext(dispatchers.IO) {
-            val response = runCatching { quotesService.fetchQuote(id) }
-            response.mapCatching { quoteConverters.toDomain(it.body()!!) }
+            runCatching {
+                val response = quotesService.fetchQuote(id)
+                quoteConverters.toDomain(response.body()!!)
+            }
         }
     }
 }

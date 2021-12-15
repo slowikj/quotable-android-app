@@ -1,21 +1,17 @@
 package com.example.quotableapp.view.onequote
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentOneQuoteBinding
 import com.example.quotableapp.view.common.TagsAdapter
-import com.example.quotableapp.view.common.uistate.UiState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest

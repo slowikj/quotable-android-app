@@ -8,7 +8,6 @@ import com.example.quotableapp.data.converters.QuoteConverters
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.QuotesService
 import com.example.quotableapp.data.repository.quoteslist.paging.QuotesPagingSource
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
