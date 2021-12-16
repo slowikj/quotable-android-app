@@ -54,7 +54,11 @@ class AuthorsListFragment : Fragment() {
                 launch { collectOtherActions() }
             }
         }
+        setupPullToRefresh()
+    }
 
+    private fun setupPullToRefresh() {
+        binding.recyclerviewLayout.swipeToRefresh.setOnRefreshListener { listViewModel.onRefresh() }
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 authorsListAdapter
