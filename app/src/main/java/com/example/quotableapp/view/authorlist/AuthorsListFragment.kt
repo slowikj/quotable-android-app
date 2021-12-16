@@ -12,16 +12,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
-import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.databinding.FragmentAuthorsListBinding
+import com.example.quotableapp.view.common.helpers.handleRefreshing
 import com.example.quotableapp.view.common.rvAdapters.DefaultLoadingAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.launch
 
 @ExperimentalPagingApi
@@ -58,20 +57,13 @@ class AuthorsListFragment : Fragment() {
     }
 
     private fun setupPullToRefresh() {
-        binding.recyclerviewLayout.swipeToRefresh.setOnRefreshListener { listViewModel.onRefresh() }
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                authorsListAdapter
-                    .loadStateFlow
-                    .distinctUntilChangedBy { it.refresh }
-                    .collectLatest { loadStates ->
-                        binding.recyclerviewLayout.swipeToRefresh.isRefreshing =
-                            loadStates.refresh is LoadState.Loading
-                        if (loadStates.refresh is LoadState.Error) {
-                            showErrorToast()
-                        }
-                    }
-            }
+        binding.recyclerviewLayout.swipeToRefresh.let { swipeToRefresh ->
+            swipeToRefresh.setOnRefreshListener { listViewModel.onRefresh() }
+            authorsListAdapter.handleRefreshing(
+                lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
+                swipeRefreshLayout = swipeToRefresh,
+                onError = { showErrorToast() }
+            )
         }
     }
 

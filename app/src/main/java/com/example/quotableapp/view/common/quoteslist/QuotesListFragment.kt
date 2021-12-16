@@ -16,6 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
+import com.example.quotableapp.view.common.helpers.handleRefreshing
 import com.example.quotableapp.view.common.rvAdapters.DefaultLoadingAdapter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
@@ -99,22 +100,11 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
 
     private fun setupPullToRefresh() {
         swipeToRefresh.setOnRefreshListener { listViewModel.onRefresh() }
-
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            whenStarted {
-                quotesAdapter
-                    .loadStateFlow
-                    .distinctUntilChangedBy { it.refresh }
-                    .collectLatest { loadStates ->
-                        swipeToRefresh.isRefreshing =
-                            loadStates.refresh is LoadState.Loading
-
-                        if (loadStates.refresh is LoadState.Error) {
-                            showErrorToast()
-                        }
-                    }
-            }
-        }
+        quotesAdapter.handleRefreshing(
+            lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
+            swipeRefreshLayout = swipeToRefresh,
+            onError = { showErrorToast() }
+        )
     }
 
     protected abstract fun showQuote(quote: Quote)
