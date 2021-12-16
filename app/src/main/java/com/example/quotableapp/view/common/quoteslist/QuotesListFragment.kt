@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.whenStarted
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
@@ -16,8 +18,10 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
 import com.example.quotableapp.view.common.DefaultLoadingAdapter
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
 @FlowPreview
@@ -55,27 +59,31 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
         rvQuotes.layoutManager = LinearLayoutManager(context)
         setupQuotesAdapter()
         setupPullToRefresh()
-        setupActionHandler()
+        setupActionsHandler()
     }
 
-    private fun setupActionHandler() {
-        listViewModel.actions.observe(viewLifecycleOwner) {
-            when (it) {
-                is QuotesListViewModel.Action.Navigation -> handleNavigation(it)
-                is QuotesListViewModel.Action.Error -> showErrorToast()
-                is QuotesListViewModel.Action.CopyToClipboard -> TODO()
-                is QuotesListViewModel.Action.InvalidateQuotes -> quotesAdapter.refresh()
+    private fun setupActionsHandler() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch { listViewModel.navigationAction.collect { handleNavigation(it) } }
+                launch { listViewModel.actions.collect { handlePlainActions(it) } }
             }
         }
     }
 
-    private fun handleNavigation(action: QuotesListViewModel.Action.Navigation) {
+    private fun handlePlainActions(action: QuotesListViewModel.Action) =
         when (action) {
-            is QuotesListViewModel.Action.Navigation.ToQuotesOfAuthor -> showAuthorFragment(action.authorSlug)
-            is QuotesListViewModel.Action.Navigation.ToDetails -> showQuote(action.quote)
-            is QuotesListViewModel.Action.Navigation.ToQuotesOfTag -> showQuotesOfTag(action.tag)
+            is QuotesListViewModel.Action.Error -> showErrorToast()
+            is QuotesListViewModel.Action.CopyToClipboard -> TODO()
+            is QuotesListViewModel.Action.RefreshQuotes -> quotesAdapter.refresh()
         }
-    }
+
+    private fun handleNavigation(action: QuotesListViewModel.NavigationAction) =
+        when (action) {
+            is QuotesListViewModel.NavigationAction.ToQuotesOfAuthor -> showAuthorFragment(action.authorSlug)
+            is QuotesListViewModel.NavigationAction.ToDetails -> showQuote(action.quote)
+            is QuotesListViewModel.NavigationAction.ToQuotesOfTag -> showQuotesOfTag(action.tag)
+        }
 
     private fun setupQuotesAdapter() {
         rvQuotes.adapter = quotesAdapter.withLoadStateFooter(

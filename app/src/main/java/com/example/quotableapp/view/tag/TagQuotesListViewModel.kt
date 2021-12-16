@@ -1,12 +1,14 @@
 package com.example.quotableapp.view.tag
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.repository.quoteslist.QuotesListRepository
 import com.example.quotableapp.di.QuotesType
 import com.example.quotableapp.view.common.quoteslist.QuotesListViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @ExperimentalPagingApi
@@ -26,7 +28,9 @@ class TagQuotesListViewModel @Inject constructor(
 
     override fun onTagClick(tag: String) {
         if (tag != keyword) {
-            _actions.postValue(Action.Navigation.ToQuotesOfTag(tag))
+            viewModelScope.launch {
+                _navigationActions.emit(NavigationAction.ToQuotesOfTag(tag))
+            }
         }
     }
 }

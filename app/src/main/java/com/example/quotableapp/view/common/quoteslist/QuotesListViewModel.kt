@@ -11,9 +11,8 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.quoteslist.QuotesListRepository
 import com.example.quotableapp.view.common.MutableSingleLiveEvent
 import com.example.quotableapp.view.common.SingleLiveEvent
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 @ExperimentalPagingApi
 abstract class QuotesListViewModel constructor(
@@ -22,27 +21,30 @@ abstract class QuotesListViewModel constructor(
     protected val dispatchers: CoroutineDispatchers
 ) : ViewModel() {
 
+    abstract val keyword: String
+
+    sealed class NavigationAction {
+
+        data class ToDetails(val quote: Quote) : NavigationAction()
+
+        data class ToQuotesOfAuthor(val authorSlug: String) : NavigationAction()
+        data class ToQuotesOfTag(val tag: String) : NavigationAction()
+    }
+
+    protected val _navigationActions = MutableSharedFlow<NavigationAction>()
+    val navigationAction = _navigationActions.asSharedFlow()
+
     sealed class Action {
-
-        sealed class Navigation : Action() {
-            data class ToDetails(val quote: Quote) : Navigation()
-
-            data class ToQuotesOfAuthor(val authorSlug: String) : Navigation()
-
-            data class ToQuotesOfTag(val tag: String): Navigation()
-        }
 
         data class CopyToClipboard(val quote: Quote) : Action()
 
-        object InvalidateQuotes : Action()
-
+        object RefreshQuotes : Action()
         object Error : Action()
     }
 
-    protected val _actions: MutableSingleLiveEvent<Action> = MutableSingleLiveEvent()
-    val actions: SingleLiveEvent<Action> = _actions
+    protected val _actions = MutableSharedFlow<Action>()
+    val actions = _actions.asSharedFlow()
 
-    abstract val keyword: String
 
     fun fetchQuotes(): Flow<PagingData<Quote>> = quotesRepository
         .fetchQuotes(keyword = keyword)
@@ -50,19 +52,27 @@ abstract class QuotesListViewModel constructor(
         .cachedIn(viewModelScope)
 
     open fun onItemClick(quote: Quote) {
-        _actions.postValue(Action.Navigation.ToDetails(quote))
+        viewModelScope.launch {
+            _navigationActions.emit(NavigationAction.ToDetails(quote))
+        }
     }
 
     open fun onAuthorClick(quote: Quote) {
-        _actions.postValue(Action.Navigation.ToQuotesOfAuthor(quote.authorSlug))
+        viewModelScope.launch {
+            _navigationActions.emit(NavigationAction.ToQuotesOfAuthor(quote.authorSlug))
+        }
     }
 
     open fun onTagClick(tag: String) {
-        _actions.postValue(Action.Navigation.ToQuotesOfTag(tag))
+        viewModelScope.launch {
+            _navigationActions.emit(NavigationAction.ToQuotesOfTag(tag))
+        }
     }
 
     fun onCopyToClipboard(quote: Quote) {
-        _actions.postValue(Action.CopyToClipboard(quote))
+        viewModelScope.launch {
+            _actions.emit(Action.CopyToClipboard(quote))
+        }
     }
 
     fun onSearch(text: String) {
@@ -70,6 +80,8 @@ abstract class QuotesListViewModel constructor(
     }
 
     fun onRefresh() {
-        _actions.postValue(Action.InvalidateQuotes)
+        viewModelScope.launch {
+            _actions.emit(Action.RefreshQuotes)
+        }
     }
 }
