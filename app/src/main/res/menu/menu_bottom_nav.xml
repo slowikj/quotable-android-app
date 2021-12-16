@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/allQuotesFragment"
+        android:enabled="true"
+        android:icon="@drawable/home"
+        android:title="@string/home_page_title" />
+    <item
+        android:id="@+id/authorsListFragment"
+        android:enabled="true"
+        android:icon="@drawable/person"
+        android:title="@string/authors_page_title" />
+</menu>

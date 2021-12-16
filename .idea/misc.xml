@@ -3,6 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/home.xml" value="0.371875" />
+        <entry key="app/src/main/res/drawable/home_checked.xml" value="0.2869791666666667" />
+        <entry key="app/src/main/res/drawable/home_selector.xml" value="0.2869791666666667" />
+        <entry key="app/src/main/res/drawable/home_unchecked.xml" value="0.2869791666666667" />
+        <entry key="app/src/main/res/drawable/menu_text_color_selector.xml" value="0.2869791666666667" />
+        <entry key="app/src/main/res/drawable/person_checked.xml" value="0.2869791666666667" />
+        <entry key="app/src/main/res/drawable/person_selector.xml" value="0.2869791666666667" />
+        <entry key="app/src/main/res/drawable/person_unchecked.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/authors_list_fragment.xml" value="0.33469202898550726" />
         <entry key="app/src/main/res/layout/empty_list.xml" value="0.2708333333333333" />
@@ -26,6 +34,7 @@
         <entry key="app/src/main/res/layout/tmp_fragment.xml" value="0.33469202898550726" />
         <entry key="app/src/main/res/layout/toolbar_author_collapsing.xml" value="0.11357340720221606" />
         <entry key="app/src/main/res/layout/toolbar_default_collapsing.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/menu/menu_bottom_nav.xml" value="0.35572916666666665" />
       </map>
     </option>
   </component>

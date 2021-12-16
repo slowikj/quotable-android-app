@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
+            app:contentScrim="?attr/colorAccent"
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
             app:title="@{authorDetailsViewModel.state.data.name}"
             tools:title="Author Name">

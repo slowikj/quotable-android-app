@@ -3,4 +3,6 @@
     <string name="retry">retry</string>
 
     <string name="error_occurred"> Error has been occurred </string>
+    <string name="home_page_title">Home</string>
+    <string name="authors_page_title">Authors</string>
 </resources>
