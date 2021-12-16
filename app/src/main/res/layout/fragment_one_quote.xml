@@ -4,13 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".view.onequote.OneQuoteFragment">
+    tools:context=".ui.onequote.OneQuoteFragment">
 
     <data>
 
         <variable
             name="viewModel"
-            type="com.example.quotableapp.view.onequote.OneQuoteViewModel" />
+            type="com.example.quotableapp.ui.onequote.OneQuoteViewModel" />
 
 
         <import type="android.view.View" />

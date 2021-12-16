@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/allQuotesFragment"
-        android:name="com.example.quotableapp.view.allquotes.AllQuotesFragment"
+        android:name="com.example.quotableapp.ui.allquotes.AllQuotesFragment"
         android:label="AllQuotesFragment">
         <action
             android:id="@+id/showOneQuote"
@@ -21,7 +21,7 @@
 
     <fragment
         android:id="@+id/oneQuoteFragment"
-        android:name="com.example.quotableapp.view.onequote.OneQuoteFragment"
+        android:name="com.example.quotableapp.ui.onequote.OneQuoteFragment"
         android:label="OneQuoteFragment">
         <argument
             android:name="quoteId"
@@ -35,7 +35,7 @@
     </fragment>
     <fragment
         android:id="@+id/authorFragment"
-        android:name="com.example.quotableapp.view.author.AuthorFragment"
+        android:name="com.example.quotableapp.ui.author.AuthorFragment"
         android:label="AuthorFragment">
         <argument
             android:name="authorSlug"
@@ -49,7 +49,7 @@
     </fragment>
     <fragment
         android:id="@+id/tagQuotes"
-        android:name="com.example.quotableapp.view.tag.TagQuotesFragment"
+        android:name="com.example.quotableapp.ui.tag.TagQuotesFragment"
         android:label="TagQuotes">
         <argument
             android:name="tag"
@@ -66,7 +66,7 @@
     </fragment>
     <fragment
         android:id="@+id/authorsListFragment"
-        android:name="com.example.quotableapp.view.authorlist.AuthorsListFragment"
+        android:name="com.example.quotableapp.ui.authorlist.AuthorsListFragment"
         android:label="AuthorsListFragment" >
         <action
             android:id="@+id/showAuthor"

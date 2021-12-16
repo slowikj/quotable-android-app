@@ -11,7 +11,7 @@
 
         <variable
             name="onClickHandler"
-            type="com.example.quotableapp.view.common.quoteslist.QuotesAdapter.ViewHolder.OnClickHandler" />
+            type="com.example.quotableapp.ui.common.quoteslist.QuotesAdapter.ViewHolder.OnClickHandler" />
     </data>
 
     <LinearLayout
