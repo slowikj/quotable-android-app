@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.ItemQuoteBinding
-import com.example.quotableapp.view.common.TagsAdapter
+import com.example.quotableapp.view.common.rvAdapters.TagsAdapter
 
 class QuotesAdapter(
     private val onClickHandler: ViewHolder.OnClickHandler

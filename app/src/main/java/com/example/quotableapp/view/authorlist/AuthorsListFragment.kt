@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.databinding.FragmentAuthorsListBinding
-import com.example.quotableapp.view.common.DefaultLoadingAdapter
+import com.example.quotableapp.view.common.rvAdapters.DefaultLoadingAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest

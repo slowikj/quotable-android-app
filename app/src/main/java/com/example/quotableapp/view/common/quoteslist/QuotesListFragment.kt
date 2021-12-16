@@ -16,7 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
-import com.example.quotableapp.view.common.DefaultLoadingAdapter
+import com.example.quotableapp.view.common.rvAdapters.DefaultLoadingAdapter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest

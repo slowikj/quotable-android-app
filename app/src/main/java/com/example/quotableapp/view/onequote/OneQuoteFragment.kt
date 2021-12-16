@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentOneQuoteBinding
-import com.example.quotableapp.view.common.TagsAdapter
+import com.example.quotableapp.view.common.rvAdapters.TagsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
