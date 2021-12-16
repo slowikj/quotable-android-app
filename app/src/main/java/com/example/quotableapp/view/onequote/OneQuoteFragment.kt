@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
 @AndroidEntryPoint
 class OneQuoteFragment : Fragment() {
 
@@ -49,7 +48,6 @@ class OneQuoteFragment : Fragment() {
 
         binding.quoteLayout.apply {
             author.setOnClickListener { viewModel.onAuthorClick() }
-            letterIcon.setOnClickListener { viewModel.onAuthorClick() }
         }
     }
 
@@ -78,8 +76,6 @@ class OneQuoteFragment : Fragment() {
     }
 
     private fun handleValidData(quote: Quote) {
-        binding.quoteLayout.letterIcon.letter =
-            if (quote.author.isNotEmpty()) quote.author[0].toString() else "?"
         tagsAdapter.submitList(quote.tags)
     }
 

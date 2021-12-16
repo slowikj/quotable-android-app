@@ -101,9 +101,6 @@ dependencies {
     // Testing Navigation
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
 
-    // Material Letter Icon
-    implementation 'com.github.ivbaranov:materiallettericon:0.2.3'
-
     // Material support
     implementation 'com.android.support:design:31.0.0'
 
