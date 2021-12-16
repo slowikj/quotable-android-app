@@ -27,7 +27,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
-            app:cardBackgroundColor="#22FFFFFF"
+            app:cardBackgroundColor="@color/recycler_item_background"
             app:cardCornerRadius="4dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
