@@ -60,7 +60,10 @@ class QuotesRemoteMediator @Inject constructor(
         }
         val newLoadKey: Int = (lastLoadKey ?: 0) + 1
 
-        val response = remoteService.fetchQuotes(newLoadKey, state.config.pageSize)
+        val response = remoteService.fetchQuotes(
+            page = newLoadKey,
+            limit = if (loadType == LoadType.REFRESH) state.config.initialLoadSize else state.config.pageSize
+        )
         val dto = response.body()!!
         updateLocalDatabase(loadType, dto, newLoadKey)
         return MediatorResult.Success(
