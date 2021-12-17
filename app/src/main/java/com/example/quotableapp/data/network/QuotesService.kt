@@ -9,10 +9,32 @@ import retrofit2.http.Query
 
 interface QuotesService {
 
-    @GET("quotes?sortBy=dateAdded?order=asc")
+    enum class SortByType(private val value: String) {
+        Author("author"),
+        Content("content"),
+        DateAdded("dateAdded"),
+        DateModified("dateModified");
+
+        override fun toString(): String {
+            return value
+        }
+    }
+
+    enum class OrderType(private val value: String) {
+        Asc("asc"),
+        Desc("desc");
+
+        override fun toString(): String {
+            return value
+        }
+    }
+
+    @GET("quotes")
     suspend fun fetchQuotes(
         @Query("page") page: Int,
-        @Query("limit") limit: Int
+        @Query("limit") limit: Int,
+        @Query("sortBy") sortBy: SortByType = SortByType.Author,
+        @Query("order") order: OrderType = OrderType.Asc
     ): Response<QuotesResponseDTO>
 
     @GET("quotes/{id}")
