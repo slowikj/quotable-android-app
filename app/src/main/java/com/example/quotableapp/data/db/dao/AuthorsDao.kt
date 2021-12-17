@@ -14,10 +14,10 @@ interface AuthorsDao {
     @Query("SELECT * FROM authors ORDER BY name ASC")
     fun getAll(): PagingSource<Int, AuthorEntity>
 
-    @Query("DELETE FROM quotes")
+    @Query("DELETE FROM authors")
     fun deleteAll()
 
-    @Query("SELECT COUNT(*) FROM quotes")
+    @Query("SELECT COUNT(*) FROM authors")
     fun getSize(): Int
 
 }
