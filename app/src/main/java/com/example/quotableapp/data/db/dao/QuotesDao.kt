@@ -13,7 +13,7 @@ interface QuotesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(quotes: List<QuoteEntity>)
 
-    @Query("SELECT * from quotes ORDER BY lastUpdated ASC")
+    @Query("SELECT * from quotes ORDER BY author ASC")
     fun getQuotes(): PagingSource<Int, QuoteEntity>
 
     @Query("DELETE from quotes")
