@@ -69,42 +69,19 @@
 
                 <TextView
                     android:id="@+id/author"
-                    style="@style/TextAppearance.AppCompat.Title"
+                    style="@style/TextAppearance.AppCompat.Title.Inverse"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:onClick="@{() -> onClickHandler.onAuthor(model)}"
                     android:text="@{model.author}"
                     android:textColor="@color/white"
-                    android:textStyle="bold"
+                    android:textStyle="normal"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/content"
                     tools:text="Author" />
-
-                <LinearLayout
-                    android:id="@+id/author_line_left"
-                    android:layout_width="24dp"
-                    android:layout_height="1dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@color/white"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="@+id/author"
-                    app:layout_constraintEnd_toStartOf="@+id/author"
-                    app:layout_constraintTop_toTopOf="@+id/author"
-                    app:layout_constraintVertical_bias="0.5" />
-
-                <LinearLayout
-                    android:id="@+id/author_line_right"
-                    android:layout_width="24dp"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@color/white"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="@+id/author"
-                    app:layout_constraintStart_toEndOf="@+id/author"
-                    app:layout_constraintTop_toTopOf="@+id/author"
-                    app:layout_constraintVertical_bias="0.5" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
