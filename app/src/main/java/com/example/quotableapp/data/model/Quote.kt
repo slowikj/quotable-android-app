@@ -5,7 +5,6 @@ data class Quote(
     val content: String = "",
     val author: String = "",
     val authorSlug: String = "",
-    val tags: List<String> = emptyList(),
-    val lastUpdated: Long = System.currentTimeMillis()
+    val tags: List<String> = emptyList()
 ) {
 }
