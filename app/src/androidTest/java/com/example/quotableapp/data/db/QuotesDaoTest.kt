@@ -3,6 +3,7 @@ package com.example.quotableapp.data.db
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.quotableapp.data.DataTestUtil
 import com.example.quotableapp.data.db.dao.QuotesDao
+import com.example.quotableapp.data.db.entities.QuoteEntity
 import com.example.quotableapp.data.model.Quote
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -29,7 +30,7 @@ class QuotesDaoTest {
 
     @Test
     fun dbHasOneRecordWhenOneQuoteHasBeenAdded() {
-        val quote = Quote()
+        val quote = QuoteEntity(id = "123")
         runBlocking {
             quotesDao.add(listOf(quote))
         }
@@ -42,9 +43,9 @@ class QuotesDaoTest {
         runBlocking {
             quotesDao.add(
                 listOf(
-                    Quote(id = "1"),
-                    Quote(id = "2"),
-                    Quote(id = "3")
+                    QuoteEntity(id = "1"),
+                    QuoteEntity(id = "2"),
+                    QuoteEntity(id = "3")
                 )
             )
         }

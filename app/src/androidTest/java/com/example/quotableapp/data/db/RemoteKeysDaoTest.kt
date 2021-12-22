@@ -29,38 +29,50 @@ class RemoteKeysDaoTest {
 
     @Test
     fun addANewRemoteKey() {
-        val remoteKey = RemoteKey(key = 123, query = "x")
+        val type = RemoteKey.Type.QUOTE
+        val query = "x"
+        val remoteKey = RemoteKey(key = 123, query = query, type = type)
         runBlocking { remoteKeysDao.updateKey(remoteKey) }
-        val dbRemoteKeys = runBlocking { remoteKeysDao.getKeys() }
+        val dbRemoteKeys = runBlocking { remoteKeysDao.getKeys(type = type, query = query) }
         assert(dbRemoteKeys.size == 1 && dbRemoteKeys.first() == remoteKey)
     }
 
     @Test
     fun addThreeRemoteKeysForDistinctQueries() {
         val remoteKeys = listOf(
-            RemoteKey(key = 133, query = "a"),
-            RemoteKey(key = 11, query = "b"),
-            RemoteKey(key = 133, query = "c")
+            RemoteKey(key = 133, query = "a", type = RemoteKey.Type.QUOTE),
+            RemoteKey(key = 11, query = "b", type = RemoteKey.Type.QUOTE),
+            RemoteKey(key = 133, query = "c", type = RemoteKey.Type.QUOTE)
         )
         runBlocking {
             remoteKeys.forEach { remoteKeysDao.updateKey(it) }
         }
-        val dbRemoteKeys = runBlocking { remoteKeysDao.getKeys() }
-        assert(dbRemoteKeys == remoteKeys)
+
+        remoteKeys.forEach { remoteKey ->
+            val dbRemoteKeys = runBlocking {
+                remoteKeysDao.getKeys(
+                    type = RemoteKey.Type.QUOTE,
+                    query = remoteKey.query
+                )
+            }
+            assert(dbRemoteKeys.size == 1 && dbRemoteKeys.first() == remoteKey)
+        }
     }
 
     @Test
     fun addThreeRemoteKeysForTheSameQuery() {
-        val lastRemoteKey = RemoteKey(key = 23, query = "a")
+        val query = "a"
+        val lastRemoteKey = RemoteKey(key = 23, query = query, type = RemoteKey.Type.QUOTE)
         val remoteKeys = listOf(
-            RemoteKey(key = 133, query = "a"),
-            RemoteKey(key = 11, query = "a"),
+            RemoteKey(key = 133, query = query, type = RemoteKey.Type.QUOTE),
+            RemoteKey(key = 11, query = query, type = RemoteKey.Type.QUOTE),
             lastRemoteKey
         )
         runBlocking {
             remoteKeys.forEach { remoteKeysDao.updateKey(it) }
         }
-        val dbRemoteKeys = runBlocking { remoteKeysDao.getKeys() }
+        val dbRemoteKeys =
+            runBlocking { remoteKeysDao.getKeys(type = RemoteKey.Type.QUOTE, query = query) }
         assert(dbRemoteKeys.size == 1 && dbRemoteKeys.first() == lastRemoteKey)
     }
 }
