@@ -2,6 +2,7 @@ package com.example.quotableapp.ui.common.quoteslist
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -14,7 +15,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
+import com.example.quotableapp.ui.common.helpers.handleEmptyList
 import com.example.quotableapp.ui.common.helpers.handleRefreshing
+import com.example.quotableapp.ui.common.helpers.showErrorToast
 import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
@@ -28,6 +31,17 @@ import kotlin.time.ExperimentalTime
 abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fragment() {
 
     protected abstract val listViewModel: ListViewModelType
+
+    protected abstract val recyclerViewLayoutBinding: RefreshableRecyclerviewBinding
+
+    protected val swipeToRefresh: SwipeRefreshLayout
+        get() = recyclerViewLayoutBinding.swipeToRefresh
+
+    protected val rvQuotes: RecyclerView
+        get() = recyclerViewLayoutBinding.rvQuotes
+
+    protected val emptyListLayout: ViewGroup
+        get() = recyclerViewLayoutBinding.emptyListLayout.root
 
     private val quotesAdapter =
         QuotesAdapter(onClickHandler = object : QuotesAdapter.ViewHolder.OnClickHandler {
@@ -44,29 +58,57 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
             }
         })
 
-    protected abstract val recyclerViewLayoutBinding: RefreshableRecyclerviewBinding
+    protected abstract fun showQuote(quote: Quote)
 
-    protected val swipeToRefresh: SwipeRefreshLayout
-        get() = recyclerViewLayoutBinding.swipeToRefresh
+    protected abstract fun showAuthorFragment(authorSlug: String)
 
-    protected val rvQuotes: RecyclerView
-        get() = recyclerViewLayoutBinding.rvQuotes
+    protected abstract fun showQuotesOfTag(tag: String)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        rvQuotes.layoutManager = LinearLayoutManager(context)
         setupQuotesAdapter()
-        setupPullToRefresh()
+        setupQuotesRecyclerView()
         setupActionsHandler()
     }
 
-    private fun setupActionsHandler() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { listViewModel.navigationAction.collect { handleNavigation(it) } }
-                launch { listViewModel.actions.collect { handlePlainActions(it) } }
-            }
+    private fun setupQuotesAdapter() {
+        setupPullToRefresh()
+        quotesAdapter.handleEmptyList(
+            lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
+            recyclerView = rvQuotes,
+            emptyListLayout = emptyListLayout
+        )
+    }
+
+    private fun setupQuotesRecyclerView() {
+        with(rvQuotes) {
+            layoutManager = LinearLayoutManager(context)
+            adapter = quotesAdapter.withLoadStateFooter(
+                footer = DefaultLoadingAdapter { quotesAdapter.retry() }
+            )
         }
+    }
+
+    private fun setupActionsHandler() {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            launch { collectQuotesFlow() }
+            launch { collectNavigationActions() }
+            launch { collectPlainActions() }
+        }
+    }
+
+    private suspend fun collectQuotesFlow() {
+        listViewModel.fetchQuotes().collectLatest {
+            quotesAdapter.submitData(it)
+        }
+    }
+
+    private suspend fun collectPlainActions() {
+        listViewModel.actions.collect { handlePlainActions(it) }
+    }
+
+    private suspend fun collectNavigationActions() {
+        listViewModel.navigationAction.collect { handleNavigation(it) }
     }
 
     private fun handlePlainActions(action: QuotesListViewModel.Action) =
@@ -83,18 +125,6 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
             is QuotesListViewModel.NavigationAction.ToQuotesOfTag -> showQuotesOfTag(action.tag)
         }
 
-    private fun setupQuotesAdapter() {
-        rvQuotes.adapter = quotesAdapter.withLoadStateFooter(
-            footer = DefaultLoadingAdapter { quotesAdapter.retry() }
-        )
-
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            listViewModel.fetchQuotes().collectLatest {
-                quotesAdapter.submitData(it)
-            }
-        }
-    }
-
     private fun setupPullToRefresh() {
         swipeToRefresh.setOnRefreshListener { listViewModel.onRefresh() }
         quotesAdapter.handleRefreshing(
@@ -104,17 +134,4 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
         )
     }
 
-    protected abstract fun showQuote(quote: Quote)
-
-    protected abstract fun showAuthorFragment(authorSlug: String)
-
-    protected abstract fun showQuotesOfTag(tag: String)
-
-    private fun showErrorToast() {
-        Toast.makeText(
-            context,
-            getString(R.string.error_occurred),
-            Toast.LENGTH_SHORT
-        ).show()
-    }
 }

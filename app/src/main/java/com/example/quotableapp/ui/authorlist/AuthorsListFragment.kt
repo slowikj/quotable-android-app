@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -13,10 +12,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.databinding.FragmentAuthorsListBinding
+import com.example.quotableapp.ui.common.helpers.handleEmptyList
 import com.example.quotableapp.ui.common.helpers.handleRefreshing
+import com.example.quotableapp.ui.common.helpers.showErrorToast
 import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -31,8 +31,9 @@ class AuthorsListFragment : Fragment() {
 
     private lateinit var binding: FragmentAuthorsListBinding
 
-    private val authorsListAdapter =
-        AuthorsListAdapter { listViewModel.onAuthorClick(it) }
+    private val authorsListAdapter = AuthorsListAdapter(
+        onItemClick = { listViewModel.onAuthorClick(it) }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,37 +46,39 @@ class AuthorsListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupListAdapter()
         setUpAuthorListRecyclerView()
+        setupViewModelEventsHandling()
+    }
+
+    private fun setupViewModelEventsHandling() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 launch { collectNavigationActions() }
                 launch { collectAuthorsFlow() }
-                launch { collectOtherActions() }
+                launch { collectPlainActions() }
             }
         }
-        setupPullToRefresh()
     }
 
-    private fun setupPullToRefresh() {
-        binding.recyclerviewLayout.swipeToRefresh.let { swipeToRefresh ->
-            swipeToRefresh.setOnRefreshListener { listViewModel.onRefresh() }
-            authorsListAdapter.handleRefreshing(
-                lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
-                swipeRefreshLayout = swipeToRefresh,
-                onError = { showErrorToast() }
-            )
-        }
+    private fun setupListAdapter() {
+        setupListRefreshing()
+        setupEmptyListHandling()
     }
 
     private fun setUpAuthorListRecyclerView() {
         binding.recyclerviewLayout.rvQuotes.apply {
-            layoutManager = GridLayoutManager(binding.recyclerviewLayout.rvQuotes.context, 2)
-            adapter =
-                authorsListAdapter.withLoadStateFooter(DefaultLoadingAdapter { authorsListAdapter.retry() })
+            layoutManager = GridLayoutManager(
+                binding.recyclerviewLayout.rvQuotes.context,
+                2
+            )
+            adapter = authorsListAdapter.withLoadStateFooter(
+                DefaultLoadingAdapter { authorsListAdapter.retry() }
+            )
         }
     }
 
-    private suspend fun collectOtherActions() {
+    private suspend fun collectPlainActions() {
         listViewModel.action.collect {
             when (it) {
                 is AuthorsListViewModel.Action.RefreshList -> authorsListAdapter.refresh()
@@ -102,11 +105,24 @@ class AuthorsListFragment : Fragment() {
         findNavController().navigate(action)
     }
 
-    private fun showErrorToast() {
-        Toast.makeText(
-            context,
-            getString(R.string.error_occurred),
-            Toast.LENGTH_SHORT
-        ).show()
+    private fun setupListRefreshing() {
+        binding.recyclerviewLayout.swipeToRefresh.let { swipeToRefresh ->
+            swipeToRefresh.setOnRefreshListener { listViewModel.onRefresh() }
+            authorsListAdapter.handleRefreshing(
+                lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
+                swipeRefreshLayout = swipeToRefresh,
+                onError = { showErrorToast() }
+            )
+        }
     }
+
+    private fun setupEmptyListHandling() {
+        authorsListAdapter.handleEmptyList(
+            lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
+            recyclerView = binding.recyclerviewLayout.rvQuotes,
+            emptyListLayout = binding.recyclerviewLayout.emptyListLayout.root
+        )
+    }
+
+
 }
