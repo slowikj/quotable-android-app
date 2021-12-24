@@ -40,7 +40,7 @@ fun <T : PagingDataAdapter<*, *>> T.handleEmptyList(
             .loadStateFlow
             .collectLatest { loadStates ->
                 val isEmpty =
-                    loadStates.refresh is LoadState.NotLoading && pagingAdapter.itemCount == 0
+                    loadStates.refresh !is LoadState.Loading && pagingAdapter.itemCount == 0
                 recyclerView.isVisible = !isEmpty
                 emptyListLayout.isVisible = isEmpty
             }
