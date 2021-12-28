@@ -1,7 +1,7 @@
-package com.example.quotableapp.data.repository
+package com.example.quotableapp.data.repository.quotes
 
 import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.data.converters.QuoteConverters
+import com.example.quotableapp.data.repository.common.converters.QuoteConverters
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.QuotesService
 import kotlinx.coroutines.withContext

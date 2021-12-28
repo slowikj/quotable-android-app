@@ -7,5 +7,7 @@ data class QuotesResponseDTO(
     val totalPages: Int,
     val lastItemIndex: Int,
     val results: List<QuoteDTO>
-) {
+) : PagedDTO {
+    override val endOfPaginationReached: Boolean
+        get() = page == totalPages
 }

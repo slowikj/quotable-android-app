@@ -1,8 +1,10 @@
 package com.example.quotableapp.data.db.dao
 
 import androidx.paging.PagingSource
-import androidx.room.*
-
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.example.quotableapp.data.db.entities.AuthorEntity
 
 @Dao
@@ -16,8 +18,5 @@ interface AuthorsDao {
 
     @Query("DELETE FROM authors")
     fun deleteAll()
-
-    @Query("SELECT COUNT(*) FROM authors")
-    fun getSize(): Int
 
 }

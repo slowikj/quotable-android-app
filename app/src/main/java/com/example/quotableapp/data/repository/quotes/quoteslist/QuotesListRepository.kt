@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.repository.quoteslist
+package com.example.quotableapp.data.repository.quotes.quoteslist
 
 import androidx.paging.PagingData
 import com.example.quotableapp.data.model.Quote

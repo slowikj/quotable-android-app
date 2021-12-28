@@ -1,8 +1,10 @@
-package com.example.quotableapp.di
+package com.example.quotableapp.data.network.di
 
-import com.example.quotableapp.data.converters.AuthorPhotoUrlCreator
 import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.QuotesService
+import com.example.quotableapp.data.network.common.ApiResponseInterpreter
+import com.example.quotableapp.data.network.common.HttpApiError
+import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,16 +34,8 @@ object NetworkModule {
         retrofitClient.create(QuotesService::class.java)
 
     @Provides
-    fun getAuthorsService(@DefaultRetrofitClient retrofitClient: Retrofit): AuthorsService =
+    fun bindAuthorsService(@DefaultRetrofitClient retrofitClient: Retrofit): AuthorsService =
         retrofitClient.create(AuthorsService::class.java)
-
-    @Provides
-    fun getAuthorUrlCreator(): AuthorPhotoUrlCreator = object : AuthorPhotoUrlCreator {
-        override fun create(authorSlug: String): String {
-            val size = 200
-            return "https://images.quotable.dev/profile/$size/$authorSlug.jpg"
-        }
-    }
 
     @Provides
     @DefaultRetrofitClient
@@ -58,5 +52,9 @@ object NetworkModule {
         OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply { setLevel(HttpLoggingInterceptor.Level.BODY) })
             .build()
+
+    @Provides
+    fun provideHttpResultInterpreter(): ApiResponseInterpreter<HttpApiError> =
+        QuotableApiResponseInterpreter()
 }
 

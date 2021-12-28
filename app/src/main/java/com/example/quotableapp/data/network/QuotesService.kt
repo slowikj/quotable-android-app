@@ -29,6 +29,11 @@ interface QuotesService {
         }
     }
 
+    @GET("quotes/{id}")
+    suspend fun fetchQuote(
+        @Path("id") id: String
+    ): Response<QuoteDTO>
+
     @GET("quotes")
     suspend fun fetchQuotes(
         @Query("page") page: Int,
@@ -36,11 +41,6 @@ interface QuotesService {
         @Query("sortBy") sortBy: SortByType = SortByType.Author,
         @Query("order") order: OrderType = OrderType.Asc
     ): Response<QuotesResponseDTO>
-
-    @GET("quotes/{id}")
-    suspend fun fetchQuote(
-        @Path("id") id: String
-    ): Response<QuoteDTO>
 
     @GET("quotes")
     suspend fun fetchQuotesOfAuthor(
@@ -52,6 +52,13 @@ interface QuotesService {
     @GET("quotes")
     suspend fun fetchQuotesOfTag(
         @Query("tags") tag: String,
+        @Query("page") page: Int,
+        @Query("limit") limit: Int
+    ): Response<QuotesResponseDTO>
+
+    @GET("search/quotes")
+    suspend fun fetchQuotesWithSearchPhrase(
+        @Query("query") searchPhrase: String,
         @Query("page") page: Int,
         @Query("limit") limit: Int
     ): Response<QuotesResponseDTO>

@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.data.repository.quoteslist.QuotesListRepository
-import com.example.quotableapp.di.QuotesType
+import com.example.quotableapp.data.repository.quotes.di.QuotesType
+import com.example.quotableapp.data.repository.quotes.quoteslist.QuotesListRepository
 import com.example.quotableapp.ui.common.quoteslist.QuotesListViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

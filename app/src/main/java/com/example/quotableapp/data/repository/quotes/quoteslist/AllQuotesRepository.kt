@@ -1,9 +1,9 @@
-package com.example.quotableapp.data.repository.quoteslist
+package com.example.quotableapp.data.repository.quotes.quoteslist
 
 import androidx.paging.*
-import com.example.quotableapp.data.converters.QuoteConverters
+import com.example.quotableapp.data.repository.common.converters.QuoteConverters
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.repository.quoteslist.paging.QuotesRemoteMediator
+import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesRemoteMediator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -19,7 +19,7 @@ class AllQuotesRepository @Inject constructor(
         Pager(
             config = pagingConfig,
             remoteMediator = remoteMediator,
-            pagingSourceFactory = { remoteMediator.database.quotes().getQuotes() }
+            pagingSourceFactory = { remoteMediator.persistenceManager.getPagingSource() }
         ).flow
             .map { pagingData -> pagingData.map { quotesConverters.toDomain(it) } }
 }

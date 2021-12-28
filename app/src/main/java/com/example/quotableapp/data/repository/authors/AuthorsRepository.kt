@@ -2,7 +2,7 @@ package com.example.quotableapp.data.repository.authors
 
 import androidx.paging.*
 import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.data.converters.AuthorConverters
+import com.example.quotableapp.data.repository.common.converters.AuthorConverters
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediator
@@ -36,7 +36,9 @@ class AuthorsRepository @Inject constructor(
     fun fetchAuthors(): Flow<PagingData<Author>> = Pager(
         config = pagingConfig,
         remoteMediator = authorListRemoteMediator,
-        pagingSourceFactory = { authorListRemoteMediator.database.authors().getAll() }
+        pagingSourceFactory = { authorListRemoteMediator.persistenceManager.getPagingSource() }
     ).flow
-        .map { pagingData -> pagingData.map { authorConverters.toDomain(it) } }
+        .map { pagingData ->
+            pagingData.map { authorConverters.toDomain(it) }
+        }
 }

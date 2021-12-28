@@ -1,11 +1,10 @@
-package com.example.quotableapp.data.converters
+package com.example.quotableapp.data.repository.common.converters
 
 import com.example.quotableapp.data.db.entities.AuthorEntity
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.model.AuthorDTO
-import javax.inject.Inject
 
-class DefaultAuthorConverters @Inject constructor(
+class DefaultAuthorConverters(
     private val authorPhotoUrlCreator: AuthorPhotoUrlCreator
 ) : AuthorConverters {
 

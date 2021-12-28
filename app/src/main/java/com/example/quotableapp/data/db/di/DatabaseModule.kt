@@ -1,4 +1,4 @@
-package com.example.quotableapp.di
+package com.example.quotableapp.data.db.di
 
 import android.content.Context
 import android.util.Log

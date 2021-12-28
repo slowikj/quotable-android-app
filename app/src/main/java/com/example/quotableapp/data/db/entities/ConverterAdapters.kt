@@ -15,8 +15,9 @@ class ConverterAdapters {
     }
 
     @TypeConverter
-    fun fromRemoteKeyType(type: RemoteKey.Type) = type.ordinal
+    fun fromRemoteKeyType(type: RemoteKeyEntity.Type) = type.ordinal
 
     @TypeConverter
-    fun toRemoteKeyType(ordinal: Int) = enumValues<RemoteKey.Type>()[ordinal]
+    fun toRemoteKeyType(ordinal: Int) = enumValues<RemoteKeyEntity.Type>()[ordinal]
+
 }

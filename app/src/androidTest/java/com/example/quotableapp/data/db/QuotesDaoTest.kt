@@ -4,7 +4,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.quotableapp.data.DataTestUtil
 import com.example.quotableapp.data.db.dao.QuotesDao
 import com.example.quotableapp.data.db.entities.QuoteEntity
-import com.example.quotableapp.data.model.Quote
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -20,7 +19,7 @@ class QuotesDaoTest {
     @Before
     fun setUp() {
         db = DataTestUtil.prepareInMemoryDatabase()
-        quotesDao = db.quotes()
+        quotesDao = db.quotesDao()
     }
 
     @After

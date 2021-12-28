@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.repository.OneQuoteRepository
+import com.example.quotableapp.data.repository.quotes.OneQuoteRepository
 import com.example.quotableapp.ui.common.uistate.UiState
 import com.example.quotableapp.ui.common.uistate.setData
 import com.example.quotableapp.ui.common.uistate.setError

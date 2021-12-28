@@ -1,25 +1,25 @@
-package com.example.quotableapp.data.repository.authors.paging
+package com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator
 
 import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.data.repository.common.converters.Converter
 import com.example.quotableapp.data.db.common.PersistenceManager
-import com.example.quotableapp.data.db.entities.AuthorEntity
+import com.example.quotableapp.data.db.entities.QuoteEntity
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.common.HttpApiError
-import com.example.quotableapp.data.network.model.AuthorsResponseDTO
+import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.common.IntPageKeyRemoteMediator
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
 import com.example.quotableapp.data.repository.di.CacheTimeout
 import javax.inject.Inject
 
 @ExperimentalPagingApi
-class AuthorsRemoteMediator @Inject constructor(
-    persistenceManager: PersistenceManager<AuthorEntity, Int>,
+class QuotesRemoteMediator @Inject constructor(
+    persistenceManager: PersistenceManager<QuoteEntity, Int>,
     @CacheTimeout cacheTimeoutMilliseconds: Long,
-    remoteService: IntPagedRemoteService<AuthorsResponseDTO>,
+    remoteService: IntPagedRemoteService<QuotesResponseDTO>,
     apiResultInterpreter: ApiResponseInterpreter<HttpApiError>,
-    dtoToEntityConverter: Converter<AuthorsResponseDTO, List<AuthorEntity>>
-) : IntPageKeyRemoteMediator<AuthorEntity, AuthorsResponseDTO, HttpApiError>(
+    dtoToEntityConverter: Converter<QuotesResponseDTO, List<QuoteEntity>>
+) : IntPageKeyRemoteMediator<QuoteEntity, QuotesResponseDTO, HttpApiError>(
     persistenceManager,
     cacheTimeoutMilliseconds,
     remoteService,

@@ -8,7 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.repository.quoteslist.QuotesListRepository
+import com.example.quotableapp.data.repository.quotes.quoteslist.QuotesListRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 

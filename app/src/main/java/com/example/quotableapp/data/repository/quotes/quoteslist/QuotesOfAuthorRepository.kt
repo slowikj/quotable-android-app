@@ -1,13 +1,13 @@
-package com.example.quotableapp.data.repository.quoteslist
+package com.example.quotableapp.data.repository.quotes.quoteslist
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
-import com.example.quotableapp.data.converters.QuoteConverters
+import com.example.quotableapp.data.repository.common.converters.QuoteConverters
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.QuotesService
-import com.example.quotableapp.data.repository.quoteslist.paging.QuotesPagingSource
+import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesPagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

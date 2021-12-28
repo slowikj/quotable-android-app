@@ -9,8 +9,7 @@ data class QuoteEntity(
     val content: String = "",
     val author: String = "",
     val authorSlug: String = "",
-    val tags: List<String> = listOf(),
-    val lastUpdated: Long = System.currentTimeMillis()
+    val tags: List<String> = listOf()
 ) {
 }
 
