@@ -1,6 +1,7 @@
 package com.example.quotableapp.data.network.common
 
 import retrofit2.Response
+import java.util.concurrent.CancellationException
 
 interface ApiResponseInterpreter<ErrorType : Throwable> {
 
@@ -30,6 +31,8 @@ sealed class HttpApiError() : Throwable() {
 
     data class OtherError(val exception: Throwable? = null) : HttpApiError()
 
+    object CancelledRequest : HttpApiError()
+
 }
 
 class QuotableApiResponseInterpreter() : ApiResponseInterpreter<HttpApiError> {
@@ -37,7 +40,7 @@ class QuotableApiResponseInterpreter() : ApiResponseInterpreter<HttpApiError> {
     override suspend fun <DTO> invoke(apiCall: suspend () -> Response<DTO>): InterpretedApiResult<DTO, HttpApiError> =
         runCatching { apiCall() }
             .map { getInterpretedApiResult(it) }
-            .getOrDefault(InterpretedApiResult.Error(HttpApiError.ConnectionError))
+            .getOrElse { interpretApiCallError(it) }
 
     private fun <DTO> getInterpretedApiResult(response: Response<DTO>): InterpretedApiResult<DTO, HttpApiError> =
         when (val code = response.code()) {
@@ -50,4 +53,9 @@ class QuotableApiResponseInterpreter() : ApiResponseInterpreter<HttpApiError> {
     private fun <DTO> getInterpretedApiResult(body: DTO?): InterpretedApiResult<DTO, HttpApiError> =
         runCatching { InterpretedApiResult.Success<DTO, HttpApiError>(body!!) }
             .getOrElse { exception -> InterpretedApiResult.Error(HttpApiError.OtherError(exception)) }
+
+    private fun <DTO> interpretApiCallError(it: Throwable): InterpretedApiResult.Error<DTO, HttpApiError> =
+        InterpretedApiResult.Error(
+            if (it is CancellationException) HttpApiError.CancelledRequest else HttpApiError.ConnectionError
+        )
 }

@@ -56,7 +56,7 @@ interface QuotesService {
         @Query("limit") limit: Int
     ): Response<QuotesResponseDTO>
 
-    @GET("search/quotes")
+    @GET("search/quotes?fuzzyMaxExpansions=0")
     suspend fun fetchQuotesWithSearchPhrase(
         @Query("query") searchPhrase: String,
         @Query("page") page: Int,

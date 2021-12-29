@@ -3,11 +3,13 @@ package com.example.quotableapp.ui.tag
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.cachedIn
 import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.data.repository.quotes.di.QuotesType
-import com.example.quotableapp.data.repository.quotes.quoteslist.QuotesListRepository
+import com.example.quotableapp.data.repository.quotes.quoteslist.QuotesOfTagRepository
 import com.example.quotableapp.ui.common.quoteslist.QuotesListViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,16 +17,25 @@ import javax.inject.Inject
 @HiltViewModel
 class TagQuotesListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    @QuotesType.OfTag tagRepository: QuotesListRepository,
+    private val tagRepository: QuotesOfTagRepository,
     dispatchers: CoroutineDispatchers
-) : QuotesListViewModel(savedStateHandle, tagRepository, dispatchers) {
+) : QuotesListViewModel(savedStateHandle, dispatchers) {
 
     companion object {
         const val TAG_ID = "tag"
     }
 
-    override val keyword: String
+    private val keyword: String
         get() = savedStateHandle[TAG_ID]!!
+
+    init {
+        viewModelScope.launch {
+            tagRepository.fetchQuotes(keyword)
+                .flowOn(dispatchers.IO)
+                .cachedIn(viewModelScope)
+                .collectLatest { _quotes.value = it }
+        }
+    }
 
     override fun onTagClick(tag: String) {
         if (tag != keyword) {

@@ -22,6 +22,8 @@ import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
@@ -98,9 +100,8 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
     }
 
     private suspend fun collectQuotesFlow() {
-        listViewModel.fetchQuotes().collectLatest {
-            quotesAdapter.submitData(it)
-        }
+        listViewModel.quotes.filterNotNull()
+            .collectLatest { quotesAdapter.submitData(it) }
     }
 
     private suspend fun collectPlainActions() {

@@ -20,7 +20,7 @@ class QuotesPagingSource(
             LoadResult.Page(
                 data = responseBody.results,
                 prevKey = null,
-                nextKey = if (responseBody.totalPages == page) null else page + 1
+                nextKey = if (responseBody.endOfPaginationReached) null else page + 1
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

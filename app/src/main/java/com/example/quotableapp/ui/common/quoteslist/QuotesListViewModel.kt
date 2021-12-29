@@ -5,21 +5,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.repository.quotes.quoteslist.QuotesListRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 @ExperimentalPagingApi
 abstract class QuotesListViewModel constructor(
     protected val savedStateHandle: SavedStateHandle,
-    protected val quotesRepository: QuotesListRepository,
     protected val dispatchers: CoroutineDispatchers
 ) : ViewModel() {
-
-    abstract val keyword: String
 
     sealed class NavigationAction {
 
@@ -43,11 +38,8 @@ abstract class QuotesListViewModel constructor(
     protected val _actions = MutableSharedFlow<Action>()
     val actions = _actions.asSharedFlow()
 
-
-    fun fetchQuotes(): Flow<PagingData<Quote>> = quotesRepository
-        .fetchQuotes(keyword = keyword)
-        .flowOn(dispatchers.IO)
-        .cachedIn(viewModelScope)
+    protected val _quotes = MutableStateFlow<PagingData<Quote>?>(null)
+    val quotes: StateFlow<PagingData<Quote>?> = _quotes
 
     open fun onItemClick(quote: Quote) {
         viewModelScope.launch {
@@ -71,10 +63,6 @@ abstract class QuotesListViewModel constructor(
         viewModelScope.launch {
             _actions.emit(Action.CopyToClipboard(quote))
         }
-    }
-
-    fun onSearch(text: String) {
-        // TODO
     }
 
     fun onRefresh() {

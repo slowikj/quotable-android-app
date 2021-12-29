@@ -1,17 +1,12 @@
 package com.example.quotableapp.data.repository.quotes.di
 
-import androidx.paging.ExperimentalPagingApi
-import com.example.quotableapp.data.repository.common.converters.Converter
-import com.example.quotableapp.data.repository.common.converters.QuoteConverters
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.db.entities.QuoteEntity
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
+import com.example.quotableapp.data.repository.common.converters.Converter
 import com.example.quotableapp.data.repository.common.converters.DefaultQuoteConverters
-import com.example.quotableapp.data.repository.quotes.quoteslist.AllQuotesRepository
-import com.example.quotableapp.data.repository.quotes.quoteslist.QuotesListRepository
-import com.example.quotableapp.data.repository.quotes.quoteslist.QuotesOfAuthorRepository
-import com.example.quotableapp.data.repository.quotes.quoteslist.QuotesOfTagRepository
+import com.example.quotableapp.data.repository.common.converters.QuoteConverters
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.DefaultQuotesListRemoteService
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesListDTOResponseToEntitiesConverter
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesListPersistenceManager
@@ -61,19 +56,6 @@ object QuotesRepositoryModule {
         @Binds
         fun bindQuotesPersistenceManager(persistenceManager: QuotesListPersistenceManager):
                 PersistenceManager<QuoteEntity, Int>
-
-        @ExperimentalPagingApi
-        @Binds
-        @QuotesType.All
-        fun bindAllQuotesRepository(repo: AllQuotesRepository): QuotesListRepository
-
-        @Binds
-        @QuotesType.OfAuthor
-        fun bindQuotesOfAuthorRepository(repo: QuotesOfAuthorRepository): QuotesListRepository
-
-        @Binds
-        @QuotesType.OfTag
-        fun bindQuotesOfTagRepository(repo: QuotesOfTagRepository): QuotesListRepository
     }
 
 }

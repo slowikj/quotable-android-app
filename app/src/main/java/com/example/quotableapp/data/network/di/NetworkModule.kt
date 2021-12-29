@@ -13,6 +13,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.Duration
+import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 
 @Qualifier
@@ -51,6 +53,7 @@ object NetworkModule {
     fun createOkHttpClient(): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply { setLevel(HttpLoggingInterceptor.Level.BODY) })
+            .callTimeout(1, TimeUnit.MINUTES)
             .build()
 
     @Provides

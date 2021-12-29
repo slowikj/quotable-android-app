@@ -3,11 +3,14 @@ package com.example.quotableapp.ui.common.helpers
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.quotableapp.data.network.common.HttpApiError
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 
 fun <T : PagingDataAdapter<*, *>> T.handleRefreshing(
     lifecycleCoroutineScope: LifecycleCoroutineScope,
@@ -18,14 +21,26 @@ fun <T : PagingDataAdapter<*, *>> T.handleRefreshing(
     lifecycleCoroutineScope.launchWhenStarted {
         pagingAdapter
             .loadStateFlow
+            .debounce(100)
             .collectLatest { loadStates ->
-                swipeRefreshLayout.isRefreshing =
-                    loadStates.refresh is LoadState.Loading
-
-                if (loadStates.refresh is LoadState.Error) {
-                    onError((loadStates.refresh as LoadState.Error).error)
-                }
+                handleLoadStates(loadStates, swipeRefreshLayout, onError)
             }
+    }
+}
+
+private fun handleLoadStates(
+    loadStates: CombinedLoadStates,
+    swipeRefreshLayout: SwipeRefreshLayout,
+    onError: (Throwable) -> Unit
+) {
+    val refreshState = loadStates.refresh
+    swipeRefreshLayout.isRefreshing =
+        refreshState is LoadState.Loading
+
+    if (refreshState is LoadState.Error
+        && refreshState.error !is HttpApiError.CancelledRequest
+    ) {
+        onError(refreshState.error)
     }
 }
 
@@ -38,9 +53,11 @@ fun <T : PagingDataAdapter<*, *>> T.handleEmptyList(
     lifecycleCoroutineScope.launchWhenStarted {
         pagingAdapter
             .loadStateFlow
+            .debounce(100)
             .collectLatest { loadStates ->
-                val isEmpty =
-                    loadStates.refresh !is LoadState.Loading && pagingAdapter.itemCount == 0
+                val refreshState = loadStates.refresh
+                val isEmpty = refreshState !is LoadState.Loading
+                        && pagingAdapter.itemCount == 0
                 recyclerView.isVisible = !isEmpty
                 emptyListLayout.isVisible = isEmpty
             }
