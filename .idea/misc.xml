@@ -15,6 +15,7 @@
         <entry key="app/src/main/res/drawable/person_selector.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/drawable/person_unchecked.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/layout/activity_author.xml" value="0.27853260869565216" />
+        <entry key="app/src/main/res/layout/activity_base_host.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/activity_host_author.xml" value="0.14513677811550152" />
         <entry key="app/src/main/res/layout/activity_host_one_quote.xml" value="0.25833333333333336" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />

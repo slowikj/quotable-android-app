@@ -80,12 +80,6 @@ class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem.actionView as SearchView
         observeOnSearchQueryChanged(searchView)
-
-        searchItem.setOnMenuItemClickListener {
-            binding.appbar.setExpanded(false, true)
-            true
-        }
-
         searchView.setQuery(listViewModel.lastSearchQuery.value, true)
     }
 
