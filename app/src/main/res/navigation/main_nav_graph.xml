@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/allQuotesFragment">
+
+    <fragment
+        android:id="@+id/allQuotesFragment"
+        android:name="com.example.quotableapp.ui.allquotes.AllQuotesFragment"
+        android:label="AllQuotesFragment">
+        <action
+            android:id="@+id/showAuthor"
+            app:destination="@id/authorActivity" />
+        <action
+            android:id="@+id/showTagQuotes"
+            app:destination="@id/tagQuotesHostActivity" />
+        <action
+            android:id="@+id/showOneQuote"
+            app:destination="@id/oneQuoteHostActivity" />
+    </fragment>
+
+    <activity
+        android:id="@+id/authorActivity"
+        android:name="com.example.quotableapp.ui.author.AuthorHostActivity">
+        <argument
+            android:name="authorSlug"
+            app:argType="string" />
+    </activity>
+    <fragment
+        android:id="@+id/authorsListFragment"
+        android:name="com.example.quotableapp.ui.authorlist.AuthorsListFragment"
+        android:label="AuthorsListFragment">
+        <action
+            android:id="@+id/showAuthor"
+            app:destination="@id/authorActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/oneQuoteHostActivity"
+        android:name="com.example.quotableapp.ui.onequote.OneQuoteHostActivity"
+        android:label="activity_host_one_quote">
+        <argument
+            android:name="quoteId"
+            app:argType="string" />
+    </activity>
+    <activity
+        android:id="@+id/tagQuotesHostActivity"
+        android:name="com.example.quotableapp.ui.tag.TagQuotesHostActivity"
+        android:label="activity_host_tag_quotes">
+        <argument
+            android:name="tag"
+            app:argType="string" />
+    </activity>
+</navigation>

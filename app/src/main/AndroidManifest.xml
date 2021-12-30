@@ -13,6 +13,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".ui.tag.TagQuotesHostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.onequote.OneQuoteHostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.author.AuthorHostActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>

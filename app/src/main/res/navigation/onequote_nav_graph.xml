@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/onequote_nav_graph"
+    app:startDestination="@id/oneQuoteFragment">
+    <fragment
+        android:id="@+id/oneQuoteFragment"
+        android:name="com.example.quotableapp.ui.onequote.OneQuoteFragment">
+        <argument
+            android:name="quoteId"
+            app:argType="string" />
+        <action
+            android:id="@+id/showAuthor"
+            app:destination="@id/authorActivity" />
+        <action
+            android:id="@+id/showTagQuotes"
+            app:destination="@id/tagQuotesActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/authorActivity"
+        android:name="com.example.quotableapp.ui.author.AuthorHostActivity">
+        <argument
+            android:name="authorSlug"
+            app:argType="string" />
+    </activity>
+
+    <activity
+        android:id="@+id/tagQuotesActivity"
+        android:name="com.example.quotableapp.ui.tag.TagQuotesHostActivity">
+        <argument
+            android:name="tag"
+            app:argType="string" />
+    </activity>
+</navigation>
