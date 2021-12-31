@@ -7,7 +7,10 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.model.Quote
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 @ExperimentalPagingApi

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.cachedIn
 import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.data.repository.quotes.quoteslist.QuotesOfAuthorRepository
+import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.ui.common.quoteslist.QuotesListViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthorQuotesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    quotesOfAuthorRepository: QuotesOfAuthorRepository,
+    quotesRepository: QuotesRepository,
     dispatchers: CoroutineDispatchers
 ) : QuotesListViewModel(savedStateHandle, dispatchers) {
 
@@ -30,7 +30,7 @@ class AuthorQuotesViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            quotesOfAuthorRepository.fetchQuotes(keyword)
+            quotesRepository.fetchQuotesOfAuthor(keyword)
                 .flowOn(dispatchers.IO)
                 .cachedIn(viewModelScope)
                 .collectLatest { _quotes.value = it }

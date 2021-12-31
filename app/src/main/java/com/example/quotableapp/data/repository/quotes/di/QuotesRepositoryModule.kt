@@ -1,12 +1,20 @@
 package com.example.quotableapp.data.repository.quotes.di
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.PagingSource
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.db.entities.QuoteEntity
+import com.example.quotableapp.data.network.QuotesService
+import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
 import com.example.quotableapp.data.repository.common.converters.Converter
 import com.example.quotableapp.data.repository.common.converters.DefaultQuoteConverters
 import com.example.quotableapp.data.repository.common.converters.QuoteConverters
+import com.example.quotableapp.data.repository.quotes.onequote.DefaultOneQuoteRepository
+import com.example.quotableapp.data.repository.quotes.onequote.OneQuoteRepository
+import com.example.quotableapp.data.repository.quotes.quoteslist.*
+import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesPagingSource
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.DefaultQuotesListRemoteService
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesListDTOResponseToEntitiesConverter
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesListPersistenceManager
@@ -15,21 +23,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Qualifier
-
-annotation class QuotesType {
-    @Qualifier
-    @Retention(AnnotationRetention.BINARY)
-    annotation class OfTag
-
-    @Qualifier
-    @Retention(AnnotationRetention.BINARY)
-    annotation class OfAuthor
-
-    @Qualifier
-    @Retention(AnnotationRetention.BINARY)
-    annotation class All
-}
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -46,6 +39,48 @@ object QuotesRepositoryModule {
         return DefaultQuoteConverters()
     }
 
+    @Provides
+    fun provideSearchPhraseInAllQuotesPagingSourceFactory(quotesService: QuotesService): SearchPhraseInAllQuotesPagingSourceFactory =
+        object : SearchPhraseInAllQuotesPagingSourceFactory {
+            override fun get(searchPhrase: String): QuotesPagingSource {
+                return QuotesPagingSource { page: Int, limit: Int ->
+                    quotesService.fetchQuotesWithSearchPhrase(
+                        searchPhrase = searchPhrase,
+                        page = page,
+                        limit = limit
+                    )
+                }
+            }
+        }
+
+    @Provides
+    fun provideQuotesOfAuthorPagingSourceFactory(quotesService: QuotesService): QuotesOfAuthorPagingSourceFactory =
+        object : QuotesOfAuthorPagingSourceFactory {
+            override fun get(authorSlug: String): PagingSource<Int, QuoteDTO> {
+                return QuotesPagingSource { page: Int, limit: Int ->
+                    quotesService.fetchQuotesOfAuthor(
+                        author = authorSlug,
+                        page = page,
+                        limit = limit
+                    )
+                }
+            }
+        }
+
+    @Provides
+    fun provideQuotesOfTagPagingSourceFactory(quotesService: QuotesService): QuotesOfTagPagingSourceFactory =
+        object : QuotesOfTagPagingSourceFactory {
+            override fun get(tag: String): PagingSource<Int, QuoteDTO> {
+                return QuotesPagingSource { page: Int, limit: Int ->
+                    quotesService.fetchQuotesOfTag(
+                        tag = tag,
+                        page = page,
+                        limit = limit
+                    )
+                }
+            }
+        }
+
     @Module
     @InstallIn(SingletonComponent::class)
     interface Declarations {
@@ -56,6 +91,19 @@ object QuotesRepositoryModule {
         @Binds
         fun bindQuotesPersistenceManager(persistenceManager: QuotesListPersistenceManager):
                 PersistenceManager<QuoteEntity, Int>
+
+        @ExperimentalPagingApi
+        @Binds
+        fun bindAllQuotesRepository(repository: DefaultAllQuotesRepository): AllQuotesRepository
+
+        @Binds
+        fun bindQuotesOfAuthorRepository(repository: DefaultQuotesOfAuthorRepository): QuotesOfAuthorRepository
+
+        @Binds
+        fun bindQuotesOfTagRepository(repository: DefaultQuotesOfTagRepository): QuotesOfTagRepository
+
+        @Binds
+        fun bindOneQuoteRepository(repository: DefaultOneQuoteRepository): OneQuoteRepository
     }
 
 }

@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.repository.quotes.OneQuoteRepository
+import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.ui.common.uistate.UiState
 import com.example.quotableapp.ui.common.uistate.setData
 import com.example.quotableapp.ui.common.uistate.setError
@@ -19,7 +19,7 @@ typealias OneQuoteUiState = UiState<Quote, OneQuoteViewModel.UiError>
 @HiltViewModel
 class OneQuoteViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val oneQuoteRepository: OneQuoteRepository
+    private val quoteRepository: QuotesRepository
 ) : ViewModel() {
 
     sealed class UiError {
@@ -58,7 +58,7 @@ class OneQuoteViewModel @Inject constructor(
 
         _state.setLoading()
         viewModelScope.launch {
-            val res = oneQuoteRepository.fetchQuote(quoteId)
+            val res = quoteRepository.fetchQuote(quoteId)
             res.onSuccess { _state.setData(it) }
                 .onFailure {
                     _action.emit(Action.ShowError)

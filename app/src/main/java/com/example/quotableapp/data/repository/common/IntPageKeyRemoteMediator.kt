@@ -4,11 +4,11 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import com.example.quotableapp.data.repository.common.converters.Converter
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.common.InterpretedApiResult
 import com.example.quotableapp.data.network.model.PagedDTO
+import com.example.quotableapp.data.repository.common.converters.Converter
 import javax.inject.Inject
 
 @ExperimentalPagingApi

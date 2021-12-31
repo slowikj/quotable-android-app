@@ -41,7 +41,7 @@ class AuthorsListViewModel
     val action = _action.asSharedFlow()
 
     fun fetchAuthors(): Flow<PagingData<Author>> =
-        authorsRepository.fetchAuthors()
+        authorsRepository.fetchAllAuthors()
             .flowOn(dispatchers.IO)
             .cachedIn(viewModelScope)
 

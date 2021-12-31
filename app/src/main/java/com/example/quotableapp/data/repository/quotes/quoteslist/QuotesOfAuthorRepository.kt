@@ -3,34 +3,31 @@ package com.example.quotableapp.data.repository.quotes.quoteslist
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.map
+import androidx.paging.PagingSource
+import com.example.quotableapp.common.mapPagingElements
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.QuotesService
+import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.repository.common.converters.QuoteConverters
-import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesPagingSource
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class QuotesOfAuthorRepository @Inject constructor(
-    private val quotesService: QuotesService,
+interface QuotesOfAuthorPagingSourceFactory {
+    fun get(authorSlug: String): PagingSource<Int, QuoteDTO>
+}
+
+interface QuotesOfAuthorRepository {
+    fun fetchQuotesOfAuthor(authorSlug: String): Flow<PagingData<Quote>>
+}
+
+class DefaultQuotesOfAuthorRepository @Inject constructor(
+    private val pagingSourceFactory: QuotesOfAuthorPagingSourceFactory,
     private val pagingConfig: PagingConfig,
     private val quoteConverters: QuoteConverters
-) {
+) : QuotesOfAuthorRepository {
 
-    fun fetchQuotes(authorSlug: String): Flow<PagingData<Quote>> = Pager(
+    override fun fetchQuotesOfAuthor(authorSlug: String): Flow<PagingData<Quote>> = Pager(
         config = pagingConfig,
-        pagingSourceFactory = {
-            QuotesPagingSource { page: Int, limit: Int ->
-                quotesService.fetchQuotesOfAuthor(
-                    author = authorSlug,
-                    page = page,
-                    limit = limit
-                )
-            }
-        }
+        pagingSourceFactory = { pagingSourceFactory.get(authorSlug = authorSlug) }
     ).flow
-        .map { pagingData ->
-            pagingData.map { quoteConverters.toDomain(it) }
-        }
+        .mapPagingElements { quoteDTO -> quoteConverters.toDomain(quoteDTO) }
 }

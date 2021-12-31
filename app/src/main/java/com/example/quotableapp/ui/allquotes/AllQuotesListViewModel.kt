@@ -4,7 +4,7 @@ import androidx.lifecycle.*
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.cachedIn
 import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.data.repository.quotes.quoteslist.AllQuotesRepository
+import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.ui.common.quoteslist.QuotesListViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AllQuotesListViewModel
 @Inject constructor(
-    quotesListRepository: AllQuotesRepository,
+    quotesRepository: QuotesRepository,
     savedStateHandle: SavedStateHandle,
     dispatchers: CoroutineDispatchers
 ) : QuotesListViewModel(savedStateHandle, dispatchers) {
@@ -37,7 +37,7 @@ class AllQuotesListViewModel
     init {
         viewModelScope.launch {
             _lastSearchQuery.asFlow()
-                .flatMapLatest { quotesListRepository.fetchQuotes(it) }
+                .flatMapLatest { quotesRepository.fetchAllQuotes(it) }
                 .cachedIn(viewModelScope)
                 .collectLatest { _quotes.value = it }
         }
