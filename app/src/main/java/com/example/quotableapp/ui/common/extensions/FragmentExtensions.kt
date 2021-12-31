@@ -1,4 +1,4 @@
-package com.example.quotableapp.ui.common.helpers
+package com.example.quotableapp.ui.common.extensions
 
 import android.widget.Toast
 import androidx.fragment.app.Fragment

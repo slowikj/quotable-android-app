@@ -3,7 +3,7 @@ package com.example.quotableapp.ui.tag
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.quotableapp.R
-import com.example.quotableapp.ui.common.helpers.setNavIntentExtras
+import com.example.quotableapp.ui.common.extensions.setNavIntentExtras
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

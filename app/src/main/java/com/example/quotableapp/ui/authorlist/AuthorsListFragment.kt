@@ -14,9 +14,9 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.databinding.FragmentAuthorsListBinding
-import com.example.quotableapp.ui.common.helpers.handleEmptyList
-import com.example.quotableapp.ui.common.helpers.handleRefreshing
-import com.example.quotableapp.ui.common.helpers.showErrorToast
+import com.example.quotableapp.ui.common.extensions.handleEmptyList
+import com.example.quotableapp.ui.common.extensions.handleRefreshing
+import com.example.quotableapp.ui.common.extensions.showErrorToast
 import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect

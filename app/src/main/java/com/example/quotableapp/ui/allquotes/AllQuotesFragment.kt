@@ -12,17 +12,15 @@ import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentAllQuotesBinding
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
-import com.example.quotableapp.ui.common.helpers.getQueryTextChangedStateFlow
+import com.example.quotableapp.ui.common.extensions.getQueryTextChangedStateFlow
 import com.example.quotableapp.ui.common.quoteslist.QuotesListFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOn
 import kotlin.time.ExperimentalTime
 
 @ExperimentalCoroutinesApi
