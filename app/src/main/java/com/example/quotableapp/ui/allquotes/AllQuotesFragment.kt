@@ -12,6 +12,8 @@ import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentAllQuotesBinding
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
+import com.example.quotableapp.ui.common.extensions.changeToolbarColorOnVisibilityChange
+import com.example.quotableapp.ui.common.extensions.getColor
 import com.example.quotableapp.ui.common.extensions.getQueryTextChangedStateFlow
 import com.example.quotableapp.ui.common.quoteslist.QuotesListFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,6 +31,9 @@ import kotlin.time.ExperimentalTime
 @FlowPreview
 @AndroidEntryPoint
 class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
+
+    private val focusColor by lazy { getColor(R.color.colorAccent) }
+    private val notFocusedColor by lazy { getColor(R.color.colorPrimaryDark) }
 
     private lateinit var binding: FragmentAllQuotesBinding
 
@@ -76,7 +81,11 @@ class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
 
     private fun prepareSearchView(menu: Menu) {
         val searchItem = menu.findItem(R.id.action_search)
-        val searchView = searchItem.actionView as SearchView
+        val searchView = (searchItem.actionView as SearchView).apply {
+            queryHint = getString(R.string.search)
+            changeToolbarColorOnVisibilityChange(focusColor, notFocusedColor, binding.toolbar)
+        }
+
         observeOnSearchQueryChanged(searchView)
     }
 
