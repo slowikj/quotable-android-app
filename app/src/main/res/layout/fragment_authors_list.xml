@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.authorlist.AuthorsListFragment">
+    tools:context=".ui.authorlist.AuthorsListFragment"
+    style="@style/AppTheme.DefaultWindow">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"

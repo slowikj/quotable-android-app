@@ -78,7 +78,6 @@ class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem.actionView as SearchView
         observeOnSearchQueryChanged(searchView)
-        searchView.setQuery(listViewModel.lastSearchQuery.value, true)
     }
 
     private fun observeOnSearchQueryChanged(searchView: SearchView) {

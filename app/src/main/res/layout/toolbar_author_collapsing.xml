@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:fitsSystemWindows="true"
-        android:theme="@style/AppTheme">
+        style="@style/AppTheme.DefaultWindow">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
@@ -37,7 +37,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     android:text="@{authorDetailsViewModel.state.data.description}"
-                    android:textColor="@color/white"
+                    style="@style/AuthorToolbar.Subtitle"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     tools:text="short desciption" />

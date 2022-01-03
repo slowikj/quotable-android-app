@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.onequote.OneQuoteFragment">
+    tools:context=".ui.onequote.OneQuoteFragment"
+    style="@style/AppTheme.DefaultWindow">
 
     <data>
 
@@ -12,15 +13,13 @@
             name="viewModel"
             type="com.example.quotableapp.ui.onequote.OneQuoteViewModel" />
 
-
         <import type="android.view.View" />
     </data>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimary">
+        android:layout_height="match_parent">
 
         <include
             android:id="@+id/quote_layout"

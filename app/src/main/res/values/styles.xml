@@ -2,10 +2,49 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
+<!--        in order to have solid color-->
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColor">#DEFFFFFF</item>
+        <item name="android:fontFamily">@font/roboto</item>
+    </style>
+
+    <style name="AppTheme.DefaultWindow">
+        <item name="android:background">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="QuoteCard">
+        <item name="android:background">@color/recycler_item_background</item>
+        <item name="cardCornerRadius">4dp</item>
+        <item name="cardBackgroundColor">@color/recycler_item_background</item>
+    </style>
+
+    <style name="QuoteCard.Tag" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="QuoteCard.AuthorText" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/white_60</item>
+    </style>
+
+    <style name="QuoteCard.Content" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white_87</item>
+    </style>
+
+    <style name="BottomNav">
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+
+    <style name="AuthorToolbar">
+        <item name="android:background">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="AuthorToolbar.Subtitle">
+        <item name="android:textColor">@color/white_87</item>
     </style>
 </resources>

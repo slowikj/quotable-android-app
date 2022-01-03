@@ -13,7 +13,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:padding="16dp"
+        style="@style/AppTheme.DefaultWindow">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/appCompatImageView"
@@ -31,7 +32,7 @@
             android:id="@+id/author_background"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:background="#99000000"
+            android:background="@color/black_60"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -44,7 +45,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{model.name}"
-            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="@+id/author_background"
             app:layout_constraintEnd_toEndOf="@+id/author_background"
             app:layout_constraintStart_toStartOf="@+id/author_background"
@@ -56,8 +56,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{String.valueOf(model.quoteCount)}"
-            android:textSize="11sp"
-            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="@id/image_quote_count"
             app:layout_constraintEnd_toStartOf="@id/image_quote_count"
             app:layout_constraintHorizontal_bias="1"

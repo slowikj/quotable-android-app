@@ -17,18 +17,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> onClickHandler.onItem(model)}"
-        tools:background="@color/colorPrimary"
-        tools:paddingBottom="16dp">
+        tools:paddingBottom="16dp"
+        style="@style/AppTheme.DefaultWindow">
 
         <androidx.cardview.widget.CardView
+            style="@style/QuoteCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
-            app:cardBackgroundColor="@color/recycler_item_background"
-            app:cardCornerRadius="4dp">
+            android:onClick="@{() -> onClickHandler.onItem(model)}">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -56,12 +55,11 @@
 
                 <TextView
                     android:id="@+id/content"
-                    style="@style/TextAppearance.AppCompat.Body2"
+                    style="@style/QuoteCard.Content"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:text="@{model.content}"
-                    android:textColor="@color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/image_quote"
                     app:layout_constraintTop_toBottomOf="@id/image_quote"
@@ -69,14 +67,12 @@
 
                 <TextView
                     android:id="@+id/author"
-                    style="@style/TextAppearance.AppCompat.Title.Inverse"
+                    style="@style/QuoteCard.AuthorText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:onClick="@{() -> onClickHandler.onAuthor(model)}"
                     android:text="@{model.author}"
-                    android:textColor="@color/white"
-                    android:textStyle="normal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

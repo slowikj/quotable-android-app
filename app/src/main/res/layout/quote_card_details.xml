@@ -15,7 +15,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        style="@style/AppTheme.DefaultWindow">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView"
@@ -23,8 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            app:cardBackgroundColor="#11FFFFFF"
-            app:cardCornerRadius="8dp"
+            style="@style/QuoteCard"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -48,28 +48,24 @@
 
                 <TextView
                     android:id="@+id/content"
-                    style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:text="@{model.data.content}"
-                    android:textColor="@color/white"
+                    style="@style/QuoteCard.Content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/quote_imageview"
                     app:layout_constraintTop_toBottomOf="@id/quote_imageview"
                     tools:text="Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum" />
 
-
                 <TextView
                     android:id="@+id/author"
-                    style="@style/TextAppearance.AppCompat.Title"
+                    style="@style/QuoteCard.AuthorText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@{model.data.author}"
-                    android:textColor="@color/white"
-                    android:textStyle="normal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
