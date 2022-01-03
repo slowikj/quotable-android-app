@@ -30,9 +30,6 @@ class DefaultLoadingAdapter(private val retry: () -> Unit) :
 
         fun bind(loadState: LoadState) {
             with(binding) {
-                if (loadState is LoadState.Error) {
-                    errorMessage.text = loadState.error.localizedMessage
-                }
                 btnRetry.isVisible = loadState is LoadState.Error
                 errorMessage.isVisible = loadState is LoadState.Error
                 progressBar.isVisible = loadState is LoadState.Loading
