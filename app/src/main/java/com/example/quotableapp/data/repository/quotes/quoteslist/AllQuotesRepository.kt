@@ -4,7 +4,7 @@ import androidx.paging.*
 import com.example.quotableapp.common.mapPagingElements
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.model.QuoteDTO
-import com.example.quotableapp.data.repository.common.converters.QuoteConverters
+import com.example.quotableapp.data.converters.QuoteConverters
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesRemoteMediator
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

@@ -9,9 +9,9 @@ import com.example.quotableapp.data.network.common.QuotableApiResponseInterprete
 import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
-import com.example.quotableapp.data.repository.common.converters.Converter
-import com.example.quotableapp.data.repository.common.converters.DefaultQuoteConverters
-import com.example.quotableapp.data.repository.common.converters.QuoteConverters
+import com.example.quotableapp.data.converters.Converter
+import com.example.quotableapp.data.converters.DefaultQuoteConverters
+import com.example.quotableapp.data.converters.QuoteConverters
 import com.example.quotableapp.data.repository.quotes.onequote.DefaultOneQuoteRepository
 import com.example.quotableapp.data.repository.quotes.onequote.OneQuoteRepository
 import com.example.quotableapp.data.repository.quotes.quoteslist.*

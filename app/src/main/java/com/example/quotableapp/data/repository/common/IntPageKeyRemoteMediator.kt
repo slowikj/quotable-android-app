@@ -7,7 +7,7 @@ import androidx.paging.RemoteMediator
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.PagedDTO
-import com.example.quotableapp.data.repository.common.converters.Converter
+import com.example.quotableapp.data.converters.Converter
 
 @ExperimentalPagingApi
 abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO, ApiErrorType : Throwable>(

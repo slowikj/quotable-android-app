@@ -2,8 +2,8 @@ package com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteM
 
 import com.example.quotableapp.data.db.entities.QuoteEntity
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
-import com.example.quotableapp.data.repository.common.converters.Converter
-import com.example.quotableapp.data.repository.common.converters.QuoteConverters
+import com.example.quotableapp.data.converters.Converter
+import com.example.quotableapp.data.converters.QuoteConverters
 import javax.inject.Inject
 
 class QuotesListDTOResponseToEntitiesConverter @Inject constructor(private val quoteConverters: QuoteConverters) :

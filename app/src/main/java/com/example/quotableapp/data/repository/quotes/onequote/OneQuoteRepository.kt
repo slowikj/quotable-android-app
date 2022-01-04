@@ -5,8 +5,8 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.QuotesService
 import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
-import com.example.quotableapp.data.network.common.Resource
-import com.example.quotableapp.data.repository.common.converters.QuoteConverters
+import com.example.quotableapp.data.common.Resource
+import com.example.quotableapp.data.converters.QuoteConverters
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 

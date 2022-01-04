@@ -4,12 +4,11 @@ import androidx.paging.*
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.AuthorsService
-import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
-import com.example.quotableapp.data.network.common.Resource
+import com.example.quotableapp.data.common.Resource
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediator
-import com.example.quotableapp.data.repository.common.converters.AuthorConverters
+import com.example.quotableapp.data.converters.AuthorConverters
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext

@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.repository.common.converters
+package com.example.quotableapp.data.converters
 
 interface AuthorPhotoUrlCreator {
 

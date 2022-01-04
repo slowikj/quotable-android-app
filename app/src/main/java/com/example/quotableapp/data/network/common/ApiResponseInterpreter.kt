@@ -1,5 +1,6 @@
 package com.example.quotableapp.data.network.common
 
+import com.example.quotableapp.data.common.Resource
 import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException

@@ -7,7 +7,7 @@ import com.example.quotableapp.data.repository.authors.paging.AuthorsListDTOResp
 import com.example.quotableapp.data.repository.authors.paging.AuthorsListPersistenceManager
 import com.example.quotableapp.data.repository.authors.paging.DefaultAuthorsListPagedRemoteService
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
-import com.example.quotableapp.data.repository.common.converters.*
+import com.example.quotableapp.data.converters.*
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

@@ -8,7 +8,7 @@ import com.example.quotableapp.data.network.common.QuotableApiResponseInterprete
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.repository.common.IntPageKeyRemoteMediator
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
-import com.example.quotableapp.data.repository.common.converters.Converter
+import com.example.quotableapp.data.converters.Converter
 import com.example.quotableapp.data.repository.di.CacheTimeout
 import javax.inject.Inject
 

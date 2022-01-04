@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.network.common
+package com.example.quotableapp.data.common
 
 sealed class Resource<Value, ErrorType : Throwable>() {
 
