@@ -2,8 +2,7 @@ package com.example.quotableapp.data.network.di
 
 import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.QuotesService
-import com.example.quotableapp.data.network.common.ApiResponseInterpreter
-import com.example.quotableapp.data.network.common.HttpApiError
+import com.example.quotableapp.data.network.common.DefaultQuotableApiResponseInterpreter
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
 import dagger.Module
 import dagger.Provides
@@ -13,7 +12,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.time.Duration
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 
@@ -57,7 +55,7 @@ object NetworkModule {
             .build()
 
     @Provides
-    fun provideHttpResultInterpreter(): ApiResponseInterpreter<HttpApiError> =
-        QuotableApiResponseInterpreter()
+    fun provideHttpResultInterpreter(): QuotableApiResponseInterpreter =
+        DefaultQuotableApiResponseInterpreter()
 }
 

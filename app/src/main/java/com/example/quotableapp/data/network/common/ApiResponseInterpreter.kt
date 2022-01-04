@@ -1,61 +1,47 @@
 package com.example.quotableapp.data.network.common
 
+import retrofit2.HttpException
 import retrofit2.Response
+import java.io.IOException
 import java.util.concurrent.CancellationException
 
 interface ApiResponseInterpreter<ErrorType : Throwable> {
 
-    suspend operator fun <DTO> invoke(apiCall: suspend () -> Response<DTO>): InterpretedApiResult<DTO, ErrorType>
+    suspend operator fun <DTO> invoke(apiCall: suspend () -> Response<DTO>): Resource<DTO, ErrorType>
 }
 
-sealed class InterpretedApiResult<DTO, ErrorType : Throwable>() {
+interface QuotableApiResponseInterpreter : ApiResponseInterpreter<HttpApiError>
 
-    data class Success<DTO, ErrorType : Throwable>(val value: DTO) :
-        InterpretedApiResult<DTO, ErrorType>()
+class DefaultQuotableApiResponseInterpreter : QuotableApiResponseInterpreter {
 
-    data class Error<DTO, ErrorType : Throwable>(val error: ErrorType) :
-        InterpretedApiResult<DTO, ErrorType>()
-
-    val isSuccess: Boolean
-        get() = this is Success
-
-}
-
-sealed class HttpApiError() : Throwable() {
-
-    object ConnectionError : HttpApiError()
-
-    data class ServerError(val code: Int) : HttpApiError()
-
-    data class ClientError(val code: Int) : HttpApiError()
-
-    data class OtherError(val exception: Throwable? = null) : HttpApiError()
-
-    object CancelledRequest : HttpApiError()
-
-}
-
-class QuotableApiResponseInterpreter() : ApiResponseInterpreter<HttpApiError> {
-
-    override suspend fun <DTO> invoke(apiCall: suspend () -> Response<DTO>): InterpretedApiResult<DTO, HttpApiError> =
-        runCatching { apiCall() }
-            .map { getInterpretedApiResult(it) }
-            .getOrElse { interpretApiCallError(it) }
-
-    private fun <DTO> getInterpretedApiResult(response: Response<DTO>): InterpretedApiResult<DTO, HttpApiError> =
-        when (val code = response.code()) {
-            200 -> getInterpretedApiResult(response.body())
-            in 400..499 -> InterpretedApiResult.Error(HttpApiError.ClientError(code))
-            in 500..599 -> InterpretedApiResult.Error(HttpApiError.ServerError(code))
-            else -> InterpretedApiResult.Error(HttpApiError.OtherError())
+    override suspend fun <DTO> invoke(apiCall: suspend () -> Response<DTO>): Resource<DTO, HttpApiError> =
+        try {
+            getInterpretedApiResult(apiCall())
+        } catch (e: IOException) {
+            Resource.Failure(HttpApiError.ConnectionError)
+        } catch (e: HttpException) {
+            interpretErrorCode(e.code())
+        } catch (e: CancellationException) {
+            Resource.Failure(HttpApiError.CancelledRequest)
+        } catch (e: Throwable) {
+            Resource.Failure(HttpApiError.OtherError(e))
         }
 
-    private fun <DTO> getInterpretedApiResult(body: DTO?): InterpretedApiResult<DTO, HttpApiError> =
-        runCatching { InterpretedApiResult.Success<DTO, HttpApiError>(body!!) }
-            .getOrElse { exception -> InterpretedApiResult.Error(HttpApiError.OtherError(exception)) }
+    private fun <DTO> getInterpretedApiResult(response: Response<DTO>): Resource<DTO, HttpApiError> =
+        when (val code = response.code()) {
+            in 200..299 -> getInterpretedApiResult(response.body())
+            else -> interpretErrorCode(code)
+        }
 
-    private fun <DTO> interpretApiCallError(it: Throwable): InterpretedApiResult.Error<DTO, HttpApiError> =
-        InterpretedApiResult.Error(
-            if (it is CancellationException) HttpApiError.CancelledRequest else HttpApiError.ConnectionError
-        )
+    private fun <DTO> interpretErrorCode(code: Int): Resource.Failure<DTO, HttpApiError> =
+        when (code) {
+            in 400..499 -> Resource.Failure(HttpApiError.ClientError(code))
+            in 500..599 -> Resource.Failure(HttpApiError.ServerError(code))
+            else -> Resource.Failure(HttpApiError.OtherError())
+        }
+
+    private fun <DTO> getInterpretedApiResult(body: DTO?): Resource<DTO, HttpApiError> =
+        runCatching { Resource.Success<DTO, HttpApiError>(body!!) }
+            .getOrElse { exception -> Resource.Failure(HttpApiError.OtherError(exception)) }
+
 }

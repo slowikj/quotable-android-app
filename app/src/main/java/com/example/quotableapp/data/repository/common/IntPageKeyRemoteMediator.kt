@@ -6,19 +6,19 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
-import com.example.quotableapp.data.network.common.InterpretedApiResult
 import com.example.quotableapp.data.network.model.PagedDTO
 import com.example.quotableapp.data.repository.common.converters.Converter
-import javax.inject.Inject
 
 @ExperimentalPagingApi
-open class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO, ApiErrorType : Throwable> @Inject constructor(
+abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO, ApiErrorType : Throwable>(
     val persistenceManager: PersistenceManager<ValueEntity, Int>,
     private val cacheTimeoutMilliseconds: Long,
     private val remoteService: IntPagedRemoteService<ValueDTO>,
     private val apiResultInterpreter: ApiResponseInterpreter<ApiErrorType>,
     private val dtoToEntityConverter: Converter<ValueDTO, List<ValueEntity>>
 ) : RemoteMediator<Int, ValueEntity>() {
+
+    abstract fun getOtherError(innerException: Throwable): ApiErrorType
 
     override suspend fun initialize(): InitializeAction {
         val lastUpdated = persistenceManager.getLastUpdated() ?: 0
@@ -33,6 +33,17 @@ open class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO, ApiE
         loadType: LoadType,
         state: PagingState<Int, ValueEntity>
     ): MediatorResult {
+        return try {
+            getMediatorResult(loadType, state)
+        } catch (e: Throwable) {
+            MediatorResult.Error(getOtherError(e))
+        }
+    }
+
+    private suspend fun getMediatorResult(
+        loadType: LoadType,
+        state: PagingState<Int, ValueEntity>
+    ): MediatorResult {
         val lastLoadKey = when (loadType) {
             LoadType.APPEND -> persistenceManager.getLatestPageKey()
                 ?: return MediatorResult.Success(
@@ -42,22 +53,24 @@ open class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO, ApiE
             LoadType.REFRESH -> null
         }
         val newLoadKey: Int = (lastLoadKey ?: 0) + 1
-        val pageSize =
-            if (loadType == LoadType.REFRESH) state.config.initialLoadSize else state.config.pageSize
+        val pageSize = computePageSize(loadType, state)
 
-        val apiResult = apiResultInterpreter {
-            remoteService.fetch(page = newLoadKey, limit = pageSize)
-        }
-
-        return when (apiResult) {
-            is InterpretedApiResult.Success -> {
-                val dto = apiResult.value
-                updateLocalDatabase(loadType, newLoadKey, dto)
-                MediatorResult.Success(endOfPaginationReached = dto.endOfPaginationReached)
-            }
-            is InterpretedApiResult.Error -> MediatorResult.Error(apiResult.error)
-        }
+        return apiResultInterpreter { remoteService.fetch(page = newLoadKey, limit = pageSize) }
+            .fold(
+                onSuccess = { dto ->
+                    updateLocalDatabase(loadType, newLoadKey, dto)
+                    MediatorResult.Success(endOfPaginationReached = dto.endOfPaginationReached)
+                },
+                onFailure = {
+                    MediatorResult.Error(it)
+                }
+            )
     }
+
+    private fun computePageSize(
+        loadType: LoadType,
+        state: PagingState<Int, ValueEntity>
+    ) = if (loadType == LoadType.REFRESH) state.config.initialLoadSize else state.config.pageSize
 
     private suspend fun updateLocalDatabase(loadType: LoadType, newLoadKey: Int, dto: ValueDTO) {
         persistenceManager.withTransaction {

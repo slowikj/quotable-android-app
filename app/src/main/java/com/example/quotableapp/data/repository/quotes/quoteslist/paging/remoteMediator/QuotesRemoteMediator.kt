@@ -3,8 +3,8 @@ package com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteM
 import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.db.entities.QuoteEntity
-import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.common.HttpApiError
+import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.common.IntPageKeyRemoteMediator
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
@@ -17,7 +17,7 @@ class QuotesRemoteMediator @Inject constructor(
     persistenceManager: PersistenceManager<QuoteEntity, Int>,
     @CacheTimeout cacheTimeoutMilliseconds: Long,
     remoteService: IntPagedRemoteService<QuotesResponseDTO>,
-    apiResultInterpreter: ApiResponseInterpreter<HttpApiError>,
+    apiResultInterpreter: QuotableApiResponseInterpreter,
     dtoToEntityConverter: Converter<QuotesResponseDTO, List<QuoteEntity>>
 ) : IntPageKeyRemoteMediator<QuoteEntity, QuotesResponseDTO, HttpApiError>(
     persistenceManager,
@@ -25,4 +25,8 @@ class QuotesRemoteMediator @Inject constructor(
     remoteService,
     apiResultInterpreter,
     dtoToEntityConverter
-)
+) {
+    override fun getOtherError(innerException: Throwable): HttpApiError {
+        return HttpApiError.OtherError(innerException)
+    }
+}

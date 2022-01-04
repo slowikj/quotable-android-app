@@ -2,11 +2,14 @@ package com.example.quotableapp.data.repository.quotes.quoteslist.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
+import com.example.quotableapp.data.network.common.Resource
 import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import retrofit2.Response
 
 class QuotesPagingSource(
+    private val apiResponseInterpreter: QuotableApiResponseInterpreter,
     private val service: suspend (page: Int, limit: Int) -> Response<QuotesResponseDTO>
 ) : PagingSource<Int, QuoteDTO>() {
 
@@ -14,16 +17,16 @@ class QuotesPagingSource(
         get() = true
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, QuoteDTO> {
-        return try {
-            val page = params.key ?: 1
-            val responseBody = service(page, params.loadSize).body()!!
-            LoadResult.Page(
-                data = responseBody.results,
+        val page = params.key ?: 1
+        return when (val response = apiResponseInterpreter { service(page, params.loadSize) }) {
+            is Resource.Success -> LoadResult.Page(
+                data = response.value.results,
                 prevKey = null,
-                nextKey = if (responseBody.endOfPaginationReached) null else page + 1
+                nextKey = if (response.value.endOfPaginationReached) null else page + 1
             )
-        } catch (e: Exception) {
-            LoadResult.Error(e)
+            is Resource.Failure -> LoadResult.Error(
+                throwable = response.error
+            )
         }
     }
 

@@ -32,8 +32,6 @@ class AllQuotesListViewModel
     private val _lastSearchQuery: MutableLiveData<String> = savedStateHandle
         .getLiveData(SEARCH_QUERY_TAG, "")
 
-    val lastSearchQuery: LiveData<String> = _lastSearchQuery
-
     init {
         viewModelScope.launch {
             _lastSearchQuery.asFlow()
@@ -44,6 +42,7 @@ class AllQuotesListViewModel
     }
 
     fun onSearchQueryChanged(query: String) {
+        savedStateHandle.set(SEARCH_QUERY_TAG, query)
         _lastSearchQuery.value = query
     }
 

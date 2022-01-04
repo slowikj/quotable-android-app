@@ -5,6 +5,7 @@ import androidx.paging.PagingSource
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.db.entities.QuoteEntity
 import com.example.quotableapp.data.network.QuotesService
+import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
@@ -40,10 +41,13 @@ object QuotesRepositoryModule {
     }
 
     @Provides
-    fun provideSearchPhraseInAllQuotesPagingSourceFactory(quotesService: QuotesService): SearchPhraseInAllQuotesPagingSourceFactory =
+    fun provideSearchPhraseInAllQuotesPagingSourceFactory(
+        quotesService: QuotesService,
+        apiResponseInterpreter: QuotableApiResponseInterpreter
+    ): SearchPhraseInAllQuotesPagingSourceFactory =
         object : SearchPhraseInAllQuotesPagingSourceFactory {
             override fun get(searchPhrase: String): QuotesPagingSource {
-                return QuotesPagingSource { page: Int, limit: Int ->
+                return QuotesPagingSource(apiResponseInterpreter = apiResponseInterpreter) { page: Int, limit: Int ->
                     quotesService.fetchQuotesWithSearchPhrase(
                         searchPhrase = searchPhrase,
                         page = page,
@@ -54,10 +58,13 @@ object QuotesRepositoryModule {
         }
 
     @Provides
-    fun provideQuotesOfAuthorPagingSourceFactory(quotesService: QuotesService): QuotesOfAuthorPagingSourceFactory =
+    fun provideQuotesOfAuthorPagingSourceFactory(
+        quotesService: QuotesService,
+        apiResponseInterpreter: QuotableApiResponseInterpreter
+    ): QuotesOfAuthorPagingSourceFactory =
         object : QuotesOfAuthorPagingSourceFactory {
             override fun get(authorSlug: String): PagingSource<Int, QuoteDTO> {
-                return QuotesPagingSource { page: Int, limit: Int ->
+                return QuotesPagingSource(apiResponseInterpreter = apiResponseInterpreter) { page: Int, limit: Int ->
                     quotesService.fetchQuotesOfAuthor(
                         author = authorSlug,
                         page = page,
@@ -68,10 +75,13 @@ object QuotesRepositoryModule {
         }
 
     @Provides
-    fun provideQuotesOfTagPagingSourceFactory(quotesService: QuotesService): QuotesOfTagPagingSourceFactory =
+    fun provideQuotesOfTagPagingSourceFactory(
+        quotesService: QuotesService,
+        apiResponseInterpreter: QuotableApiResponseInterpreter
+    ): QuotesOfTagPagingSourceFactory =
         object : QuotesOfTagPagingSourceFactory {
             override fun get(tag: String): PagingSource<Int, QuoteDTO> {
-                return QuotesPagingSource { page: Int, limit: Int ->
+                return QuotesPagingSource(apiResponseInterpreter = apiResponseInterpreter) { page: Int, limit: Int ->
                     quotesService.fetchQuotesOfTag(
                         tag = tag,
                         page = page,
