@@ -29,14 +29,14 @@ interface AuthorsService {
 
     @GET("/authors")
     suspend fun fetchAuthor(
-        @Query("slug") authorSlug: String,
-        @Query("sortBy") sortBy: SortByType = SortByType.Name,
-        @Query("order") orderType: OrderType = OrderType.Asc
+        @Query("slug") authorSlug: String
     ): Response<AuthorsResponseDTO>
 
     @GET("/authors")
     suspend fun fetchAuthors(
         @Query("page") page: Int,
-        @Query("limit") limit: Int
+        @Query("limit") limit: Int,
+        @Query("sortBy") sortBy: SortByType = SortByType.Name,
+        @Query("order") orderType: OrderType = OrderType.Asc
     ): Response<AuthorsResponseDTO>
 }

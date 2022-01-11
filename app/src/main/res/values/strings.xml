@@ -8,4 +8,6 @@
     <string name="search">Search</string>
     <string name="authors">Authors</string>
     <string name="no_items_found">No items found</string>
+    <string name="dashboard_authors_title">Authors</string>
+    <string name="dashboard_quotes_title">Quotes</string>
 </resources>

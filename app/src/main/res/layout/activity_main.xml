@@ -13,15 +13,4 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/main_nav_graph"/>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_nav"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        style="@style/BottomNav"
-        app:itemIconTint="@color/bottom_nav_color_icon_selector"
-        app:itemTextColor="@color/bottom_nav_color_icon_selector"
-        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
-        app:menu="@menu/menu_bottom_nav" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

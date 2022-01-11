@@ -3,52 +3,98 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/allQuotesFragment">
+    app:startDestination="@id/dashboardFragment">
+
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.example.quotableapp.ui.dashboard.DashboardFragment"
+        android:label="DashboardFragment" >
+        <action
+            android:id="@+id/showAllAuthors"
+            app:destination="@id/authorsListFragment" />
+        <action
+            android:id="@+id/showAuthor"
+            app:destination="@id/authorFragment" />
+        <action
+            android:id="@+id/showAllQuotes"
+            app:destination="@id/allQuotesFragment" />
+        <action
+            android:id="@+id/showOneQuote"
+            app:destination="@id/oneQuoteFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/allQuotesFragment"
         android:name="com.example.quotableapp.ui.allquotes.AllQuotesFragment"
         android:label="AllQuotesFragment">
         <action
-            android:id="@+id/showAuthor"
-            app:destination="@id/authorActivity" />
+            android:id="@+id/showQuotesOfTag"
+            app:destination="@id/tagQuotesFragment" />
         <action
-            android:id="@+id/showTagQuotes"
-            app:destination="@id/tagQuotesHostActivity" />
+            android:id="@+id/showAuthor"
+            app:destination="@id/authorFragment" />
         <action
             android:id="@+id/showOneQuote"
-            app:destination="@id/oneQuoteHostActivity" />
+            app:destination="@id/oneQuoteFragment" />
     </fragment>
 
-    <activity
-        android:id="@+id/authorActivity"
-        android:name="com.example.quotableapp.ui.author.AuthorHostActivity">
+    <fragment
+        android:id="@+id/tagQuotesFragment"
+        android:name="com.example.quotableapp.ui.tag.TagQuotesFragment"
+        android:label="TagQuotesFragment" >
+        <argument
+            android:name="tag"
+            app:argType="string"/>
+        <action
+            android:id="@+id/showOneQuote"
+            app:destination="@id/oneQuoteFragment" />
+        <action
+            android:id="@+id/showAuthor"
+            app:destination="@id/authorFragment" />
+        <action
+            android:id="@+id/showQuotesOfTag"
+            app:destination="@id/tagQuotesFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/authorFragment"
+        android:name="com.example.quotableapp.ui.author.AuthorFragment"
+        android:label="AuthorFragment" >
         <argument
             android:name="authorSlug"
-            app:argType="string" />
-    </activity>
+            app:argType="string"/>
+        <action
+            android:id="@+id/showOneQuote"
+            app:destination="@id/oneQuoteFragment" />
+        <action
+            android:id="@+id/showQuotesOfTag"
+            app:destination="@id/tagQuotesFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/authorsListFragment"
         android:name="com.example.quotableapp.ui.authorlist.AuthorsListFragment"
         android:label="AuthorsListFragment">
         <action
             android:id="@+id/showAuthor"
-            app:destination="@id/authorActivity" />
+            app:destination="@id/authorFragment" />
     </fragment>
-    <activity
-        android:id="@+id/oneQuoteHostActivity"
-        android:name="com.example.quotableapp.ui.onequote.OneQuoteHostActivity"
-        android:label="activity_host_one_quote">
+
+    <fragment
+        android:id="@+id/oneQuoteFragment"
+        android:name="com.example.quotableapp.ui.onequote.OneQuoteFragment"
+        android:label="OneQuoteFragment">
         <argument
             android:name="quoteId"
-            app:argType="string" />
-    </activity>
-    <activity
-        android:id="@+id/tagQuotesHostActivity"
-        android:name="com.example.quotableapp.ui.tag.TagQuotesHostActivity"
-        android:label="activity_host_tag_quotes">
-        <argument
-            android:name="tag"
-            app:argType="string" />
-    </activity>
+            app:argType="string"/>
+        <action
+            android:id="@+id/showAuthor"
+            app:destination="@id/authorFragment" />
+        <action
+            android:id="@+id/showQuotesOfTag"
+            app:destination="@id/tagQuotesFragment" />
+    </fragment>
+
+
 </navigation>

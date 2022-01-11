@@ -66,7 +66,7 @@ class OneQuoteFragment : Fragment() {
     }
 
     private fun showQuotesOfTag(tag: String) {
-        val action = OneQuoteFragmentDirections.showTagQuotes(tag)
+        val action = OneQuoteFragmentDirections.showQuotesOfTag(tag)
         findNavController().navigate(action)
     }
 

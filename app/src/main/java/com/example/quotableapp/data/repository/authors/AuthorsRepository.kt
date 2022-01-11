@@ -18,6 +18,8 @@ interface AuthorsRepository {
     suspend fun fetchAuthor(slug: String): Resource<Author, HttpApiError>
 
     fun fetchAllAuthors(): Flow<PagingData<Author>>
+
+    suspend fun fetchFirstAuthors(limit: Int): Resource<List<Author>, HttpApiError>
 }
 
 @ExperimentalPagingApi
@@ -48,4 +50,20 @@ class DefaultAuthorsRepository @Inject constructor(
         .map { pagingData ->
             pagingData.map { authorConverters.toDomain(it) }
         }
+
+    override suspend fun fetchFirstAuthors(limit: Int): Resource<List<Author>, HttpApiError> {
+        return withContext(coroutineDispatchers.IO) {
+            apiResponseInterpreter {
+                authorsService.fetchAuthors(
+                    page = 1,
+                    limit = limit,
+                    sortBy = AuthorsService.SortByType.QuoteCount,
+                    orderType = AuthorsService.OrderType.Desc
+                )
+            }
+                .map { dto ->
+                    dto.results.map { authorConverters.toDomain(it) }
+                }
+        }
+    }
 }

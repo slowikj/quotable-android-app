@@ -51,7 +51,7 @@ class AuthorFragment : QuotesListFragment<AuthorQuotesViewModel>() {
     }
 
     override fun showQuotesOfTag(tag: String) {
-        val action = AuthorFragmentDirections.showTagQuotes(tag)
+        val action = AuthorFragmentDirections.showQuotesOfTag(tag)
         findNavController().navigate(action)
     }
 }

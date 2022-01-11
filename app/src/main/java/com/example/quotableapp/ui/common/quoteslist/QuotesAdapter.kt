@@ -6,7 +6,7 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.databinding.ItemQuoteBinding
+import com.example.quotableapp.databinding.ItemListQuoteBinding
 import com.example.quotableapp.ui.common.rvAdapters.TagsAdapter
 
 class QuotesAdapter(
@@ -33,13 +33,13 @@ class QuotesAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return ViewHolder(
-            binding = ItemQuoteBinding.inflate(layoutInflater, parent, false),
+            binding = ItemListQuoteBinding.inflate(layoutInflater, parent, false),
             onClickHandler = onClickHandler
         )
     }
 
     class ViewHolder(
-        private val binding: ItemQuoteBinding,
+        private val binding: ItemListQuoteBinding,
         private val onClickHandler: OnClickHandler
     ) : RecyclerView.ViewHolder(binding.root) {
 
