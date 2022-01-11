@@ -15,6 +15,8 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentDashboardBinding
 import com.example.quotableapp.databinding.RowDashboardRvBinding
 import com.example.quotableapp.ui.common.uistate.UiState
+import com.example.quotableapp.ui.dashboard.adapters.AuthorsAdapter
+import com.example.quotableapp.ui.dashboard.adapters.QuotesAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -45,6 +47,8 @@ class DashboardFragment : Fragment() {
             rowQuotes.rvItems.adapter = quotesAdapter
             rowAuthors.ivSeeMore.setOnClickListener { viewModel.onAuthorsShowMoreClick() }
             rowQuotes.ivSeeMore.setOnClickListener { viewModel.onQuotesShowMoreClick() }
+            rowQuotes.btnRetry.setOnClickListener { viewModel.requestQuotes() }
+            rowAuthors.btnRetry.setOnClickListener { viewModel.requestAuthors() }
         }
         return binding.root
     }
@@ -98,11 +102,11 @@ class DashboardFragment : Fragment() {
     }
 
     private fun <M> RowDashboardRvBinding.handleUiState(state: UiState<List<M>, DashboardViewModel.UiError>) {
-        tvError.isVisible = state.error != null
-        btnRetry.isVisible = state.error != null
+        tvError.isVisible = state.error != null && !state.isLoading
+        btnRetry.isVisible = state.error != null && !state.isLoading
         ivSeeMore.isVisible = state.error == null
         progressBar.isVisible = state.isLoading
-        rvItems.isVisible = true
+        rvItems.isVisible = state.data != null
         (rvItems.adapter as? ListAdapter<M, *>)?.submitList(state.data)
     }
 

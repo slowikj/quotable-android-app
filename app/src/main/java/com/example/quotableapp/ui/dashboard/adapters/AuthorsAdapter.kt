@@ -1,4 +1,4 @@
-package com.example.quotableapp.ui.dashboard
+package com.example.quotableapp.ui.dashboard.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.databinding.ItemGridAuthorBinding
 
-class AuthorsAdapter(private val onClick: (Author) -> Unit) : ListAdapter<Author, AuthorsAdapter.ViewHolder>(itemDifferentiator) {
+class AuthorsAdapter(private val onClick: (Author) -> Unit) : ListAdapter<Author, AuthorsAdapter.ViewHolder>(
+    itemDifferentiator
+) {
 
     companion object {
         val itemDifferentiator = object : DiffUtil.ItemCallback<Author>() {

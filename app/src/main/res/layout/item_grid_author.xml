@@ -20,6 +20,7 @@
             loadImage="@{model.photoUrl}"
             android:layout_width="200dp"
             android:layout_height="200dp"
+            android:padding="8dp"
             app:layout_constraintBottom_toTopOf="@id/author_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

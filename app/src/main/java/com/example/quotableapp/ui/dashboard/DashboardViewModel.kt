@@ -55,10 +55,8 @@ class DashboardViewModel @Inject constructor(
     val quotes: StateFlow<QuotesListState> = _quotes.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            launch { requestAndHandleAuthors() }
-            launch { requestAndHandleQuotes() }
-        }
+        requestAuthors()
+        requestQuotes()
     }
 
     fun onAuthorsShowMoreClick() {
@@ -77,23 +75,27 @@ class DashboardViewModel @Inject constructor(
         emit(NavigationAction.ToQuote(quoteId = quote.id))
     }
 
-    private suspend fun requestAndHandleAuthors() {
-        _authors.setLoading()
-        val authorsResponse = authorsRepository.fetchFirstAuthors(limit = ITEMS_TO_SHOW_NUM)
-        authorsResponse.onSuccess {
-            _authors.setData(it)
-        }.onFailure {
-            _authors.setError(UiError.NetworkError)
+    fun requestAuthors() {
+        viewModelScope.launch {
+            _authors.setLoading()
+            val authorsResponse = authorsRepository.fetchFirstAuthors(limit = ITEMS_TO_SHOW_NUM)
+            authorsResponse.onSuccess {
+                _authors.setData(it)
+            }.onFailure {
+                _authors.setError(UiError.NetworkError)
+            }
         }
     }
 
-    private suspend fun requestAndHandleQuotes() {
-        _quotes.setLoading()
-        val quotesResponse = quotesRepository.fetchFirstQuotes(limit = ITEMS_TO_SHOW_NUM)
-        quotesResponse.onSuccess {
-            _quotes.setData(it)
-        }.onFailure {
-            _quotes.setError(UiError.NetworkError)
+    fun requestQuotes() {
+        viewModelScope.launch {
+            _quotes.setLoading()
+            val quotesResponse = quotesRepository.fetchFirstQuotes(limit = ITEMS_TO_SHOW_NUM)
+            quotesResponse.onSuccess {
+                _quotes.setData(it)
+            }.onFailure {
+                _quotes.setError(UiError.NetworkError)
+            }
         }
     }
 
