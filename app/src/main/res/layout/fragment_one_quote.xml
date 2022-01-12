@@ -24,8 +24,8 @@
         <include
             android:id="@+id/quote_layout"
             layout="@layout/quote_card_details"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_margin="32dp"
             android:visibility="@{(viewModel.state.loading || viewModel.state.data == null) ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"

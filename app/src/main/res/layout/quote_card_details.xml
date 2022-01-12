@@ -8,87 +8,73 @@
         <variable
             name="model"
             type="com.example.quotableapp.ui.common.uistate.UiState&lt;Quote, UiError&gt;" />
-        <import type="com.example.quotableapp.data.model.Quote"/>
-        <import type="com.example.quotableapp.ui.onequote.OneQuoteViewModel"/>
-        <import type="com.example.quotableapp.ui.onequote.OneQuoteViewModel.UiError"/>
+
+        <import type="com.example.quotableapp.data.model.Quote" />
+
+        <import type="com.example.quotableapp.ui.onequote.OneQuoteViewModel" />
+
+        <import type="com.example.quotableapp.ui.onequote.OneQuoteViewModel.UiError" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/QuoteCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/AppTheme.DefaultWindow">
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
-            android:layout_width="match_parent"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_tags"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_tag" />
+
+        <TextView
+            android:id="@+id/content"
+            style="@style/QuoteCard.Content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            style="@style/QuoteCard"
+            android:text="@{model.data.content}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/quote_imageview"
+            app:layout_constraintTop_toBottomOf="@id/quote_imageview"
+            tools:text="Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum" />
+
+        <TextView
+            android:id="@+id/author"
+            style="@style/QuoteCard.AuthorText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="@{model.data.author}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/content"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="Author" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/quote_imageview"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_quote"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/rv_tags"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/rv_tags"
+            app:layout_constraintTop_toBottomOf="@+id/rv_tags"
+            app:layout_constraintVertical_bias="0.0" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_tags"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:orientation="horizontal"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:listitem="@layout/item_tag" />
-
-                <TextView
-                    android:id="@+id/content"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="@{model.data.content}"
-                    style="@style/QuoteCard.Content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/quote_imageview"
-                    app:layout_constraintTop_toBottomOf="@id/quote_imageview"
-                    tools:text="Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum" />
-
-                <TextView
-                    android:id="@+id/author"
-                    style="@style/QuoteCard.AuthorText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="@{model.data.author}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/content"
-                    app:layout_constraintVertical_bias="1.0"
-                    tools:text="Author" />
-
-                <ImageView
-                    android:id="@+id/quote_imageview"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="8dp"
-                    android:src="@drawable/ic_quote"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/rv_tags"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/rv_tags"
-                    app:layout_constraintTop_toBottomOf="@+id/rv_tags"
-                    app:layout_constraintVertical_bias="0.0" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
