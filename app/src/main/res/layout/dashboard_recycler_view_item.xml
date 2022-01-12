@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/toolss"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="title"
             type="String" />
@@ -14,17 +16,16 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary">
 
-        <TextView
-            android:id="@+id/tvTitle"
-            style="@style/AppTheme.Dashboard.CategoryTitle"
-            android:layout_width="wrap_content"
+        <include
+            android:id="@+id/headerLayout"
+            layout="@layout/dashboard_category_header"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@{title}"
-            tools:text="Title"
+            android:layout_margin="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            bind:title="@{title}" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvItems"
@@ -33,34 +34,22 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            tools:listitem="@layout/item_grid_quote"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/ivSeeMore"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_arrow_see_more"
-            app:layout_constraintBottom_toBottomOf="@+id/tvTitle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/tvTitle"
-            app:layout_constraintTop_toTopOf="@+id/tvTitle" />
+            app:layout_constraintTop_toBottomOf="@+id/headerLayout"
+            tools:listitem="@layout/item_grid_quote" />
 
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/headerLayout" />
 
         <TextView
             android:id="@+id/tvError"
@@ -85,7 +74,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/tvError"
-            app:layout_constraintTop_toBottomOf="@id/ivSeeMore" />
+            app:layout_constraintTop_toBottomOf="@id/headerLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

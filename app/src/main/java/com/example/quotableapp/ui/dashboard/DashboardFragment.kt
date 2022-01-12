@@ -10,10 +10,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
+import com.example.quotableapp.databinding.DashboardRecyclerViewItemBinding
 import com.example.quotableapp.databinding.FragmentDashboardBinding
-import com.example.quotableapp.databinding.RowDashboardRvBinding
 import com.example.quotableapp.ui.common.uistate.UiState
 import com.example.quotableapp.ui.dashboard.adapters.AuthorsAdapter
 import com.example.quotableapp.ui.dashboard.adapters.QuotesAdapter
@@ -43,13 +44,8 @@ class DashboardFragment : Fragment() {
     ): View {
         binding = FragmentDashboardBinding.inflate(inflater).apply {
             lifecycleOwner = this@DashboardFragment.viewLifecycleOwner
-            rowAuthors.rvItems.adapter = authorsAdapter
-            rowQuotes.rvItems.adapter = quotesAdapter
-            rowAuthors.ivSeeMore.setOnClickListener { viewModel.onAuthorsShowMoreClick() }
-            rowQuotes.ivSeeMore.setOnClickListener { viewModel.onQuotesShowMoreClick() }
-            rowQuotes.btnRetry.setOnClickListener { viewModel.requestQuotes() }
-            rowAuthors.btnRetry.setOnClickListener { viewModel.requestAuthors() }
         }
+        setupCategories()
         return binding.root
     }
 
@@ -101,13 +97,44 @@ class DashboardFragment : Fragment() {
         findNavController().navigate(action)
     }
 
-    private fun <M> RowDashboardRvBinding.handleUiState(state: UiState<List<M>, DashboardViewModel.UiError>) {
+    private fun <M> DashboardRecyclerViewItemBinding.handleUiState(state: UiState<List<M>, DashboardViewModel.UiError>) {
         tvError.isVisible = state.error != null && !state.isLoading
         btnRetry.isVisible = state.error != null && !state.isLoading
-        ivSeeMore.isVisible = state.error == null
+        headerLayout.ivSeeMore.isVisible = state.error == null
         progressBar.isVisible = state.isLoading
         rvItems.isVisible = state.data != null
         (rvItems.adapter as? ListAdapter<M, *>)?.submitList(state.data)
+    }
+
+    private fun setupCategories() {
+        setupAuthorsEntry()
+        setupQuotesEntry()
+    }
+
+    private fun setupAuthorsEntry() {
+        setupCategoryEntry(
+            binding = binding.rowAuthors,
+            listAdapter = authorsAdapter,
+            onCategoryClickListener = { viewModel.onAuthorsShowMoreClick() },
+            onDataRetryRequest = { viewModel.requestAuthors() })
+    }
+
+    private fun setupQuotesEntry() {
+        setupCategoryEntry(
+            binding = binding.rowQuotes,
+            listAdapter = quotesAdapter,
+            onCategoryClickListener = { viewModel.onQuotesShowMoreClick() },
+            onDataRetryRequest = { viewModel.requestQuotes() })
+    }
+
+    private fun <M, VH : RecyclerView.ViewHolder> setupCategoryEntry(
+        binding: DashboardRecyclerViewItemBinding, listAdapter: ListAdapter<M, VH>,
+        onCategoryClickListener: () -> Unit,
+        onDataRetryRequest: () -> Unit
+    ) {
+        binding.rvItems.adapter = listAdapter
+        binding.headerLayout.root.setOnClickListener { onCategoryClickListener() }
+        binding.btnRetry.setOnClickListener { onDataRetryRequest() }
     }
 
 }

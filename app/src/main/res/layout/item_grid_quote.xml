@@ -15,7 +15,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         style="@style/AppTheme.QuoteItem"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="8dp">
 
         <TextView
             android:id="@+id/tvContent"
@@ -26,7 +27,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
-            android:maxLines="5"
+            android:maxLines="7"
             android:text="@{model.content}"
             app:layout_constraintBottom_toTopOf="@+id/tvAuthor"
             app:layout_constraintEnd_toEndOf="parent"
@@ -55,6 +56,7 @@
             bindFirstMeaningfulTag="@{model.tags}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:ellipsize="end"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

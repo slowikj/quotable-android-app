@@ -15,15 +15,19 @@
         <item name="android:background">@color/colorPrimary</item>
     </style>
 
-    <style name="AppTheme.Dashboard.CategoryTitle" parent="TextAppearance.AppCompat">
+    <style name="AppTheme.Dashboard.Category">
+        <item name="android:background">@color/category_header_background</item>
+    </style>
+
+    <style name="AppTheme.Dashboard.Category.Text" parent="TextAppearance.AppCompat">
         <item name="android:textColor">@color/white_100</item>
         <item name="android:textSize">18sp</item>
     </style>
 
     <style name="AppTheme.AuthorItem">
         <item name="cardCornerRadius">8dp</item>
-        <item name="android:background">@color/colorPrimary</item>
-        <item name="background">@color/colorPrimary</item>
+        <item name="android:background">@color/recycler_item_background</item>
+        <item name="background">@color/recycler_item_background</item>
     </style>
 
     <style name="AppTheme.AuthorItem.Title" parent="TextAppearance.AppCompat">
@@ -37,8 +41,8 @@
     </style>
 
     <style name="AppTheme.QuoteItem">
-        <item name="android:background">@color/colorPrimaryDark</item>
-        <item name="cardBackgroundColor">@color/colorPrimaryDark</item>
+        <item name="android:background">@color/recycler_item_background</item>
+        <item name="cardBackgroundColor">@color/recycler_item_background</item>
     </style>
 
     <style name="AppTheme.QuoteItem.Main" parent="TextAppearance.AppCompat">
