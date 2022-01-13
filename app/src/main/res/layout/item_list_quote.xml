@@ -32,7 +32,7 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/item_tag" />
+            tools:listitem="@layout/item_plain_tag" />
 
         <ImageView
             android:id="@+id/image_quote"

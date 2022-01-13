@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.quotableapp.databinding.ItemTagBinding
+import com.example.quotableapp.databinding.ItemPlainTagBinding
 
 class TagsAdapter(private val onClick: (String) -> Unit) :
     ListAdapter<String, TagsAdapter.ViewHolder>(StringDifferentiator()) {
@@ -12,7 +12,7 @@ class TagsAdapter(private val onClick: (String) -> Unit) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return ViewHolder(
-            binding = ItemTagBinding.inflate(layoutInflater),
+            binding = ItemPlainTagBinding.inflate(layoutInflater),
             onClick = onClick
         )
     }
@@ -22,7 +22,7 @@ class TagsAdapter(private val onClick: (String) -> Unit) :
     }
 
     class ViewHolder(
-        private val binding: ItemTagBinding,
+        private val binding: ItemPlainTagBinding,
         private val onClick: (String) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
