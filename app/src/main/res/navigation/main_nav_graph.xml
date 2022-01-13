@@ -22,6 +22,12 @@
         <action
             android:id="@+id/showOneQuote"
             app:destination="@id/oneQuoteFragment" />
+        <action
+            android:id="@+id/showAllTags"
+            app:destination="@id/tagsListFragment" />
+        <action
+            android:id="@+id/showQuotesOfTag"
+            app:destination="@id/tagQuotesFragment" />
     </fragment>
 
     <fragment
@@ -41,7 +47,7 @@
 
     <fragment
         android:id="@+id/tagQuotesFragment"
-        android:name="com.example.quotableapp.ui.tag.TagQuotesFragment"
+        android:name="com.example.quotableapp.ui.tagquotes.TagQuotesFragment"
         android:label="TagQuotesFragment" >
         <argument
             android:name="tag"
@@ -74,7 +80,7 @@
 
     <fragment
         android:id="@+id/authorsListFragment"
-        android:name="com.example.quotableapp.ui.authorlist.AuthorsListFragment"
+        android:name="com.example.quotableapp.ui.authorslist.AuthorsListFragment"
         android:label="AuthorsListFragment">
         <action
             android:id="@+id/showAuthor"
@@ -91,6 +97,15 @@
         <action
             android:id="@+id/showAuthor"
             app:destination="@id/authorFragment" />
+        <action
+            android:id="@+id/showQuotesOfTag"
+            app:destination="@id/tagQuotesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/tagsListFragment"
+        android:name="com.example.quotableapp.ui.tagslist.TagsListFragment"
+        android:label="fragment_tags_list"
+        tools:layout="@layout/fragment_tags_list" >
         <action
             android:id="@+id/showQuotesOfTag"
             app:destination="@id/tagQuotesFragment" />

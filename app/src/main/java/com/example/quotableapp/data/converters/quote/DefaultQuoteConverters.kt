@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.converters
+package com.example.quotableapp.data.converters.quote
 
 import com.example.quotableapp.data.db.entities.QuoteEntity
 import com.example.quotableapp.data.model.Quote

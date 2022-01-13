@@ -1,5 +1,7 @@
-package com.example.quotableapp.data.converters
+package com.example.quotableapp.data.converters.author
 
+import com.example.quotableapp.data.converters.author.AuthorConverters
+import com.example.quotableapp.data.converters.author.AuthorPhotoUrlCreator
 import com.example.quotableapp.data.db.entities.AuthorEntity
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.model.AuthorDTO

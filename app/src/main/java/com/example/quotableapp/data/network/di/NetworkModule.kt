@@ -2,6 +2,7 @@ package com.example.quotableapp.data.network.di
 
 import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.QuotesService
+import com.example.quotableapp.data.network.TagsService
 import com.example.quotableapp.data.network.common.DefaultQuotableApiResponseInterpreter
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
 import dagger.Module
@@ -34,8 +35,12 @@ object NetworkModule {
         retrofitClient.create(QuotesService::class.java)
 
     @Provides
-    fun bindAuthorsService(@DefaultRetrofitClient retrofitClient: Retrofit): AuthorsService =
+    fun getAuthorsService(@DefaultRetrofitClient retrofitClient: Retrofit): AuthorsService =
         retrofitClient.create(AuthorsService::class.java)
+
+    @Provides
+    fun getTagsService(@DefaultRetrofitClient retrofitClient: Retrofit): TagsService =
+        retrofitClient.create(TagsService::class.java)
 
     @Provides
     @DefaultRetrofitClient

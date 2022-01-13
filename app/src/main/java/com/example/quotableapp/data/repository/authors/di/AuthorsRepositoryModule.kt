@@ -1,5 +1,10 @@
 package com.example.quotableapp.data.repository.authors.di
 
+import com.example.quotableapp.data.converters.Converter
+import com.example.quotableapp.data.converters.author.AuthorConverters
+import com.example.quotableapp.data.converters.author.AuthorPhotoUrlCreator
+import com.example.quotableapp.data.converters.author.DefaultAuthorConverters
+import com.example.quotableapp.data.converters.author.DefaultAuthorPhotoUrlCreator
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.db.entities.AuthorEntity
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
@@ -7,7 +12,6 @@ import com.example.quotableapp.data.repository.authors.paging.AuthorsListDTOResp
 import com.example.quotableapp.data.repository.authors.paging.AuthorsListPersistenceManager
 import com.example.quotableapp.data.repository.authors.paging.DefaultAuthorsListPagedRemoteService
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
-import com.example.quotableapp.data.converters.*
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -21,25 +21,37 @@
             android:orientation="vertical">
 
             <include
+                android:id="@+id/rowTags"
+                layout="@layout/dashboard_recycler_view_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                bind:layout_constraintTop_toTopOf="parent"
+                bind:title="@{@string/dashboard_tags_title}" />
+
+            <include
                 android:id="@+id/rowAuthors"
+                layout="@layout/dashboard_recycler_view_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                layout="@layout/dashboard_recycler_view_item"
-                app:title="@{@string/dashboard_authors_title}"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:title="@{@string/dashboard_authors_title}"
+                bind:layout_constraintTop_toBottomOf="@id/rowTags" />
 
             <include
                 android:id="@+id/rowQuotes"
+                layout="@layout/dashboard_recycler_view_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                layout="@layout/dashboard_recycler_view_item"
-                bind:title="@{@string/dashboard_quotes_title}"
-                app:layout_constraintTop_toBottomOf="@id/rowAuthors"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/rowAuthors"
+                bind:title="@{@string/dashboard_quotes_title}" />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </layout>

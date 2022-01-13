@@ -1,6 +1,7 @@
 package com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator
 
 import androidx.paging.ExperimentalPagingApi
+import com.example.quotableapp.data.converters.Converter
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.db.entities.QuoteEntity
 import com.example.quotableapp.data.network.common.HttpApiError
@@ -8,7 +9,6 @@ import com.example.quotableapp.data.network.common.QuotableApiResponseInterprete
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.common.IntPageKeyRemoteMediator
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
-import com.example.quotableapp.data.converters.Converter
 import com.example.quotableapp.data.repository.di.CacheTimeout
 import javax.inject.Inject
 

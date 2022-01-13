@@ -1,12 +1,14 @@
-package com.example.quotableapp.data.repository.quotes.quoteslist
+package com.example.quotableapp.data.repository.quotes.quoteslist.all
 
-import androidx.paging.*
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.common.mapPagingElements
 import com.example.quotableapp.data.common.Resource
+import com.example.quotableapp.data.converters.quote.QuoteConverters
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.model.QuoteDTO
-import com.example.quotableapp.data.converters.QuoteConverters
 import com.example.quotableapp.data.network.QuotesService
 import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
@@ -14,16 +16,6 @@ import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-
-interface SearchPhraseInAllQuotesPagingSourceFactory {
-    fun get(searchPhrase: String): PagingSource<Int, QuoteDTO>
-}
-
-interface AllQuotesRepository {
-    fun fetchAllQuotes(searchPhrase: String?): Flow<PagingData<Quote>>
-
-    suspend fun fetchFirstQuotes(limit: Int): Resource<List<Quote>, HttpApiError>
-}
 
 @ExperimentalPagingApi
 class DefaultAllQuotesRepository @Inject constructor(

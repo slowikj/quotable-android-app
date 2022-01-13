@@ -10,4 +10,5 @@
     <string name="no_items_found">No items found</string>
     <string name="dashboard_authors_title">Authors</string>
     <string name="dashboard_quotes_title">Quotes</string>
+    <string name="dashboard_tags_title">Tags</string>
 </resources>

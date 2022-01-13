@@ -2,8 +2,8 @@ package com.example.quotableapp.data.repository.quotes.quoteslist.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
 import com.example.quotableapp.data.common.Resource
+import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import retrofit2.Response

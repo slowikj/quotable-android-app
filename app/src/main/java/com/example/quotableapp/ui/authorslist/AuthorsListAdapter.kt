@@ -1,26 +1,15 @@
-package com.example.quotableapp.ui.authorlist
+package com.example.quotableapp.ui.authorslist
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.databinding.ItemGridAuthorBinding
+import com.example.quotableapp.ui.common.rvAdapters.AuthorDifferentiator
 
 class AuthorsListAdapter(private val onItemClick: (Author) -> Unit) :
-    PagingDataAdapter<Author, AuthorsListAdapter.ViewHolder>(differentiator) {
-
-    companion object {
-        val differentiator = object : DiffUtil.ItemCallback<Author>() {
-            override fun areItemsTheSame(oldItem: Author, newItem: Author): Boolean =
-                oldItem.id == newItem.id
-
-            override fun areContentsTheSame(oldItem: Author, newItem: Author): Boolean =
-                oldItem == newItem
-
-        }
-    }
+    PagingDataAdapter<Author, AuthorsListAdapter.ViewHolder>(AuthorDifferentiator()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
@@ -29,7 +18,7 @@ class AuthorsListAdapter(private val onItemClick: (Author) -> Unit) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return ViewHolder(
-            binding = ItemGridAuthorBinding.inflate(layoutInflater),
+            binding = ItemGridAuthorBinding.inflate(layoutInflater, parent, false),
             onItemClick = onItemClick
         )
     }

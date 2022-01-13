@@ -1,4 +1,4 @@
-package com.example.quotableapp.ui.authorlist
+package com.example.quotableapp.ui.authorslist
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -25,6 +25,20 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="AppTheme.TagListItem">
+        <item name="android:background">@drawable/recycler_item_background</item>
+    </style>
+
+    <style name="AppTheme.TagListItem.Icon">
+        <item name="android:tint">@color/white_87</item>
+        <item name="android:background">@drawable/recycler_item_background</item>
+    </style>
+
+    <style name="AppTheme.TagListItem.Text" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/white_87</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="AppTheme.AuthorItem">
         <item name="cardCornerRadius">8dp</item>
         <item name="android:background">@drawable/recycler_item_background</item>

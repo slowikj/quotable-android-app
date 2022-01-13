@@ -13,11 +13,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
+import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.databinding.DashboardRecyclerViewItemBinding
 import com.example.quotableapp.databinding.FragmentDashboardBinding
 import com.example.quotableapp.ui.common.uistate.UiState
 import com.example.quotableapp.ui.dashboard.adapters.AuthorsAdapter
 import com.example.quotableapp.ui.dashboard.adapters.QuotesAdapter
+import com.example.quotableapp.ui.dashboard.adapters.TagsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -37,6 +39,10 @@ class DashboardFragment : Fragment() {
         QuotesAdapter(onClick = { viewModel.onQuoteClick(it) })
     }
 
+    private val tagsAdapter: TagsAdapter by lazy {
+        TagsAdapter(onClick = { viewModel.onTagClick(it) })
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,6 +60,7 @@ class DashboardFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             launch { viewModel.quotes.collectLatest { handle(it) } }
             launch { viewModel.authors.collectLatest { handle(it) } }
+            launch { viewModel.tags.collectLatest { handle(it) } }
             launch { viewModel.navigationActions.collectLatest { handle(it) } }
         }
     }
@@ -68,6 +75,11 @@ class DashboardFragment : Fragment() {
         binding.rowAuthors.handleUiState(authorsState)
     }
 
+    @JvmName("handleTagsListState")
+    private fun handle(tagsState: UiState<List<Tag>, DashboardViewModel.UiError>) {
+        binding.rowTags.handleUiState(tagsState)
+    }
+
     @JvmName("handleNavigationAction")
     private fun handle(navigationAction: DashboardViewModel.NavigationAction) =
         when (navigationAction) {
@@ -75,6 +87,8 @@ class DashboardFragment : Fragment() {
             is DashboardViewModel.NavigationAction.ToAuthor -> showAuthor(navigationAction.authorSlug)
             is DashboardViewModel.NavigationAction.ToAllQuotes -> showAllQuotes()
             is DashboardViewModel.NavigationAction.ToAllAuthors -> showAllAuthors()
+            is DashboardViewModel.NavigationAction.ToTag -> showQuotesOfTag(navigationAction.tag)
+            is DashboardViewModel.NavigationAction.ToAllTags -> showAllTags()
         }
 
     private fun showQuote(quoteId: String) {
@@ -97,10 +111,19 @@ class DashboardFragment : Fragment() {
         findNavController().navigate(action)
     }
 
+    private fun showQuotesOfTag(tag: Tag) {
+        val action = DashboardFragmentDirections.showQuotesOfTag(tag.name)
+        findNavController().navigate(action)
+    }
+
+    private fun showAllTags() {
+        val action = DashboardFragmentDirections.showAllTags()
+        findNavController().navigate(action)
+    }
+
     private fun <M> DashboardRecyclerViewItemBinding.handleUiState(state: UiState<List<M>, DashboardViewModel.UiError>) {
         tvError.isVisible = state.error != null && !state.isLoading
         btnRetry.isVisible = state.error != null && !state.isLoading
-        headerLayout.ivSeeMore.isVisible = state.error == null
         progressBar.isVisible = state.isLoading
         rvItems.isVisible = state.data != null
         (rvItems.adapter as? ListAdapter<M, *>)?.submitList(state.data)
@@ -109,6 +132,16 @@ class DashboardFragment : Fragment() {
     private fun setupCategories() {
         setupAuthorsEntry()
         setupQuotesEntry()
+        setupTagsEntry()
+    }
+
+    private fun setupTagsEntry() {
+        setupCategoryEntry(
+            binding = binding.rowTags,
+            listAdapter = tagsAdapter,
+            onCategoryClickListener = { viewModel.onTagsShowMoreClick() },
+            onDataRetryRequest = { viewModel.requestTags() }
+        )
     }
 
     private fun setupAuthorsEntry() {

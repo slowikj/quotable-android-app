@@ -1,4 +1,4 @@
-package com.example.quotableapp.ui.authorlist
+package com.example.quotableapp.ui.authorslist
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

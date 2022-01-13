@@ -1,4 +1,4 @@
-package com.example.quotableapp.ui.tag
+package com.example.quotableapp.ui.tagquotes
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

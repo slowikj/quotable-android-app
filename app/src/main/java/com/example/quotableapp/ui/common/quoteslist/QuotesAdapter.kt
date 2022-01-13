@@ -3,28 +3,15 @@ package com.example.quotableapp.ui.common.quoteslist
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.ItemListQuoteBinding
+import com.example.quotableapp.ui.common.rvAdapters.QuoteDifferentiator
 import com.example.quotableapp.ui.common.rvAdapters.TagsAdapter
 
 class QuotesAdapter(
     private val onClickHandler: ViewHolder.OnClickHandler
-) :
-    PagingDataAdapter<Quote, QuotesAdapter.ViewHolder>(itemDifferentiator) {
-
-    companion object {
-        private val itemDifferentiator = object : DiffUtil.ItemCallback<Quote>() {
-            override fun areItemsTheSame(oldItem: Quote, newItem: Quote): Boolean {
-                return oldItem.id == newItem.id
-            }
-
-            override fun areContentsTheSame(oldItem: Quote, newItem: Quote): Boolean {
-                return oldItem == newItem
-            }
-        }
-    }
+) : PagingDataAdapter<Quote, QuotesAdapter.ViewHolder>(QuoteDifferentiator()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
