@@ -31,7 +31,7 @@ class TagsListFragment : Fragment() {
     ): View {
         binding = FragmentTagsListBinding.inflate(inflater).apply {
             rvTags.adapter = tagsAdapter
-            btnRetry.setOnClickListener { viewModel.fetchTags() }
+            dataLoadHandler.btnRetry.setOnClickListener { viewModel.fetchTags() }
         }
         return binding.root
     }
@@ -61,10 +61,10 @@ class TagsListFragment : Fragment() {
         viewModel.tags.collectLatest { state ->
             tagsAdapter.submitList(state.data)
             with(binding) {
-                btnRetry.isVisible = state.error != null
-                tvError.isVisible = state.error != null
+                dataLoadHandler.btnRetry.isVisible = state.error != null
+                dataLoadHandler.tvError.isVisible = state.error != null
                 rvTags.isVisible = state.data?.isNotEmpty() ?: false
-                progressBar.isVisible = state.isLoading
+                dataLoadHandler.progressBar.isVisible = state.isLoading
             }
         }
     }

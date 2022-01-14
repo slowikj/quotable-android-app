@@ -14,6 +14,7 @@
         <entry key="app/src/main/res/drawable/person_checked.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/drawable/person_selector.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/drawable/person_unchecked.xml" value="0.2869791666666667" />
+        <entry key="app/src/main/res/drawable/recycler_item_background.xml" value="0.371875" />
         <entry key="app/src/main/res/layout/activity_author.xml" value="0.27853260869565216" />
         <entry key="app/src/main/res/layout/activity_base_host.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/activity_host_author.xml" value="0.14513677811550152" />
@@ -43,6 +44,7 @@
         <entry key="app/src/main/res/layout/item_loading.xml" value="0.290625" />
         <entry key="app/src/main/res/layout/item_quote.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_tag.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/load_data_handler.xml" value="0.2653985507246377" />
         <entry key="app/src/main/res/layout/main_layout.xml" value="0.24909420289855072" />
         <entry key="app/src/main/res/layout/one_quote_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/layout/quote_card_details.xml" value="0.1" />

@@ -122,9 +122,9 @@ class DashboardFragment : Fragment() {
     }
 
     private fun <M> DashboardRecyclerViewItemBinding.handleUiState(state: UiState<List<M>, DashboardViewModel.UiError>) {
-        tvError.isVisible = state.error != null && !state.isLoading
-        btnRetry.isVisible = state.error != null && !state.isLoading
-        progressBar.isVisible = state.isLoading
+        dataLoadHandler.tvError.isVisible = state.error != null && !state.isLoading
+        dataLoadHandler.btnRetry.isVisible = state.error != null && !state.isLoading
+        dataLoadHandler.progressBar.isVisible = state.isLoading
         rvItems.isVisible = state.data != null
         (rvItems.adapter as? ListAdapter<M, *>)?.submitList(state.data)
     }
@@ -167,7 +167,7 @@ class DashboardFragment : Fragment() {
     ) {
         binding.rvItems.adapter = listAdapter
         binding.headerLayout.root.setOnClickListener { onCategoryClickListener() }
-        binding.btnRetry.setOnClickListener { onDataRetryRequest() }
+        binding.dataLoadHandler.btnRetry.setOnClickListener { onDataRetryRequest() }
     }
 
 }
