@@ -11,10 +11,7 @@ import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.data.repository.tags.TagsRepository
-import com.example.quotableapp.ui.common.uistate.UiState
-import com.example.quotableapp.ui.common.uistate.setData
-import com.example.quotableapp.ui.common.uistate.setError
-import com.example.quotableapp.ui.common.uistate.setLoading
+import com.example.quotableapp.ui.common.uistate.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -124,15 +121,11 @@ class DashboardViewModel @Inject constructor(
         stateFlow: MutableStateFlow<UiState<V, UiError>>,
         requestFunc: suspend () -> Resource<V, HttpApiError>
     ) {
-        viewModelScope.launch {
-            stateFlow.setLoading()
-            val response = requestFunc()
-            response.onSuccess {
-                stateFlow.setData(it)
-            }.onFailure {
-                stateFlow.setError(UiError.NetworkError)
-            }
-        }
+        stateFlow.handleRequest(
+            coroutineScope = viewModelScope,
+            requestFunc = requestFunc,
+            errorConverter = { UiError.NetworkError }
+        )
     }
 
     private fun emit(navigationAction: NavigationAction) {
