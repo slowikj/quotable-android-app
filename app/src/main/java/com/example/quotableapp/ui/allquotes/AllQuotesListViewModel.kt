@@ -13,6 +13,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,8 +23,7 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 @ExperimentalPagingApi
 @HiltViewModel
-class AllQuotesListViewModel
-@Inject constructor(
+class AllQuotesListViewModel @Inject constructor(
     quotesRepository: QuotesRepository,
     savedStateHandle: SavedStateHandle,
     dispatchers: CoroutineDispatchers
@@ -30,6 +31,8 @@ class AllQuotesListViewModel
 
     companion object {
         const val SEARCH_QUERY_TAG = "search_query_tag"
+
+        private const val SEARCH_VIEW_DEBOUNCE_TIME_MILLIS = 150L
     }
 
     private val _lastSearchQuery: MutableLiveData<String> = savedStateHandle
@@ -37,7 +40,10 @@ class AllQuotesListViewModel
 
     init {
         viewModelScope.launch {
-            _lastSearchQuery.asFlow()
+            _lastSearchQuery
+                .asFlow()
+                .debounce(SEARCH_VIEW_DEBOUNCE_TIME_MILLIS)
+                .distinctUntilChanged()
                 .flatMapLatest { quotesRepository.fetchAllQuotes(it) }
                 .cachedIn(viewModelScope)
                 .collectLatest { _quotes.value = it }
@@ -48,5 +54,4 @@ class AllQuotesListViewModel
         savedStateHandle.set(SEARCH_QUERY_TAG, query)
         _lastSearchQuery.value = query
     }
-
 }

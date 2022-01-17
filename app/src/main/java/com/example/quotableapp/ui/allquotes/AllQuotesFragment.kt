@@ -21,8 +21,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlin.time.ExperimentalTime
 
 @ExperimentalCoroutinesApi
@@ -83,7 +81,11 @@ class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = (searchItem.actionView as SearchView).apply {
             queryHint = getString(R.string.search)
-            changeToolbarColorOnVisibilityChange(focusColor, notFocusedColor, binding.toolbar)
+            changeToolbarColorOnVisibilityChange(
+                focusColor = focusColor,
+                notFocusedColor = notFocusedColor,
+                toolbar = binding.toolbar
+            )
         }
 
         observeOnSearchQueryChanged(searchView)
@@ -92,8 +94,6 @@ class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
     private fun observeOnSearchQueryChanged(searchView: SearchView) {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             searchView.getQueryTextChangedStateFlow()
-                .debounce(300)
-                .distinctUntilChanged()
                 .collectLatest { listViewModel.onSearchQueryChanged(it) }
         }
     }

@@ -14,6 +14,7 @@ import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesRemoteMediator
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -33,7 +34,7 @@ class DefaultAllQuotesRepository @Inject constructor(
             fetchAllQuotes()
         } else {
             fetchQuotesOfPhrase(searchPhrase)
-        }
+        }.flowOn(coroutineDispatchers.IO)
     }
 
     override suspend fun fetchFirstQuotes(limit: Int): Resource<List<Quote>, HttpApiError> {
