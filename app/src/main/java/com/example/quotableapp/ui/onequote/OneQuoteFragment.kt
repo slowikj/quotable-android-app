@@ -4,13 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentOneQuoteBinding
+import com.example.quotableapp.ui.common.extensions.copyQuoteToClipBoardWithToast
+import com.example.quotableapp.ui.common.extensions.copyToClipBoardWithToast
+import com.example.quotableapp.ui.common.extensions.handle
+import com.example.quotableapp.ui.common.extensions.showErrorToast
 import com.example.quotableapp.ui.common.rvAdapters.TagsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -39,22 +41,29 @@ class OneQuoteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.quoteLayout.rvTags.adapter = tagsAdapter
+        setupUi()
+        setObservingViewModel()
+    }
 
+    private fun setupUi() {
+        with(binding.quoteLayout) {
+            author.setOnClickListener { viewModel.onAuthorClick() }
+            root.setOnLongClickListener { viewModel.onQuoteLongClick() }
+            rvTags.adapter = tagsAdapter
+        }
+        binding.dataLoadHandler.btnRetry.setOnClickListener { viewModel.requestData() }
+    }
+
+    private fun setObservingViewModel() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             launch { viewModel.state.collectLatest { handle(it) } }
             launch { viewModel.action.collect { handle(it) } }
         }
-
-        binding.quoteLayout.apply {
-            author.setOnClickListener { viewModel.onAuthorClick() }
-        }
     }
 
     private fun handle(state: OneQuoteUiState) {
-        if (state.data != null) {
-            handleValidData(state.data)
-        }
+        binding.dataLoadHandler.handle(state)
+        tagsAdapter.submitList(state.data?.tags)
     }
 
     private fun handle(action: OneQuoteViewModel.Action) {
@@ -62,6 +71,7 @@ class OneQuoteFragment : Fragment() {
             is OneQuoteViewModel.Action.ShowError -> showErrorToast()
             is OneQuoteViewModel.Action.Navigation.ToAuthorQuotes -> showAuthorFragment(action.authorSlug)
             is OneQuoteViewModel.Action.Navigation.ToTagQuotes -> showQuotesOfTag(action.tag)
+            is OneQuoteViewModel.Action.CopyToClipboard -> copyQuoteToClipBoardWithToast(action.formattedText)
         }
     }
 
@@ -73,13 +83,5 @@ class OneQuoteFragment : Fragment() {
     private fun showAuthorFragment(authorSlug: String) {
         val action = OneQuoteFragmentDirections.showAuthor(authorSlug)
         findNavController().navigate(action)
-    }
-
-    private fun handleValidData(quote: Quote) {
-        tagsAdapter.submitList(quote.tags)
-    }
-
-    private fun showErrorToast() {
-        Toast.makeText(context, "Error occurred", Toast.LENGTH_SHORT).show()
     }
 }

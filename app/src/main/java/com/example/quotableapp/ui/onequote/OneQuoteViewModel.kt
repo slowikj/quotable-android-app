@@ -5,10 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
-import com.example.quotableapp.ui.common.uistate.UiState
-import com.example.quotableapp.ui.common.uistate.setData
-import com.example.quotableapp.ui.common.uistate.setError
-import com.example.quotableapp.ui.common.uistate.setLoading
+import com.example.quotableapp.ui.common.UiState
+import com.example.quotableapp.ui.common.extensions.handleRequest
+import com.example.quotableapp.ui.common.formatters.formatToClipboard
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -34,6 +33,8 @@ class OneQuoteViewModel @Inject constructor(
         }
 
         object ShowError : Action()
+
+        data class CopyToClipboard(val formattedText: String) : Action()
     }
 
     companion object {
@@ -45,26 +46,19 @@ class OneQuoteViewModel @Inject constructor(
     private val _state: MutableStateFlow<OneQuoteUiState> = MutableStateFlow(OneQuoteUiState())
     val state: StateFlow<OneQuoteUiState> = _state.asStateFlow()
 
-
     private val _action: MutableSharedFlow<Action> = MutableSharedFlow()
     val action = _action.asSharedFlow()
 
     init {
-        onRefresh()
+        requestData()
     }
 
-    private fun onRefresh() {
-        if (_state.value.isLoading) return
-
-        _state.setLoading()
-        viewModelScope.launch {
-            val res = quoteRepository.fetchQuote(quoteId)
-            res.onSuccess { _state.setData(it) }
-                .onFailure {
-                    _action.emit(Action.ShowError)
-                    _state.setError(UiError.IOError)
-                }
-        }
+    fun requestData() {
+        _state.handleRequest(
+            coroutineScope = viewModelScope,
+            requestFunc = { quoteRepository.fetchQuote(quoteId) },
+            errorConverter = { UiError.IOError }
+        )
     }
 
     fun onAuthorClick() {
@@ -81,8 +75,13 @@ class OneQuoteViewModel @Inject constructor(
         }
     }
 
-    fun onCopyToClipboard() {
-        // TODO
+    fun onQuoteLongClick(): Boolean {
+        viewModelScope.launch {
+            _state.value.data?.let {
+                _action.emit(Action.CopyToClipboard(it.formatToClipboard()))
+            }
+        }
+        return true
     }
 
 }

@@ -7,13 +7,7 @@
 
         <variable
             name="model"
-            type="com.example.quotableapp.ui.common.uistate.UiState&lt;Quote, UiError&gt;" />
-
-        <import type="com.example.quotableapp.data.model.Quote" />
-
-        <import type="com.example.quotableapp.ui.onequote.OneQuoteViewModel" />
-
-        <import type="com.example.quotableapp.ui.onequote.OneQuoteViewModel.UiError" />
+            type="com.example.quotableapp.data.model.Quote" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -41,7 +35,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@{model.data.content}"
+            android:text="@{model.content}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/quote_imageview"
             app:layout_constraintTop_toBottomOf="@id/quote_imageview"
@@ -54,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:text="@{model.data.author}"
+            android:text="@{model.author}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
