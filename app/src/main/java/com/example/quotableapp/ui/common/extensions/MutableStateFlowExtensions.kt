@@ -1,6 +1,7 @@
-package com.example.quotableapp.ui.common.uistate
+package com.example.quotableapp.ui.common.extensions
 
 import com.example.quotableapp.data.common.Resource
+import com.example.quotableapp.ui.common.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -10,6 +11,7 @@ fun <V, DE, RE : Throwable> MutableStateFlow<UiState<V, DE>>.handleRequest(
     requestFunc: suspend () -> Resource<V, RE>,
     errorConverter: (RE) -> (DE)
 ) {
+    if (value.isLoading) return
     coroutineScope.launch {
         this@handleRequest.setLoading()
         val response = requestFunc()

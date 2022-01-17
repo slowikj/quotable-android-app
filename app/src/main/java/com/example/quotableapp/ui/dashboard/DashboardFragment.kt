@@ -16,7 +16,8 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.databinding.DashboardRecyclerViewItemBinding
 import com.example.quotableapp.databinding.FragmentDashboardBinding
-import com.example.quotableapp.ui.common.uistate.UiState
+import com.example.quotableapp.ui.common.UiState
+import com.example.quotableapp.ui.common.extensions.handle
 import com.example.quotableapp.ui.dashboard.adapters.AuthorsAdapter
 import com.example.quotableapp.ui.dashboard.adapters.QuotesAdapter
 import com.example.quotableapp.ui.dashboard.adapters.TagsAdapter
@@ -122,9 +123,7 @@ class DashboardFragment : Fragment() {
     }
 
     private fun <M> DashboardRecyclerViewItemBinding.handleUiState(state: UiState<List<M>, DashboardViewModel.UiError>) {
-        dataLoadHandler.tvError.isVisible = state.error != null && !state.isLoading
-        dataLoadHandler.btnRetry.isVisible = state.error != null && !state.isLoading
-        dataLoadHandler.progressBar.isVisible = state.isLoading
+        dataLoadHandler.handle(state)
         rvItems.isVisible = state.data != null
         (rvItems.adapter as? ListAdapter<M, *>)?.submitList(state.data)
     }

@@ -11,7 +11,8 @@ import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.data.repository.tags.TagsRepository
-import com.example.quotableapp.ui.common.uistate.*
+import com.example.quotableapp.ui.common.UiState
+import com.example.quotableapp.ui.common.extensions.handleRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

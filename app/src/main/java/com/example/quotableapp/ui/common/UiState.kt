@@ -1,4 +1,4 @@
-package com.example.quotableapp.ui.common.uistate
+package com.example.quotableapp.ui.common
 
 data class UiState<V, E>(
     val isLoading: Boolean = false,

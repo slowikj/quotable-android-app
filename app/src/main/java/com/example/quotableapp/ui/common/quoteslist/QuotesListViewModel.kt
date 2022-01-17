@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.ui.common.OnQuoteClickListener
+import com.example.quotableapp.ui.common.formatters.formatToClipboard
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +34,7 @@ abstract class QuotesListViewModel constructor(
 
     sealed class Action {
 
-        data class CopyToClipboard(val quote: Quote) : Action()
+        data class CopyToClipboard(val formattedQuote: String) : Action()
 
         object RefreshQuotes : Action()
         object Error : Action()
@@ -71,7 +72,7 @@ abstract class QuotesListViewModel constructor(
 
     override fun onItemLongClick(quote: Quote): Boolean {
         viewModelScope.launch {
-            _actions.emit(Action.CopyToClipboard(quote))
+            _actions.emit(Action.CopyToClipboard(quote.formatToClipboard()))
         }
         return true
     }

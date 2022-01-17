@@ -15,10 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
-import com.example.quotableapp.ui.common.extensions.handleEmptyList
-import com.example.quotableapp.ui.common.extensions.handleRefreshing
-import com.example.quotableapp.ui.common.extensions.showErrorToast
-import com.example.quotableapp.ui.common.extensions.showToast
+import com.example.quotableapp.ui.common.extensions.*
 import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
@@ -106,18 +103,9 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
     private fun handlePlainActions(action: QuotesListViewModel.Action) =
         when (action) {
             is QuotesListViewModel.Action.Error -> showErrorToast()
-            is QuotesListViewModel.Action.CopyToClipboard -> copyToClipboard(action.quote)
+            is QuotesListViewModel.Action.CopyToClipboard -> copyQuoteToClipBoardWithToast(action.formattedQuote)
             is QuotesListViewModel.Action.RefreshQuotes -> quotesAdapter.refresh()
         }
-
-    private fun copyToClipboard(quote: Quote) {
-        val clipboardManager: ClipboardManager =
-            activity!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clipData =
-            ClipData.newPlainText(CLIPBOARD_QUOTE_LABEL, "${quote.content} ${quote.author}")
-        clipboardManager.setPrimaryClip(clipData)
-        showToast(getString(R.string.clipboard_copied_message))
-    }
 
     private fun handleNavigation(action: QuotesListViewModel.NavigationAction) =
         when (action) {

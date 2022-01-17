@@ -6,10 +6,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
-import com.example.quotableapp.ui.common.uistate.UiState
-import com.example.quotableapp.ui.common.uistate.setData
-import com.example.quotableapp.ui.common.uistate.setError
-import com.example.quotableapp.ui.common.uistate.setLoading
+import com.example.quotableapp.ui.common.UiState
+import com.example.quotableapp.ui.common.extensions.setData
+import com.example.quotableapp.ui.common.extensions.setError
+import com.example.quotableapp.ui.common.extensions.setLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
