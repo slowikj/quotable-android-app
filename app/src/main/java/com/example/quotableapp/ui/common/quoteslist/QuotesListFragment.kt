@@ -1,5 +1,8 @@
 package com.example.quotableapp.ui.common.quoteslist
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -9,11 +12,13 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
 import com.example.quotableapp.ui.common.extensions.handleEmptyList
 import com.example.quotableapp.ui.common.extensions.handleRefreshing
 import com.example.quotableapp.ui.common.extensions.showErrorToast
+import com.example.quotableapp.ui.common.extensions.showToast
 import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
@@ -26,6 +31,10 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 @ExperimentalPagingApi
 abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fragment() {
+
+    companion object {
+        const val CLIPBOARD_QUOTE_LABEL = "quote"
+    }
 
     protected abstract val listViewModel: ListViewModelType
 
@@ -40,20 +49,7 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
     protected val emptyListLayout: ViewGroup
         get() = recyclerViewLayoutBinding.emptyListLayout.root
 
-    private val quotesAdapter =
-        QuotesAdapter(onClickHandler = object : QuotesAdapter.ViewHolder.OnClickHandler {
-            override fun onItem(quote: Quote) {
-                listViewModel.onItemClick(quote)
-            }
-
-            override fun onAuthor(quote: Quote) {
-                listViewModel.onAuthorClick(quote)
-            }
-
-            override fun onTag(tag: String) {
-                listViewModel.onTagClick(tag)
-            }
-        })
+    private val quotesAdapter by lazy { QuotesAdapter(onClickHandler = listViewModel) }
 
     protected abstract fun showQuote(quote: Quote)
 
@@ -110,9 +106,18 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
     private fun handlePlainActions(action: QuotesListViewModel.Action) =
         when (action) {
             is QuotesListViewModel.Action.Error -> showErrorToast()
-            is QuotesListViewModel.Action.CopyToClipboard -> TODO()
+            is QuotesListViewModel.Action.CopyToClipboard -> copyToClipboard(action.quote)
             is QuotesListViewModel.Action.RefreshQuotes -> quotesAdapter.refresh()
         }
+
+    private fun copyToClipboard(quote: Quote) {
+        val clipboardManager: ClipboardManager =
+            activity!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData =
+            ClipData.newPlainText(CLIPBOARD_QUOTE_LABEL, "${quote.content} ${quote.author}")
+        clipboardManager.setPrimaryClip(clipData)
+        showToast(getString(R.string.clipboard_copied_message))
+    }
 
     private fun handleNavigation(action: QuotesListViewModel.NavigationAction) =
         when (action) {

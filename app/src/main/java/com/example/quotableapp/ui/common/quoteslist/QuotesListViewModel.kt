@@ -7,6 +7,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.model.Quote
+import com.example.quotableapp.ui.common.OnQuoteClickListener
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 abstract class QuotesListViewModel constructor(
     protected val savedStateHandle: SavedStateHandle,
     protected val dispatchers: CoroutineDispatchers
-) : ViewModel() {
+) : ViewModel(), OnQuoteClickListener {
 
     sealed class NavigationAction {
 
@@ -44,33 +45,34 @@ abstract class QuotesListViewModel constructor(
     protected val _quotes = MutableStateFlow<PagingData<Quote>?>(null)
     val quotes: StateFlow<PagingData<Quote>?> = _quotes
 
-    open fun onItemClick(quote: Quote) {
+    fun onRefresh() {
+        viewModelScope.launch {
+            _actions.emit(Action.RefreshQuotes)
+        }
+    }
+
+    override fun onItemClick(quote: Quote) {
         viewModelScope.launch {
             _navigationActions.emit(NavigationAction.ToDetails(quote))
         }
     }
 
-    open fun onAuthorClick(quote: Quote) {
+    override fun onAuthorClick(authorSlug: String) {
         viewModelScope.launch {
-            _navigationActions.emit(NavigationAction.ToQuotesOfAuthor(quote.authorSlug))
+            _navigationActions.emit(NavigationAction.ToQuotesOfAuthor(authorSlug))
         }
     }
 
-    open fun onTagClick(tag: String) {
+    override fun onTagClick(tag: String) {
         viewModelScope.launch {
             _navigationActions.emit(NavigationAction.ToQuotesOfTag(tag))
         }
     }
 
-    fun onCopyToClipboard(quote: Quote) {
+    override fun onItemLongClick(quote: Quote): Boolean {
         viewModelScope.launch {
             _actions.emit(Action.CopyToClipboard(quote))
         }
-    }
-
-    fun onRefresh() {
-        viewModelScope.launch {
-            _actions.emit(Action.RefreshQuotes)
-        }
+        return true
     }
 }
