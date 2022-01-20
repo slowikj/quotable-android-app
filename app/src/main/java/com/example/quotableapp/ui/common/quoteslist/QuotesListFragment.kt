@@ -26,15 +26,7 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
 
     protected abstract val recyclerViewLayoutBinding: RefreshableRecyclerviewBinding
 
-    protected val recyclerViewComposite by lazy {
-        RecyclerViewComposite(
-            recyclerView = recyclerViewLayoutBinding.rvQuotes,
-            emptyListLayout = recyclerViewLayoutBinding.emptyListLayout.root,
-            errorLayout = recyclerViewLayoutBinding.dataLoadHandler.errorHandler,
-            swipeRefreshLayout = recyclerViewLayoutBinding.swipeToRefresh,
-            loadingLayout = recyclerViewLayoutBinding.dataLoadHandler.progressBar
-        )
-    }
+    protected lateinit var recyclerViewComposite: RecyclerViewComposite
 
     private val quotesAdapter by lazy { QuotesAdapter(onClickHandler = listViewModel) }
 
@@ -46,6 +38,7 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        recyclerViewComposite = prepareRecyclerViewComposite()
         setupQuotesRecyclerView()
         setupQuotesAdapter()
         setupActionsHandler()
@@ -53,6 +46,14 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
             listViewModel.onRefresh()
         }
     }
+
+    private fun prepareRecyclerViewComposite() = RecyclerViewComposite(
+        recyclerView = recyclerViewLayoutBinding.rvQuotes,
+        emptyListLayout = recyclerViewLayoutBinding.emptyListLayout.root,
+        errorLayout = recyclerViewLayoutBinding.dataLoadHandler.errorHandler,
+        swipeRefreshLayout = recyclerViewLayoutBinding.swipeToRefresh,
+        loadingLayout = recyclerViewLayoutBinding.dataLoadHandler.progressBar
+    )
 
     private fun setupQuotesAdapter() {
         recyclerViewComposite.swipeRefreshLayout
@@ -65,7 +66,7 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
     }
 
     private fun setupQuotesRecyclerView() {
-        with(recyclerViewComposite.recyclerView) {
+        recyclerViewComposite.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = quotesAdapter.withLoadStateFooter(
                 footer = DefaultLoadingAdapter { quotesAdapter.retry() }

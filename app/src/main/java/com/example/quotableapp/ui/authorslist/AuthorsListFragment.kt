@@ -37,15 +37,7 @@ class AuthorsListFragment : Fragment() {
         onItemClick = { listViewModel.onAuthorClick(it) }
     )
 
-    private val recyclerViewComposite by lazy {
-        RecyclerViewComposite(
-            recyclerView = binding.recyclerviewLayout.rvQuotes,
-            emptyListLayout = binding.recyclerviewLayout.emptyListLayout.root,
-            errorLayout = binding.recyclerviewLayout.dataLoadHandler.errorHandler,
-            swipeRefreshLayout = binding.recyclerviewLayout.swipeToRefresh,
-            loadingLayout = binding.recyclerviewLayout.dataLoadHandler.progressBar
-        )
-    }
+    private lateinit var recyclerViewComposite: RecyclerViewComposite
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,6 +50,7 @@ class AuthorsListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        recyclerViewComposite = prepareRecyclerViewComposite()
         setupListAdapter()
         setUpAuthorListRecyclerView()
         setupViewModelEventsHandling()
@@ -65,6 +58,14 @@ class AuthorsListFragment : Fragment() {
             listViewModel.onRefresh()
         }
     }
+
+    private fun prepareRecyclerViewComposite() = RecyclerViewComposite(
+        recyclerView = binding.recyclerviewLayout.rvQuotes,
+        emptyListLayout = binding.recyclerviewLayout.emptyListLayout.root,
+        errorLayout = binding.recyclerviewLayout.dataLoadHandler.errorHandler,
+        swipeRefreshLayout = binding.recyclerviewLayout.swipeToRefresh,
+        loadingLayout = binding.recyclerviewLayout.dataLoadHandler.progressBar
+    )
 
     private fun setupViewModelEventsHandling() {
         viewLifecycleOwner.lifecycleScope.launch {
