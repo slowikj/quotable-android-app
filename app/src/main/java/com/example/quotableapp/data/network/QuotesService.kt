@@ -62,4 +62,7 @@ interface QuotesService {
         @Query("page") page: Int,
         @Query("limit") limit: Int
     ): Response<QuotesResponseDTO>
+
+    @GET("random")
+    suspend fun fetchRandomQuote(): Response<QuoteDTO>
 }

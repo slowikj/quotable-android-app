@@ -23,4 +23,11 @@ class DefaultOneQuoteRepository @Inject constructor(
                 .map { quoteConverters.toDomain(it) }
         }
     }
+
+    override suspend fun fetchRandomQuote(): Resource<Quote, HttpApiError> {
+        return withContext(dispatchers.IO) {
+            apiResponseInterpreter { quotesService.fetchRandomQuote() }
+                .map { quoteConverters.toDomain(it) }
+        }
+    }
 }

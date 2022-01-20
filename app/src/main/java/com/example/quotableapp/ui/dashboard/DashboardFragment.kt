@@ -62,6 +62,7 @@ class DashboardFragment : Fragment() {
             launch { viewModel.quotes.collectLatest { handle(it) } }
             launch { viewModel.authors.collectLatest { handle(it) } }
             launch { viewModel.tags.collectLatest { handle(it) } }
+            launch { viewModel.randomQuote.collectLatest { handle(it) } }
             launch { viewModel.navigationActions.collectLatest { handle(it) } }
         }
     }
@@ -79,6 +80,15 @@ class DashboardFragment : Fragment() {
     @JvmName("handleTagsListState")
     private fun handle(tagsState: UiState<List<Tag>, DashboardViewModel.UiError>) {
         binding.rowTags.handleUiState(tagsState)
+    }
+
+    @JvmName("handleRandomQuote")
+    private fun handle(randomQuoteState: UiState<Quote, DashboardViewModel.UiError>) {
+        with(binding.rowRandomQuote) {
+            dataLoadHandler.handle(randomQuoteState)
+            quoteLayout.root.isVisible = randomQuoteState.data != null
+            quoteLayout.model = randomQuoteState.data
+        }
     }
 
     @JvmName("handleNavigationAction")
@@ -129,9 +139,19 @@ class DashboardFragment : Fragment() {
     }
 
     private fun setupCategories() {
+        setupRandomQuoteEntry()
         setupAuthorsEntry()
         setupQuotesEntry()
         setupTagsEntry()
+    }
+
+    private fun setupRandomQuoteEntry() {
+        with(binding.rowRandomQuote) {
+            dataLoadHandler.btnRetry.setOnClickListener {
+                viewModel.requestRandomQuote()
+            }
+            quoteLayout.root.setOnClickListener { viewModel.onQuoteClick(viewModel.randomQuote.value.data!!) }
+        }
     }
 
     private fun setupTagsEntry() {

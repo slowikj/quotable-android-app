@@ -18,22 +18,31 @@
             style="@style/AppTheme.Dashboard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_margin="8dp">
+
+            <include
+                android:id="@+id/rowRandomQuote"
+                layout="@layout/dashboard_random_quote"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <include
                 android:id="@+id/rowTags"
                 layout="@layout/dashboard_recycler_view_item"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                bind:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rowRandomQuote"
                 bind:title="@{@string/dashboard_tags_title}" />
 
             <include
                 android:id="@+id/rowAuthors"
                 layout="@layout/dashboard_recycler_view_item"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -44,7 +53,7 @@
             <include
                 android:id="@+id/rowQuotes"
                 layout="@layout/dashboard_recycler_view_item"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

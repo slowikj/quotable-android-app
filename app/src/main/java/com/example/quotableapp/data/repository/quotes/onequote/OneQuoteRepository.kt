@@ -6,4 +6,6 @@ import com.example.quotableapp.data.network.common.HttpApiError
 
 interface OneQuoteRepository {
     suspend fun fetchQuote(id: String): Resource<Quote, HttpApiError>
+
+    suspend fun fetchRandomQuote(): Resource<Quote, HttpApiError>
 }

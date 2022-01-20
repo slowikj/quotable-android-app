@@ -10,6 +10,7 @@ import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
+import com.example.quotableapp.data.repository.quotes.onequote.OneQuoteRepository
 import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.extensions.handleRequest
@@ -24,12 +25,15 @@ typealias QuotesListState = UiState<List<Quote>, DashboardViewModel.UiError>
 
 typealias TagsListState = UiState<List<Tag>, DashboardViewModel.UiError>
 
+typealias RandomQuoteState = UiState<Quote, DashboardViewModel.UiError>
+
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val authorsRepository: AuthorsRepository,
     private val quotesRepository: QuotesRepository,
-    private val tagsRepository: TagsRepository
+    private val tagsRepository: TagsRepository,
+    private val oneQuoteRepository: OneQuoteRepository
 ) : ViewModel() {
 
     companion object {
@@ -67,10 +71,14 @@ class DashboardViewModel @Inject constructor(
     private val _tags = MutableStateFlow(TagsListState())
     val tags: StateFlow<TagsListState> = _tags.asStateFlow()
 
+    private val _randomQuote = MutableStateFlow(RandomQuoteState())
+    val randomQuote: StateFlow<RandomQuoteState> = _randomQuote.asStateFlow()
+
     init {
         requestAuthors()
         requestQuotes()
         requestTags()
+        requestRandomQuote()
     }
 
     fun onAuthorsShowMoreClick() {
@@ -98,27 +106,34 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun requestAuthors() {
-        requestList(
+        requestData(
             stateFlow = _authors,
             requestFunc = { authorsRepository.fetchFirstAuthors(limit = ITEMS_TO_SHOW_NUM) }
         )
     }
 
     fun requestQuotes() {
-        requestList(
+        requestData(
             stateFlow = _quotes,
             requestFunc = { quotesRepository.fetchFirstQuotes(limit = ITEMS_TO_SHOW_NUM) }
         )
     }
 
     fun requestTags() {
-        requestList(
+        requestData(
             stateFlow = _tags,
             requestFunc = { tagsRepository.fetchFirstTags(limit = ITEMS_TO_SHOW_NUM) }
         )
     }
 
-    private fun <V> requestList(
+    fun requestRandomQuote() {
+        requestData(
+            stateFlow = _randomQuote,
+            requestFunc = { oneQuoteRepository.fetchRandomQuote() }
+        )
+    }
+
+    private fun <V> requestData(
         stateFlow: MutableStateFlow<UiState<V, UiError>>,
         requestFunc: suspend () -> Resource<V, HttpApiError>
     ) {
