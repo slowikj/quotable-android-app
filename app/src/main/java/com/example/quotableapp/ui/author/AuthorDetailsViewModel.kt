@@ -45,6 +45,10 @@ class AuthorDetailsViewModel
         fetchAuthor()
     }
 
+    fun onRefresh() {
+        fetchAuthor()
+    }
+
     private fun fetchAuthor() {
         _state.setLoading()
         viewModelScope.launch {

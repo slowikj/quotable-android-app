@@ -14,15 +14,17 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.databinding.FragmentAuthorsListBinding
-import com.example.quotableapp.ui.common.extensions.handleEmptyList
-import com.example.quotableapp.ui.common.extensions.handleRefreshing
+import com.example.quotableapp.ui.common.extensions.RecyclerViewComposite
+import com.example.quotableapp.ui.common.extensions.setupWith
 import com.example.quotableapp.ui.common.extensions.showErrorToast
 import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@FlowPreview
 @ExperimentalPagingApi
 @AndroidEntryPoint
 class AuthorsListFragment : Fragment() {
@@ -34,6 +36,16 @@ class AuthorsListFragment : Fragment() {
     private val authorsListAdapter = AuthorsListAdapter(
         onItemClick = { listViewModel.onAuthorClick(it) }
     )
+
+    private val recyclerViewComposite by lazy {
+        RecyclerViewComposite(
+            recyclerView = binding.recyclerviewLayout.rvQuotes,
+            emptyListLayout = binding.recyclerviewLayout.emptyListLayout.root,
+            errorLayout = binding.recyclerviewLayout.dataLoadHandler.errorHandler,
+            swipeRefreshLayout = binding.recyclerviewLayout.swipeToRefresh,
+            loadingLayout = binding.recyclerviewLayout.dataLoadHandler.progressBar
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,6 +61,9 @@ class AuthorsListFragment : Fragment() {
         setupListAdapter()
         setUpAuthorListRecyclerView()
         setupViewModelEventsHandling()
+        binding.recyclerviewLayout.dataLoadHandler.btnRetry.setOnClickListener {
+            listViewModel.onRefresh()
+        }
     }
 
     private fun setupViewModelEventsHandling() {
@@ -62,8 +77,13 @@ class AuthorsListFragment : Fragment() {
     }
 
     private fun setupListAdapter() {
-        setupListRefreshing()
-        setupEmptyListHandling()
+        recyclerViewComposite.swipeRefreshLayout
+            ?.setOnRefreshListener { listViewModel.onRefresh() }
+        authorsListAdapter.setupWith(
+            recyclerViewComposite = recyclerViewComposite,
+            lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
+            onError = { showErrorToast() }
+        )
     }
 
     private fun setUpAuthorListRecyclerView() {
@@ -104,25 +124,5 @@ class AuthorsListFragment : Fragment() {
         val action = AuthorsListFragmentDirections.showAuthor(author.slug)
         findNavController().navigate(action)
     }
-
-    private fun setupListRefreshing() {
-        binding.recyclerviewLayout.swipeToRefresh.let { swipeToRefresh ->
-            swipeToRefresh.setOnRefreshListener { listViewModel.onRefresh() }
-            authorsListAdapter.handleRefreshing(
-                lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
-                swipeRefreshLayout = swipeToRefresh,
-                onError = { showErrorToast() }
-            )
-        }
-    }
-
-    private fun setupEmptyListHandling() {
-        authorsListAdapter.handleEmptyList(
-            lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
-            recyclerView = binding.recyclerviewLayout.rvQuotes,
-            emptyListLayout = binding.recyclerviewLayout.emptyListLayout.root
-        )
-    }
-
 
 }
