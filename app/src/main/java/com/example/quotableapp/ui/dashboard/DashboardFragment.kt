@@ -52,12 +52,12 @@ class DashboardFragment : Fragment() {
         binding = FragmentDashboardBinding.inflate(inflater).apply {
             lifecycleOwner = this@DashboardFragment.viewLifecycleOwner
         }
-        setupCategories()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupCategories()
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             launch { viewModel.quotes.collectLatest { handle(it) } }
             launch { viewModel.authors.collectLatest { handle(it) } }
@@ -150,7 +150,9 @@ class DashboardFragment : Fragment() {
             dataLoadHandler.btnRetry.setOnClickListener {
                 viewModel.requestRandomQuote()
             }
-            quoteLayout.root.setOnClickListener { viewModel.onQuoteClick(viewModel.randomQuote.value.data!!) }
+            quoteLayout.root.setOnClickListener {
+                viewModel.onQuoteClick(viewModel.randomQuote.value.data!!)
+            }
         }
     }
 

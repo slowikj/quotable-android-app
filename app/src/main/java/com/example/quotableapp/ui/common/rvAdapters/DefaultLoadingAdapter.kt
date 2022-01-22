@@ -1,6 +1,7 @@
 package com.example.quotableapp.ui.common.rvAdapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.paging.LoadState
@@ -30,8 +31,7 @@ class DefaultLoadingAdapter(private val retry: () -> Unit) :
 
         fun bind(loadState: LoadState) {
             with(binding) {
-                btnRetry.isVisible = loadState is LoadState.Error
-                tvError.isVisible = loadState is LoadState.Error
+                errorHandler.isVisible = loadState is LoadState.Error
                 progressBar.isVisible = loadState is LoadState.Loading
                 btnRetry.setOnClickListener { retry() }
             }
