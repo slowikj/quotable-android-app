@@ -1,6 +1,7 @@
 package com.example.quotableapp.ui.allquotes
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -88,13 +89,16 @@ class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
             )
         }
 
+        searchView.setQuery(listViewModel.lastSearchQuery.value, true)
         observeOnSearchQueryChanged(searchView)
     }
 
     private fun observeOnSearchQueryChanged(searchView: SearchView) {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             searchView.getQueryTextChangedStateFlow()
-                .collectLatest { listViewModel.onSearchQueryChanged(it) }
+                .collectLatest {
+                    listViewModel.onSearchQueryChanged(it)
+                }
         }
     }
 }

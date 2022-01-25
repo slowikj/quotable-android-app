@@ -1,9 +1,6 @@
 package com.example.quotableapp.ui.allquotes
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asFlow
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.cachedIn
 import com.example.quotableapp.common.CoroutineDispatchers
@@ -37,6 +34,8 @@ class AllQuotesListViewModel @Inject constructor(
 
     private val _lastSearchQuery: MutableLiveData<String> = savedStateHandle
         .getLiveData(SEARCH_QUERY_TAG, "")
+
+    val lastSearchQuery: LiveData<String> = _lastSearchQuery
 
     init {
         viewModelScope.launch {

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 fun SearchView.getQueryTextChangedStateFlow(): StateFlow<String> {
-    val res = MutableStateFlow("")
+    val res = MutableStateFlow(query.toString())
     this.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
         override fun onQueryTextSubmit(query: String?): Boolean {
             return true
@@ -21,7 +21,11 @@ fun SearchView.getQueryTextChangedStateFlow(): StateFlow<String> {
     return res
 }
 
-fun SearchView.changeToolbarColorOnVisibilityChange(focusColor: Int, notFocusedColor: Int, toolbar: Toolbar) {
+fun SearchView.changeToolbarColorOnVisibilityChange(
+    focusColor: Int,
+    notFocusedColor: Int,
+    toolbar: Toolbar
+) {
     val searchView = this
     addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View?) {
