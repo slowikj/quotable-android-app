@@ -44,7 +44,7 @@ class AuthorsListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAuthorsListBinding.inflate(inflater)
+        binding = FragmentAuthorsListBinding.inflate(inflater, container, false)
         return binding.root
     }
 

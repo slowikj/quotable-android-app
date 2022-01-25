@@ -46,7 +46,7 @@ class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAllQuotesBinding.inflate(inflater)
+        binding = FragmentAllQuotesBinding.inflate(inflater, container, false)
         prepareToolbar()
         return binding.root
     }

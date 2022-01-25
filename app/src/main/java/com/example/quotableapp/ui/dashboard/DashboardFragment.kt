@@ -49,7 +49,7 @@ class DashboardFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentDashboardBinding.inflate(inflater).apply {
+        binding = FragmentDashboardBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = this@DashboardFragment.viewLifecycleOwner
         }
         return binding.root

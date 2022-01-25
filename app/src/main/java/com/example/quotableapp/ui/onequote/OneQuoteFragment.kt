@@ -32,7 +32,7 @@ class OneQuoteFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentOneQuoteBinding.inflate(inflater).apply {
+        binding = FragmentOneQuoteBinding.inflate(inflater, container, false).apply {
             viewModel = this@OneQuoteFragment.viewModel
             lifecycleOwner = this@OneQuoteFragment.viewLifecycleOwner
         }

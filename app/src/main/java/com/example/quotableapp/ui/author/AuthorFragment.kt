@@ -38,7 +38,7 @@ class AuthorFragment : QuotesListFragment<AuthorQuotesViewModel>() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAuthorBinding.inflate(inflater).apply {
+        binding = FragmentAuthorBinding.inflate(inflater, container, false).apply {
             collapsingToolbar.authorDetailsViewModel = authorDetailsViewModel
             collapsingToolbar.lifecycleOwner = this@AuthorFragment.viewLifecycleOwner
         }

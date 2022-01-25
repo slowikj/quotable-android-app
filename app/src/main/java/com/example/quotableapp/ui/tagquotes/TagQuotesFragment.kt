@@ -35,7 +35,7 @@ class TagQuotesFragment : QuotesListFragment<TagQuotesListViewModel>() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentTagQuotesBinding.inflate(inflater).apply {
+        binding = FragmentTagQuotesBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = this@TagQuotesFragment.viewLifecycleOwner
             tagName = tagDetailsViewModel.tagName
         }

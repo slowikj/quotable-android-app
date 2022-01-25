@@ -29,7 +29,7 @@ class TagsListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentTagsListBinding.inflate(inflater).apply {
+        binding = FragmentTagsListBinding.inflate(inflater, container, false).apply {
             rvTags.adapter = tagsAdapter
             dataLoadHandler.btnRetry.setOnClickListener { viewModel.fetchTags() }
         }
