@@ -7,6 +7,8 @@ import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.db.dao.QuotesDao
 import com.example.quotableapp.data.db.dao.RemoteKeyDao
 import com.example.quotableapp.data.db.entities.QuoteEntity
+import com.example.quotableapp.data.db.entities.QuoteOriginEntity
+import com.example.quotableapp.data.db.entities.QuoteOriginParams
 import com.example.quotableapp.data.db.entities.RemoteKeyEntity
 import javax.inject.Inject
 
@@ -20,8 +22,14 @@ class QuotesListPersistenceManager @Inject constructor(
     private val remoteKeysDao: RemoteKeyDao
         get() = database.remoteKeysDao()
 
+    private val originParams = QuoteOriginParams(
+        type = QuoteOriginEntity.Type.ALL,
+        value = "",
+        searchPhrase = ""
+    )
+
     override suspend fun deleteAll() {
-        quotesDao.deleteAll()
+        quotesDao.deleteCrossRefEntries(originParams)
         remoteKeysDao.delete(RemoteKeyEntity.Type.QUOTES_LIST)
     }
 
@@ -33,7 +41,7 @@ class QuotesListPersistenceManager @Inject constructor(
 
     override suspend fun append(entries: List<QuoteEntity>, pageKey: Int) {
         remoteKeysDao.update(prepareRemoteKey(pageKey))
-        quotesDao.add(entries)
+        quotesDao.addQuotes(originParams = originParams, quotes = entries)
     }
 
     override suspend fun <R> withTransaction(block: suspend () -> R): R =

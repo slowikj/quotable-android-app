@@ -3,6 +3,7 @@ package com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteM
 import com.example.quotableapp.data.network.QuotesService
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
+import kotlinx.coroutines.delay
 import retrofit2.Response
 import javax.inject.Inject
 
