@@ -7,10 +7,10 @@ import com.example.quotableapp.data.converters.author.DefaultAuthorConverters
 import com.example.quotableapp.data.converters.author.DefaultAuthorPhotoUrlCreator
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
+import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.repository.authors.paging.AuthorsListDTOResponseToEntitiesConverter
 import com.example.quotableapp.data.repository.authors.paging.AuthorsListPersistenceManager
-import com.example.quotableapp.data.repository.authors.paging.DefaultAuthorsListPagedRemoteService
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
 import dagger.Binds
 import dagger.Module
@@ -41,9 +41,6 @@ object AuthorsRepositoryModule {
     @Module
     @InstallIn(SingletonComponent::class)
     interface Declarations {
-        @Binds
-        fun bindPagedAuthorListRemoteService(pagedService: DefaultAuthorsListPagedRemoteService)
-                : IntPagedRemoteService<AuthorsResponseDTO>
 
         @Binds
         fun bindAuthorListPersistenceManager(persistenceManager: AuthorsListPersistenceManager)

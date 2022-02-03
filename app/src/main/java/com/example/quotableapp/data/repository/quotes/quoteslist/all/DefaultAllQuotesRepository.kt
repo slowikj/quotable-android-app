@@ -13,6 +13,8 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.QuotesService
 import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
+import com.example.quotableapp.data.network.model.QuotesResponseDTO
+import com.example.quotableapp.data.repository.common.IntPagedRemoteService
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesRemoteMediator
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +26,6 @@ import javax.inject.Inject
 class DefaultAllQuotesRepository @Inject constructor(
     private val quotesRemoteMediatorFactory: QuotesRemoteMediatorFactory,
     private val pagingConfig: PagingConfig,
-    private val searchPhrasePagingSourceFactory: SearchPhraseInAllQuotesPagingSourceFactory,
     private val quotesConverters: QuoteConverters,
     private val apiResponseInterpreter: QuotableApiResponseInterpreter,
     private val quotesService: QuotesService,
@@ -32,13 +33,7 @@ class DefaultAllQuotesRepository @Inject constructor(
 ) : AllQuotesRepository {
 
     override fun fetchAllQuotes(searchPhrase: String?): Flow<PagingData<Quote>> {
-        val remoteMediator = quotesRemoteMediatorFactory.create(
-            QuoteOriginParams(
-                type = QuoteOriginParams.Type.ALL,
-                value = "",
-                searchPhrase = searchPhrase ?: ""
-            )
-        )
+        val remoteMediator = createAllQuotesRemoteMediator(searchPhrase)
         return Pager(
             config = pagingConfig,
             remoteMediator = remoteMediator,
@@ -57,4 +52,24 @@ class DefaultAllQuotesRepository @Inject constructor(
         }
     }
 
+    private fun createAllQuotesRemoteMediator(searchPhrase: String?): QuotesRemoteMediator {
+        val service: IntPagedRemoteService<QuotesResponseDTO> =
+            if (searchPhrase.isNullOrEmpty()) { page: Int, limit: Int ->
+                quotesService.fetchQuotes(page = page, limit = limit)
+            } else { page: Int, limit: Int ->
+                quotesService.fetchQuotesWithSearchPhrase(
+                    searchPhrase = searchPhrase,
+                    page = page,
+                    limit = limit
+                )
+            }
+
+        return quotesRemoteMediatorFactory.create(
+            originParams = QuoteOriginParams(
+                type = QuoteOriginParams.Type.ALL,
+                searchPhrase = searchPhrase ?: ""
+            ),
+            remoteService = service
+        )
+    }
 }

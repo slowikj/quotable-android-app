@@ -9,6 +9,8 @@ import com.example.quotableapp.data.db.dao.RemoteKeyDao
 import com.example.quotableapp.data.db.entities.*
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
+import com.example.quotableapp.data.db.entities.quote.QuoteOriginEntity
+import com.example.quotableapp.data.db.entities.quote.QuoteRemoteKeyEntity
 import com.example.quotableapp.data.db.entities.quote.QuoteWithOriginJoin
 
 @Database(
@@ -16,6 +18,7 @@ import com.example.quotableapp.data.db.entities.quote.QuoteWithOriginJoin
         QuoteEntity::class,
         QuoteOriginEntity::class,
         QuoteWithOriginJoin::class,
+        QuoteRemoteKeyEntity::class,
         AuthorEntity::class,
         RemoteKeyEntity::class],
     version = 1,

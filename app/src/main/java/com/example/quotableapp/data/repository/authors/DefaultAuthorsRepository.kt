@@ -9,6 +9,7 @@ import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediator
+import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -17,7 +18,7 @@ import javax.inject.Inject
 @ExperimentalPagingApi
 class DefaultAuthorsRepository @Inject constructor(
     private val authorsService: AuthorsService,
-    private val authorListRemoteMediator: AuthorsRemoteMediator,
+    private val authorsRemoteMediatorFactory: AuthorsRemoteMediatorFactory,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val authorConverters: AuthorConverters,
     private val pagingConfig: PagingConfig,
@@ -34,14 +35,22 @@ class DefaultAuthorsRepository @Inject constructor(
         }
     }
 
-    override fun fetchAllAuthors(): Flow<PagingData<Author>> = Pager(
-        config = pagingConfig,
-        remoteMediator = authorListRemoteMediator,
-        pagingSourceFactory = { authorListRemoteMediator.persistenceManager.getPagingSource() }
-    ).flow
-        .map { pagingData ->
-            pagingData.map { authorConverters.toDomain(it) }
+    override fun fetchAllAuthors(): Flow<PagingData<Author>> {
+        val remoteMediator = authorsRemoteMediatorFactory.create { page, limit ->
+            authorsService.fetchAuthors(
+                page,
+                limit
+            )
         }
+        return Pager(
+            config = pagingConfig,
+            remoteMediator = remoteMediator,
+            pagingSourceFactory = { remoteMediator.persistenceManager.getPagingSource() }
+        ).flow
+            .map { pagingData ->
+                pagingData.map { authorConverters.toDomain(it) }
+            }
+    }
 
     override suspend fun fetchFirstAuthors(limit: Int): Resource<List<Author>, HttpApiError> {
         return withContext(coroutineDispatchers.IO) {

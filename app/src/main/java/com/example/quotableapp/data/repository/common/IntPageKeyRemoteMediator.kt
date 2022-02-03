@@ -55,7 +55,7 @@ abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO, 
         val newLoadKey: Int = (lastLoadKey ?: 0) + 1
         val pageSize = computePageSize(loadType, state)
 
-        return apiResultInterpreter { remoteService.fetch(page = newLoadKey, limit = pageSize) }
+        return apiResultInterpreter { remoteService(newLoadKey, pageSize) }
             .fold(
                 onSuccess = { dto ->
                     updateLocalDatabase(loadType, newLoadKey, dto)

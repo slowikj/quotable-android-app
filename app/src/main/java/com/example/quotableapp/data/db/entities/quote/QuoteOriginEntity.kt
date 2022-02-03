@@ -16,7 +16,7 @@ data class QuoteOriginEntity(
 
 data class QuoteOriginParams(
     val type: Type,
-    val value: String,
+    val value: String = "",
     val searchPhrase: String = ""
 ) {
     enum class Type(private val value: String) {

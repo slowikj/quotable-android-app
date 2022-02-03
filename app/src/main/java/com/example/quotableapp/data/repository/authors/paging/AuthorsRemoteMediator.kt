@@ -10,13 +10,22 @@ import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.repository.common.IntPageKeyRemoteMediator
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
 import com.example.quotableapp.data.repository.di.CacheTimeout
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import javax.inject.Inject
 
+@AssistedFactory
+interface AuthorsRemoteMediatorFactory {
+    @ExperimentalPagingApi
+    fun create(remoteService: IntPagedRemoteService<AuthorsResponseDTO>): AuthorsRemoteMediator
+}
+
 @ExperimentalPagingApi
-class AuthorsRemoteMediator @Inject constructor(
+class AuthorsRemoteMediator @AssistedInject constructor(
     persistenceManager: PersistenceManager<AuthorEntity, Int>,
     @CacheTimeout cacheTimeoutMilliseconds: Long,
-    remoteService: IntPagedRemoteService<AuthorsResponseDTO>,
+    @Assisted remoteService: IntPagedRemoteService<AuthorsResponseDTO>,
     apiResultInterpreter: QuotableApiResponseInterpreter,
     dtoToEntityConverter: Converter<AuthorsResponseDTO, List<AuthorEntity>>,
 ) : IntPageKeyRemoteMediator<AuthorEntity, AuthorsResponseDTO, HttpApiError>(
@@ -28,4 +37,5 @@ class AuthorsRemoteMediator @Inject constructor(
 ) {
     override fun getOtherError(innerException: Throwable): HttpApiError =
         HttpApiError.OtherError(innerException)
+
 }

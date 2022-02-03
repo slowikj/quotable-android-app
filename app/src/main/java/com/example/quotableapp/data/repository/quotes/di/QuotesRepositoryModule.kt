@@ -24,9 +24,7 @@ import com.example.quotableapp.data.repository.quotes.quoteslist.oftag.DefaultQu
 import com.example.quotableapp.data.repository.quotes.quoteslist.oftag.QuotesOfTagPagingSourceFactory
 import com.example.quotableapp.data.repository.quotes.quoteslist.oftag.QuotesOfTagRepository
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesPagingSource
-import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.DefaultQuotesListRemoteService
-import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesListDTOResponseToEntitiesConverter
-import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesListPersistenceManager
+import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.*
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -48,75 +46,19 @@ object QuotesRepositoryModule {
         return DefaultQuoteConverters()
     }
 
-    @Provides
-    fun provideSearchPhraseInAllQuotesPagingSourceFactory(
-        quotesService: QuotesService,
-        apiResponseInterpreter: QuotableApiResponseInterpreter
-    ): SearchPhraseInAllQuotesPagingSourceFactory =
-        object : SearchPhraseInAllQuotesPagingSourceFactory {
-            override fun get(searchPhrase: String): QuotesPagingSource {
-                return QuotesPagingSource(apiResponseInterpreter = apiResponseInterpreter) { page: Int, limit: Int ->
-                    quotesService.fetchQuotesWithSearchPhrase(
-                        searchPhrase = searchPhrase,
-                        page = page,
-                        limit = limit
-                    )
-                }
-            }
-        }
-
-    @Provides
-    fun provideQuotesOfAuthorPagingSourceFactory(
-        quotesService: QuotesService,
-        apiResponseInterpreter: QuotableApiResponseInterpreter
-    ): QuotesOfAuthorPagingSourceFactory =
-        object : QuotesOfAuthorPagingSourceFactory {
-            override fun get(authorSlug: String): PagingSource<Int, QuoteDTO> {
-                return QuotesPagingSource(apiResponseInterpreter = apiResponseInterpreter) { page: Int, limit: Int ->
-                    quotesService.fetchQuotesOfAuthor(
-                        author = authorSlug,
-                        page = page,
-                        limit = limit
-                    )
-                }
-            }
-        }
-
-    @Provides
-    fun provideQuotesOfTagPagingSourceFactory(
-        quotesService: QuotesService,
-        apiResponseInterpreter: QuotableApiResponseInterpreter
-    ): QuotesOfTagPagingSourceFactory =
-        object : QuotesOfTagPagingSourceFactory {
-            override fun get(tag: String): PagingSource<Int, QuoteDTO> {
-                return QuotesPagingSource(apiResponseInterpreter = apiResponseInterpreter) { page: Int, limit: Int ->
-                    quotesService.fetchQuotesOfTag(
-                        tag = tag,
-                        page = page,
-                        limit = limit
-                    )
-                }
-            }
-        }
-
     @Module
     @InstallIn(SingletonComponent::class)
     interface Declarations {
-        @Binds
-        fun bindPagedQuotesRemoteService(service: DefaultQuotesListRemoteService):
-                IntPagedRemoteService<QuotesResponseDTO>
-
-        @Binds
-        fun bindQuotesPersistenceManager(persistenceManager: QuotesListPersistenceManager):
-                PersistenceManager<QuoteEntity, Int>
 
         @ExperimentalPagingApi
         @Binds
         fun bindAllQuotesRepository(repository: DefaultAllQuotesRepository): AllQuotesRepository
 
+        @ExperimentalPagingApi
         @Binds
         fun bindQuotesOfAuthorRepository(repository: DefaultQuotesOfAuthorRepository): QuotesOfAuthorRepository
 
+        @ExperimentalPagingApi
         @Binds
         fun bindQuotesOfTagRepository(repository: DefaultQuotesOfTagRepository): QuotesOfTagRepository
 
