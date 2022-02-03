@@ -5,7 +5,7 @@ import androidx.room.*
 import com.example.quotableapp.data.db.entities.QuoteEntity
 import com.example.quotableapp.data.db.entities.QuoteOriginEntity
 import com.example.quotableapp.data.db.entities.QuoteOriginParams
-import com.example.quotableapp.data.db.entities.QuoteWithOriginCrossRef
+import com.example.quotableapp.data.db.entities.QuoteWithOriginJoin
 
 @Dao
 interface QuotesDao {
@@ -13,7 +13,7 @@ interface QuotesDao {
     @Transaction
     @Query(
         "SELECT quotes.* from " +
-                "(SELECT quoteId from quote_with_origin_cross_ref WHERE originId = " +
+                "(SELECT quoteId from quote_with_origin_join WHERE originId = " +
                 "(SELECT id FROM quote_origins  WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase)) " +
                 "INNER JOIN quotes on quotes.id = quoteId " +
                 "ORDER BY quotes.author"
@@ -41,7 +41,7 @@ interface QuotesDao {
     ): Long?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun add(quoteWithOrigin: QuoteWithOriginCrossRef)
+    suspend fun add(quoteWithOrigin: QuoteWithOriginJoin)
 
     @Transaction
     suspend fun addQuotes(originParams: QuoteOriginParams, quotes: List<QuoteEntity>) {
@@ -49,12 +49,12 @@ interface QuotesDao {
         val originId = getOriginId(originParams)!!
         addQuotes(quotes)
         quotes.forEach { quote ->
-            add(QuoteWithOriginCrossRef(quoteId = quote.id, originId = originId))
+            add(QuoteWithOriginJoin(quoteId = quote.id, originId = originId))
         }
     }
 
     @Query(
-        "DELETE from quote_with_origin_cross_ref " +
+        "DELETE from quote_with_origin_join " +
                 "WHERE originId = :originId"
     )
     suspend fun deleteCrossRefEntries(originId: Long)

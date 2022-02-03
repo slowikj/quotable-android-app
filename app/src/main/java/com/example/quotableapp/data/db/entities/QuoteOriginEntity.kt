@@ -29,7 +29,7 @@ data class QuoteOriginEntity(
 }
 
 @Entity(
-    tableName = "quote_with_origin_cross_ref",
+    tableName = "quote_with_origin_join",
     primaryKeys = ["quoteId", "originId"],
     foreignKeys = [
         ForeignKey(
@@ -46,7 +46,7 @@ data class QuoteOriginEntity(
         )
     ]
 )
-data class QuoteWithOriginCrossRef(
+data class QuoteWithOriginJoin(
     val quoteId: String,
     val originId: Long
 )

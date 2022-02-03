@@ -12,7 +12,7 @@ import com.example.quotableapp.data.db.entities.*
     entities = [
         QuoteEntity::class,
         QuoteOriginEntity::class,
-        QuoteWithOriginCrossRef::class,
+        QuoteWithOriginJoin::class,
         AuthorEntity::class,
         RemoteKeyEntity::class],
     version = 1,
