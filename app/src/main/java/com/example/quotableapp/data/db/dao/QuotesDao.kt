@@ -2,10 +2,7 @@ package com.example.quotableapp.data.db.dao
 
 import androidx.paging.PagingSource
 import androidx.room.*
-import com.example.quotableapp.data.db.entities.QuoteEntity
-import com.example.quotableapp.data.db.entities.QuoteOriginEntity
-import com.example.quotableapp.data.db.entities.QuoteOriginParams
-import com.example.quotableapp.data.db.entities.QuoteWithOriginJoin
+import com.example.quotableapp.data.db.entities.quote.*
 
 @Dao
 interface QuotesDao {
@@ -19,7 +16,7 @@ interface QuotesDao {
                 "ORDER BY quotes.author"
     )
     fun getQuotes(
-        type: QuoteOriginEntity.Type = QuoteOriginEntity.Type.ALL,
+        type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
         value: String = "",
         searchPhrase: String = ""
     ): PagingSource<Int, QuoteEntity>
@@ -35,7 +32,7 @@ interface QuotesDao {
                 "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase"
     )
     suspend fun getOriginId(
-        type: QuoteOriginEntity.Type = QuoteOriginEntity.Type.ALL,
+        type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
         value: String = "",
         searchPhrase: String = ""
     ): Long?
@@ -65,6 +62,7 @@ interface QuotesDao {
         originId?.let { deleteCrossRefEntries(it) }
     }
 
+    @Transaction
     suspend fun getOriginId(params: QuoteOriginParams): Long? {
         return getOriginId(
             type = params.type,
@@ -72,4 +70,56 @@ interface QuotesDao {
             searchPhrase = params.searchPhrase
         )
     }
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(quoteRemoteKeyEntity: QuoteRemoteKeyEntity)
+
+    @Transaction
+    suspend fun insertRemotePageKey(originParams: QuoteOriginParams, key: Int) {
+        addOrigin(QuoteOriginEntity(params = originParams))
+        val originId = getOriginId(originParams)!!
+        val pageKeyEntity = QuoteRemoteKeyEntity(
+            originId = originId,
+            pageKey = key,
+            lastUpdated = System.currentTimeMillis()
+        )
+        insert(pageKeyEntity)
+    }
+
+    @Transaction
+    @Query(
+        "SELECT pageKey FROM quote_remote_keys " +
+                "INNER JOIN quote_origins on quote_origins.id = originId " +
+                "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase " +
+                "LIMIT 1"
+    )
+    fun getRemotePageKey(
+        type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
+        value: String = "",
+        searchPhrase: String = ""
+    ): Int?
+
+    @Transaction
+    @Query(
+        "SELECT lastUpdated FROM quote_remote_keys " +
+                "INNER JOIN quote_origins on quote_origins.id = originId " +
+                "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase " +
+                "LIMIT 1"
+    )
+    fun getLastUpdated(
+        type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
+        value: String = "",
+        searchPhrase: String = ""
+    ): Long?
+
+    @Query(
+        "DELETE FROM quote_remote_keys " +
+                "WHERE originId = (SELECT id FROM quote_origins " +
+                "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase LIMIT 1)"
+    )
+    fun deleteRemoteKey(
+        type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
+        value: String = "",
+        searchPhrase: String = ""
+    )
 }

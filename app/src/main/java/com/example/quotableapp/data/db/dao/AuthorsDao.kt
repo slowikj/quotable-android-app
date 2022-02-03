@@ -5,7 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.quotableapp.data.db.entities.AuthorEntity
+import com.example.quotableapp.data.db.entities.author.AuthorEntity
 
 @Dao
 interface AuthorsDao {

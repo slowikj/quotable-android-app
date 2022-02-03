@@ -7,6 +7,9 @@ import com.example.quotableapp.data.db.dao.AuthorsDao
 import com.example.quotableapp.data.db.dao.QuotesDao
 import com.example.quotableapp.data.db.dao.RemoteKeyDao
 import com.example.quotableapp.data.db.entities.*
+import com.example.quotableapp.data.db.entities.author.AuthorEntity
+import com.example.quotableapp.data.db.entities.quote.QuoteEntity
+import com.example.quotableapp.data.db.entities.quote.QuoteWithOriginJoin
 
 @Database(
     entities = [

@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.room.withTransaction
 import com.example.quotableapp.data.db.QuotesDatabase
 import com.example.quotableapp.data.db.common.PersistenceManager
-import com.example.quotableapp.data.db.entities.AuthorEntity
+import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.db.entities.RemoteKeyEntity
 import javax.inject.Inject
 

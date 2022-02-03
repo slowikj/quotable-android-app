@@ -5,57 +5,56 @@ import androidx.room.withTransaction
 import com.example.quotableapp.data.db.QuotesDatabase
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.db.dao.QuotesDao
-import com.example.quotableapp.data.db.dao.RemoteKeyDao
-import com.example.quotableapp.data.db.entities.QuoteEntity
-import com.example.quotableapp.data.db.entities.QuoteOriginEntity
-import com.example.quotableapp.data.db.entities.QuoteOriginParams
-import com.example.quotableapp.data.db.entities.RemoteKeyEntity
+import com.example.quotableapp.data.db.entities.quote.QuoteEntity
+import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import javax.inject.Inject
 
-class QuotesListPersistenceManager @Inject constructor(
-    private val database: QuotesDatabase
+interface QuotesListPersistenceManagerFactory {
+    fun create(quoteOriginParams: QuoteOriginParams): PersistenceManager<QuoteEntity, Int>
+}
+
+class QuotesListPersistenceManager(
+    private val database: QuotesDatabase,
+    private val quoteOriginParams: QuoteOriginParams
 ) : PersistenceManager<QuoteEntity, Int> {
 
     private val quotesDao: QuotesDao
         get() = database.quotesDao()
 
-    private val remoteKeysDao: RemoteKeyDao
-        get() = database.remoteKeysDao()
+    override suspend fun deleteAll() {
+        quotesDao.deleteCrossRefEntries(quoteOriginParams)
+        quotesDao.deleteRemoteKey(
+            type = quoteOriginParams.type,
+            value = quoteOriginParams.value,
+            searchPhrase = quoteOriginParams.searchPhrase
+        )
+    }
 
-    private val originParams = QuoteOriginParams(
-        type = QuoteOriginEntity.Type.ALL,
-        value = "",
-        searchPhrase = ""
+    override suspend fun getLastUpdated(): Long? = quotesDao.getLastUpdated(
+        type = quoteOriginParams.type,
+        value = quoteOriginParams.value,
+        searchPhrase = quoteOriginParams.searchPhrase
     )
 
-    override suspend fun deleteAll() {
-        quotesDao.deleteCrossRefEntries(originParams)
-        remoteKeysDao.delete(RemoteKeyEntity.Type.QUOTES_LIST)
-    }
-
-    override suspend fun getLastUpdated(): Long? = getLatestKeyEntity()?.lastUpdated
-
-    override suspend fun getLatestPageKey(): Int? {
-        return getLatestKeyEntity()?.pageKey
-    }
+    override suspend fun getLatestPageKey(): Int? = quotesDao.getRemotePageKey(
+        type = quoteOriginParams.type,
+        value = quoteOriginParams.value,
+        searchPhrase = quoteOriginParams.searchPhrase
+    )
 
     override suspend fun append(entries: List<QuoteEntity>, pageKey: Int) {
-        remoteKeysDao.update(prepareRemoteKey(pageKey))
-        quotesDao.addQuotes(originParams = originParams, quotes = entries)
+        quotesDao.insertRemotePageKey(quoteOriginParams, pageKey)
+        quotesDao.addQuotes(originParams = quoteOriginParams, quotes = entries)
     }
 
     override suspend fun <R> withTransaction(block: suspend () -> R): R =
         database.withTransaction(block)
 
-    override fun getPagingSource(): PagingSource<Int, QuoteEntity> = quotesDao.getQuotes()
-
-    private fun prepareRemoteKey(pageKey: Int): RemoteKeyEntity =
-        RemoteKeyEntity(
-            pageKey = pageKey,
-            lastUpdated = System.currentTimeMillis(),
-            type = RemoteKeyEntity.Type.QUOTES_LIST
+    override fun getPagingSource(): PagingSource<Int, QuoteEntity> =
+        quotesDao.getQuotes(
+            type = quoteOriginParams.type,
+            value = quoteOriginParams.value,
+            searchPhrase = quoteOriginParams.searchPhrase
         )
 
-    private suspend fun getLatestKeyEntity(): RemoteKeyEntity? =
-        remoteKeysDao.getLatest(RemoteKeyEntity.Type.QUOTES_LIST).lastOrNull()
 }

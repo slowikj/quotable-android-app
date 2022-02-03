@@ -6,7 +6,7 @@ import com.example.quotableapp.data.converters.author.AuthorPhotoUrlCreator
 import com.example.quotableapp.data.converters.author.DefaultAuthorConverters
 import com.example.quotableapp.data.converters.author.DefaultAuthorPhotoUrlCreator
 import com.example.quotableapp.data.db.common.PersistenceManager
-import com.example.quotableapp.data.db.entities.AuthorEntity
+import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.repository.authors.paging.AuthorsListDTOResponseToEntitiesConverter
 import com.example.quotableapp.data.repository.authors.paging.AuthorsListPersistenceManager
