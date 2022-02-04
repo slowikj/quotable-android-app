@@ -25,8 +25,8 @@ class QuotesListPersistenceManager @AssistedInject constructor(
         get() = database.quotesDao()
 
     override suspend fun deleteAll() {
-        quotesDao.deleteCrossRefEntries(quoteOriginParams)
-        quotesDao.deleteRemoteKey(
+        quotesDao.deleteQuoteEntriesFrom(quoteOriginParams)
+        quotesDao.deletePageRemoteKey(
             type = quoteOriginParams.type,
             value = quoteOriginParams.value,
             searchPhrase = quoteOriginParams.searchPhrase

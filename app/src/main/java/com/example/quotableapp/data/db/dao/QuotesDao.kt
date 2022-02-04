@@ -54,12 +54,12 @@ interface QuotesDao {
         "DELETE from quote_with_origin_join " +
                 "WHERE originId = :originId"
     )
-    suspend fun deleteCrossRefEntries(originId: Long)
+    suspend fun deleteQuoteEntriesFrom(originId: Long)
 
     @Transaction
-    suspend fun deleteCrossRefEntries(originParams: QuoteOriginParams) {
+    suspend fun deleteQuoteEntriesFrom(originParams: QuoteOriginParams) {
         val originId = getOriginId(originParams)
-        originId?.let { deleteCrossRefEntries(it) }
+        originId?.let { deleteQuoteEntriesFrom(it) }
     }
 
     @Transaction
@@ -117,7 +117,7 @@ interface QuotesDao {
                 "WHERE originId = (SELECT id FROM quote_origins " +
                 "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase LIMIT 1)"
     )
-    fun deleteRemoteKey(
+    fun deletePageRemoteKey(
         type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
         value: String = "",
         searchPhrase: String = ""
