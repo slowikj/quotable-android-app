@@ -22,7 +22,9 @@ data class QuoteOriginParams(
     enum class Type(private val value: String) {
         ALL("all"),
         OF_TAG("tag"),
-        OF_AUTHOR("of_author");
+        OF_AUTHOR("of_author"),
+        EXAMPLE_FROM_DASHBOARD("example_from_dashboard"),
+        RANDOM("random");
 
         override fun toString(): String {
             return value
