@@ -1,13 +1,8 @@
-package com.example.quotableapp.data.repository.di
+package com.example.quotableapp.data.repository
 
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.common.DefaultCoroutineDispatchers
-import com.example.quotableapp.data.repository.authors.AuthorsRepository
-import com.example.quotableapp.data.repository.authors.DefaultAuthorsRepository
-import com.example.quotableapp.data.repository.quotes.DefaultQuotesRepository
-import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -45,12 +40,6 @@ object RepositoryModule {
         @Binds
         fun bindCoroutineDispatchers(dispatchers: DefaultCoroutineDispatchers): CoroutineDispatchers
 
-        @ExperimentalPagingApi
-        @Binds
-        fun bindAuthorsRepository(repository: DefaultAuthorsRepository): AuthorsRepository
-
-        @Binds
-        fun bindQuotesRepository(repository: DefaultQuotesRepository): QuotesRepository
     }
 
 }

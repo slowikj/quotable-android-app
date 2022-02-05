@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.repository.quotes.quoteslist.all
+package com.example.quotableapp.data.repository.quotes.quoteslist
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
@@ -21,6 +21,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+
+interface AllQuotesRepository {
+    fun fetchAllQuotes(searchPhrase: String?): Flow<PagingData<Quote>>
+
+    suspend fun fetchFirstQuotes(limit: Int): Resource<List<Quote>, HttpApiError>
+}
 
 @ExperimentalPagingApi
 class DefaultAllQuotesRepository @Inject constructor(

@@ -1,9 +1,7 @@
-package com.example.quotableapp.data.repository.tags.di
+package com.example.quotableapp.data.repository.tags
 
 import com.example.quotableapp.data.converters.tag.DefaultTagConverters
 import com.example.quotableapp.data.converters.tag.TagConverters
-import com.example.quotableapp.data.repository.tags.DefaultTagRepository
-import com.example.quotableapp.data.repository.tags.TagsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

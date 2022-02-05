@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.repository.quotes.quoteslist.ofauthor
+package com.example.quotableapp.data.repository.quotes.quoteslist
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
@@ -18,17 +18,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
+interface QuotesOfTagRepository {
+    fun fetchQuotesOfTag(tag: String): Flow<PagingData<Quote>>
+}
+
 @ExperimentalPagingApi
-class DefaultQuotesOfAuthorRepository @Inject constructor(
+class DefaultQuotesOfTagRepository @Inject constructor(
     private val remoteMediatorFactory: QuotesRemoteMediatorFactory,
     private val quotesService: QuotesService,
     private val pagingConfig: PagingConfig,
     private val quoteConverters: QuoteConverters,
     private val coroutineDispatchers: CoroutineDispatchers
-) : QuotesOfAuthorRepository {
+) : QuotesOfTagRepository {
 
-    override fun fetchQuotesOfAuthor(authorSlug: String): Flow<PagingData<Quote>> {
-        val remoteMediator = createQuotesOfAuthorRemoteMediator(authorSlug)
+    override fun fetchQuotesOfTag(tag: String): Flow<PagingData<Quote>> {
+        val remoteMediator = createQuotesOfTagRemoteMediator(tag)
         return Pager(
             config = pagingConfig,
             remoteMediator = remoteMediator,
@@ -38,15 +42,12 @@ class DefaultQuotesOfAuthorRepository @Inject constructor(
             .flowOn(coroutineDispatchers.IO)
     }
 
-    private fun createQuotesOfAuthorRemoteMediator(authorSlug: String): QuotesRemoteMediator {
+    private fun createQuotesOfTagRemoteMediator(tag: String): QuotesRemoteMediator {
         val service: IntPagedRemoteService<QuotesResponseDTO> = { page: Int, limit: Int ->
-            quotesService.fetchQuotesOfAuthor(author = authorSlug, page = page, limit = limit)
+            quotesService.fetchQuotesOfTag(tag = tag, page = page, limit = limit)
         }
         return remoteMediatorFactory.create(
-            originParams = QuoteOriginParams(
-                type = QuoteOriginParams.Type.OF_AUTHOR,
-                value = authorSlug
-            ),
+            originParams = QuoteOriginParams(type = QuoteOriginParams.Type.OF_TAG, value = tag),
             remoteService = service
         )
     }
