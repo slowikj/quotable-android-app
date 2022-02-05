@@ -4,50 +4,49 @@ import androidx.paging.PagingSource
 import androidx.room.withTransaction
 import com.example.quotableapp.data.db.QuotesDatabase
 import com.example.quotableapp.data.db.common.PersistenceManager
-import com.example.quotableapp.data.db.entities.RemoteKeyEntity
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
-import javax.inject.Inject
+import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 
-class AuthorsListPersistenceManager @Inject constructor(
-    private val database: QuotesDatabase
+@AssistedFactory
+interface AuthorsListPersistenceManagerFactory {
+    fun create(originParams: AuthorOriginParams): AuthorsListPersistenceManager
+}
+
+class AuthorsListPersistenceManager @AssistedInject constructor(
+    private val database: QuotesDatabase,
+    @Assisted private val originParams: AuthorOriginParams
 ) : PersistenceManager<AuthorEntity, Int> {
-
-    companion object {
-        private val REMOTE_KEY_TYPE = RemoteKeyEntity.Type.AUTHOR_LIST
-    }
-
-    private val remoteKeysDao = database.remoteKeysDao()
 
     private val authorsDao = database.authorsDao()
 
     override suspend fun deleteAll() {
-        authorsDao.deleteAll()
-        remoteKeysDao.delete(REMOTE_KEY_TYPE)
+        authorsDao.deleteAll(type = originParams.type, searchPhrase = originParams.searchPhrase)
+        authorsDao.deletePageKey(type = originParams.type, searchPhrase = originParams.searchPhrase)
     }
 
-    override suspend fun getLastUpdated(): Long? = getLatestKeyEntity()?.lastUpdated
+    override suspend fun getLastUpdated(): Long? = authorsDao.getLastUpdated(
+        type = originParams.type,
+        searchPhrase = originParams.searchPhrase
+    )
 
-    override suspend fun getLatestPageKey(): Int? = getLatestKeyEntity()?.pageKey
-
-    private suspend fun getLatestKeyEntity() = remoteKeysDao.getLatest(REMOTE_KEY_TYPE).lastOrNull()
+    override suspend fun getLatestPageKey(): Int? =
+        authorsDao.getPageKey(type = originParams.type, searchPhrase = originParams.searchPhrase)
 
     override suspend fun append(entries: List<AuthorEntity>, pageKey: Int) {
-        remoteKeysDao.update(prepareRemoteKey(pageKey))
-        authorsDao.add(entries)
+        authorsDao.addRemoteKey(originParams = originParams, pageKey = pageKey)
+        authorsDao.add(originParams = originParams, entries = entries)
     }
 
     override suspend fun <R> withTransaction(block: suspend () -> R): R {
         return database.withTransaction(block)
     }
 
-    private fun prepareRemoteKey(pageKey: Int) = RemoteKeyEntity(
-        pageKey = pageKey,
-        type = RemoteKeyEntity.Type.AUTHOR_LIST,
-        lastUpdated = System.currentTimeMillis()
-    )
-
     override fun getPagingSource(): PagingSource<Int, AuthorEntity> {
-        return database.authorsDao().getAll()
+        return database.authorsDao()
+            .getAuthors(type = originParams.type, searchPhrase = originParams.searchPhrase)
     }
 
 }

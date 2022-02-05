@@ -14,10 +14,4 @@ class ConverterAdapters {
         return str.split(" ")
     }
 
-    @TypeConverter
-    fun fromRemoteKeyType(type: RemoteKeyEntity.Type) = type.ordinal
-
-    @TypeConverter
-    fun toRemoteKeyType(ordinal: Int) = enumValues<RemoteKeyEntity.Type>()[ordinal]
-
 }

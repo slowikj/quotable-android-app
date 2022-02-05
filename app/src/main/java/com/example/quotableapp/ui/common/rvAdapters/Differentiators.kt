@@ -27,7 +27,7 @@ class TagDifferentiator : DiffUtil.ItemCallback<Tag>() {
 
 class AuthorDifferentiator : DiffUtil.ItemCallback<Author>() {
     override fun areItemsTheSame(oldItem: Author, newItem: Author): Boolean =
-        oldItem.id == newItem.id
+        oldItem.slug == newItem.slug
 
     override fun areContentsTheSame(oldItem: Author, newItem: Author): Boolean =
         oldItem == newItem

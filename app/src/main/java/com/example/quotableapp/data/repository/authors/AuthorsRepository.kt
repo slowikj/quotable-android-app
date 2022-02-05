@@ -4,10 +4,12 @@ import androidx.paging.*
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.common.Resource
 import com.example.quotableapp.data.converters.author.AuthorConverters
+import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
+import com.example.quotableapp.data.repository.authors.paging.AssistedAuthorsRemoteMediatorFactory
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -43,12 +45,15 @@ class DefaultAuthorsRepository @Inject constructor(
     }
 
     override fun fetchAllAuthors(): Flow<PagingData<Author>> {
-        val remoteMediator = authorsRemoteMediatorFactory.create { page, limit ->
-            authorsService.fetchAuthors(
-                page,
-                limit
-            )
-        }
+        val remoteMediator =
+            authorsRemoteMediatorFactory.create(
+                originParams = AuthorOriginParams(type = AuthorOriginParams.Type.ALL)
+            ) { page: Int, limit: Int ->
+                authorsService.fetchAuthors(
+                    page,
+                    limit
+                )
+            }
         return Pager(
             config = pagingConfig,
             remoteMediator = remoteMediator,

@@ -4,7 +4,6 @@ data class Author(
     val link: String,
     val bio: String,
     val description: String,
-    val id: String,
     val name: String,
     val quoteCount: Int,
     val slug: String,

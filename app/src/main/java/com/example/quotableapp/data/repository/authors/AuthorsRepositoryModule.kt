@@ -41,10 +41,6 @@ object AuthorsRepositoryModule {
     @InstallIn(SingletonComponent::class)
     interface Declarations {
 
-        @Binds
-        fun bindAuthorListPersistenceManager(persistenceManager: AuthorsListPersistenceManager)
-                : PersistenceManager<AuthorEntity, Int>
-
         @ExperimentalPagingApi
         @Binds
         fun bindAuthorsRepository(repository: DefaultAuthorsRepository): AuthorsRepository
