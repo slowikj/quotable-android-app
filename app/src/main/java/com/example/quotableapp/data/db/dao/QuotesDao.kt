@@ -22,6 +22,16 @@ interface QuotesDao {
         searchPhrase: String = ""
     ): PagingSource<Int, QuoteEntity>
 
+    fun getQuotesSortedByAuthor(
+        params: QuoteOriginParams
+    ): PagingSource<Int, QuoteEntity> {
+        return getQuotesSortedByAuthor(
+            type = params.type,
+            value = params.value,
+            searchPhrase = params.searchPhrase
+        )
+    }
+
     @Transaction
     @Query(
         "SELECT quotes.* FROM " +
@@ -36,6 +46,18 @@ interface QuotesDao {
         searchPhrase: String = "",
         limit: Int = 1,
     ): Flow<List<QuoteEntity>>
+
+    fun getFirstQuotes(
+        params: QuoteOriginParams,
+        limit: Int = 1,
+    ): Flow<List<QuoteEntity>> {
+        return getFirstQuotes(
+            type = params.type,
+            value = params.value,
+            searchPhrase = params.searchPhrase,
+            limit = limit
+        )
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addQuotes(quotes: List<QuoteEntity>)
@@ -52,6 +74,14 @@ interface QuotesDao {
         value: String = "",
         searchPhrase: String = ""
     ): Long?
+
+    suspend fun getOriginId(params: QuoteOriginParams): Long? {
+        return getOriginId(
+            type = params.type,
+            value = params.value,
+            searchPhrase = params.searchPhrase
+        )
+    }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun add(quoteWithOrigin: QuoteWithOriginJoin)
@@ -76,15 +106,6 @@ interface QuotesDao {
     suspend fun deleteQuoteEntriesFrom(originParams: QuoteOriginParams) {
         val originId = getOriginId(originParams)
         originId?.let { deleteQuoteEntriesFrom(it) }
-    }
-
-    @Transaction
-    suspend fun getOriginId(params: QuoteOriginParams): Long? {
-        return getOriginId(
-            type = params.type,
-            value = params.value,
-            searchPhrase = params.searchPhrase
-        )
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -115,6 +136,16 @@ interface QuotesDao {
         searchPhrase: String = ""
     ): Int?
 
+    suspend fun getRemotePageKey(
+        params: QuoteOriginParams
+    ): Int? {
+        return getRemotePageKey(
+            type = params.type,
+            value = params.value,
+            searchPhrase = params.searchPhrase
+        )
+    }
+
     @Transaction
     @Query(
         "SELECT lastUpdated FROM quote_remote_keys " +
@@ -128,6 +159,17 @@ interface QuotesDao {
         searchPhrase: String = ""
     ): Long?
 
+    suspend fun getLastUpdatedMillis(
+        params: QuoteOriginParams
+    ): Long? {
+        return getLastUpdatedMillis(
+            type = params.type,
+            value = params.value,
+            searchPhrase = params.searchPhrase
+        )
+    }
+
+    @Transaction
     @Query(
         "DELETE FROM quote_remote_keys " +
                 "WHERE originId = (SELECT id FROM quote_origins " +
@@ -138,4 +180,14 @@ interface QuotesDao {
         value: String = "",
         searchPhrase: String = ""
     )
+
+    suspend fun deletePageRemoteKey(
+        params: QuoteOriginParams
+    ) {
+        return deletePageRemoteKey(
+            type = params.type,
+            value = params.value,
+            searchPhrase = params.searchPhrase
+        )
+    }
 }

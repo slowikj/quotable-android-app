@@ -26,24 +26,12 @@ class QuotesListPersistenceManager @AssistedInject constructor(
 
     override suspend fun deleteAll() {
         quotesDao.deleteQuoteEntriesFrom(quoteOriginParams)
-        quotesDao.deletePageRemoteKey(
-            type = quoteOriginParams.type,
-            value = quoteOriginParams.value,
-            searchPhrase = quoteOriginParams.searchPhrase
-        )
+        quotesDao.deletePageRemoteKey(quoteOriginParams)
     }
 
-    override suspend fun getLastUpdated(): Long? = quotesDao.getLastUpdatedMillis(
-        type = quoteOriginParams.type,
-        value = quoteOriginParams.value,
-        searchPhrase = quoteOriginParams.searchPhrase
-    )
+    override suspend fun getLastUpdated(): Long? = quotesDao.getLastUpdatedMillis(quoteOriginParams)
 
-    override suspend fun getLatestPageKey(): Int? = quotesDao.getRemotePageKey(
-        type = quoteOriginParams.type,
-        value = quoteOriginParams.value,
-        searchPhrase = quoteOriginParams.searchPhrase
-    )
+    override suspend fun getLatestPageKey(): Int? = quotesDao.getRemotePageKey(quoteOriginParams)
 
     override suspend fun append(entries: List<QuoteEntity>, pageKey: Int) {
         quotesDao.insertRemotePageKey(quoteOriginParams, pageKey)
@@ -54,10 +42,6 @@ class QuotesListPersistenceManager @AssistedInject constructor(
         database.withTransaction(block)
 
     override fun getPagingSource(): PagingSource<Int, QuoteEntity> =
-        quotesDao.getQuotesSortedByAuthor(
-            type = quoteOriginParams.type,
-            value = quoteOriginParams.value,
-            searchPhrase = quoteOriginParams.searchPhrase
-        )
+        quotesDao.getQuotesSortedByAuthor(quoteOriginParams)
 
 }

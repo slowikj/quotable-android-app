@@ -46,9 +46,7 @@ class DefaultOneQuoteRepository @Inject constructor(
     override val randomQuoteFlow: Flow<Quote>
         get() = quotesDao
             .getFirstQuotes(
-                type = randomQuoteOriginParams.type,
-                value = randomQuoteOriginParams.value,
-                searchPhrase = randomQuoteOriginParams.searchPhrase,
+                params = randomQuoteOriginParams,
                 limit = 1
             )
             .filterNot { it.isNullOrEmpty() }
@@ -91,11 +89,7 @@ class DefaultOneQuoteRepository @Inject constructor(
     private suspend fun shouldCacheBeUpdated(forceUpdate: Boolean): Boolean =
         withContext(coroutineDispatchers.Default) {
             val lastUpdatedMillis =
-                quotesDao.getLastUpdatedMillis(
-                    type = randomQuoteOriginParams.type,
-                    value = randomQuoteOriginParams.value,
-                    searchPhrase = randomQuoteOriginParams.searchPhrase
-                )
+                quotesDao.getLastUpdatedMillis(params = randomQuoteOriginParams)
             val currentTimeMillis = System.currentTimeMillis()
 
             forceUpdate ||

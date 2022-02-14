@@ -71,9 +71,7 @@ class DefaultAllQuotesRepository @Inject constructor(
 
     override val firstQuotesFlow: Flow<List<Quote>>
         get() = quotesDao.getFirstQuotes(
-            type = firstQuotesParams.type,
-            value = firstQuotesParams.value,
-            searchPhrase = firstQuotesParams.searchPhrase,
+            params = firstQuotesParams,
             limit = FIRST_QUOTES_LIMIT
         ).filterNotNull()
             .map { quotes -> quotes.map(quotesConverters::toDomain) }
@@ -129,11 +127,7 @@ class DefaultAllQuotesRepository @Inject constructor(
 
     private suspend fun shouldCacheBeUpdated(forceUpdate: Boolean) =
         withContext(coroutineDispatchers.Default) {
-            val lastUpdatedMillis = quotesDao.getLastUpdatedMillis(
-                type = firstQuotesParams.type,
-                searchPhrase = firstQuotesParams.searchPhrase,
-                value = firstQuotesParams.value
-            )
+            val lastUpdatedMillis = quotesDao.getLastUpdatedMillis(firstQuotesParams)
             val currentTimeMillis = System.currentTimeMillis()
             val res = forceUpdate ||
                     lastUpdatedMillis == null ||
