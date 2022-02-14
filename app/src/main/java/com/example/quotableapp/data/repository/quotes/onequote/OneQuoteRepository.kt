@@ -19,7 +19,7 @@ import javax.inject.Inject
 interface OneQuoteRepository {
     suspend fun fetchQuote(id: String): Resource<Quote, HttpApiError>
 
-    suspend fun fetchRandomQuote(forceUpdate: Boolean = false): Result<Boolean>
+    suspend fun fetchRandomQuote(forceUpdate: Boolean = false): Resource<Boolean, HttpApiError>
 
     val randomQuoteFlow: Flow<Quote>
 }
@@ -56,26 +56,22 @@ class DefaultOneQuoteRepository @Inject constructor(
         }
     }
 
-    override suspend fun fetchRandomQuote(forceUpdate: Boolean): Result<Boolean> {
+    override suspend fun fetchRandomQuote(forceUpdate: Boolean): Resource<Boolean, HttpApiError> {
         return withContext(dispatchers.IO) {
             if (shouldCacheBeUpdated(forceUpdate)) {
                 val apiRandomQuote = apiResponseInterpreter { quotesService.fetchRandomQuote() }
-                apiRandomQuote.fold(
-                    onSuccess = { quoteDTO ->
-                        quotesDao.insertRemotePageKey(
-                            originParams = randomQuoteOriginParams,
-                            key = 0
-                        )
-                        quotesDao.addQuotes(
-                            originParams = randomQuoteOriginParams,
-                            quotes = listOf(quoteConverters.toDb(quoteDTO))
-                        )
-                        Result.success(true)
-                    },
-                    onFailure = { error -> Result.failure(error) }
-                )
+                apiRandomQuote.onSuccess { quoteDTO ->
+                    quotesDao.insertRemotePageKey(
+                        originParams = randomQuoteOriginParams,
+                        key = 0
+                    )
+                    quotesDao.addQuotes(
+                        originParams = randomQuoteOriginParams,
+                        quotes = listOf(quoteConverters.toDb(quoteDTO))
+                    )
+                }.map { true }
             } else {
-                Result.success(false)
+                Resource.success(false)
             }
         }
     }
