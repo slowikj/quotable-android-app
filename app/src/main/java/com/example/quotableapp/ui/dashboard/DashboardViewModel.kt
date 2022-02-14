@@ -32,8 +32,7 @@ class DashboardViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val authorsRepository: AuthorsRepository,
     private val quotesRepository: QuotesRepository,
-    private val tagsRepository: TagsRepository,
-    private val oneQuoteRepository: OneQuoteRepository
+    private val tagsRepository: TagsRepository
 ) : ViewModel() {
 
     companion object {
@@ -129,7 +128,7 @@ class DashboardViewModel @Inject constructor(
     fun requestRandomQuote() {
         requestData(
             stateFlow = _randomQuote,
-            requestFunc = { oneQuoteRepository.fetchRandomQuote() }
+            requestFunc = { quotesRepository.fetchRandomQuote() }
         )
     }
 
