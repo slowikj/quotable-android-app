@@ -1,18 +1,19 @@
 package com.example.quotableapp.data.repository.quotes.onequote
 
+import androidx.room.withTransaction
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.common.Resource
 import com.example.quotableapp.data.converters.quote.QuoteConverters
+import com.example.quotableapp.data.db.QuotesDatabase
 import com.example.quotableapp.data.db.dao.QuotesDao
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.QuotesService
 import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
+import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.repository.CacheTimeout
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -25,11 +26,11 @@ interface OneQuoteRepository {
 }
 
 class DefaultOneQuoteRepository @Inject constructor(
-    private val dispatchers: CoroutineDispatchers,
+    private val coroutineDispatchers: CoroutineDispatchers,
     @CacheTimeout private val cacheTimeoutMillis: Long,
     private val quotesService: QuotesService,
     private val quoteConverters: QuoteConverters,
-    private val quotesDao: QuotesDao,
+    private val quotesDatabase: QuotesDatabase,
     private val apiResponseInterpreter: QuotableApiResponseInterpreter
 ) : OneQuoteRepository {
 
@@ -37,6 +38,8 @@ class DefaultOneQuoteRepository @Inject constructor(
         private val randomQuoteOriginParams =
             QuoteOriginParams(type = QuoteOriginParams.Type.RANDOM)
     }
+
+    private val quotesDao: QuotesDao = quotesDatabase.quotesDao()
 
     override val randomQuoteFlow: Flow<Quote>
         get() = quotesDao
@@ -46,29 +49,23 @@ class DefaultOneQuoteRepository @Inject constructor(
                 searchPhrase = randomQuoteOriginParams.searchPhrase,
                 limit = 1
             )
-            .filterNotNull()
+            .filterNot { it.isNullOrEmpty()}
+            .map { it.first() }
             .map(quoteConverters::toDomain)
 
     override suspend fun fetchQuote(id: String): Resource<Quote, HttpApiError> {
-        return withContext(dispatchers.IO) {
+        return withContext(coroutineDispatchers.IO) {
             apiResponseInterpreter { quotesService.fetchQuote(id) }
                 .map { quoteConverters.toDomain(it) }
         }
     }
 
     override suspend fun fetchRandomQuote(forceUpdate: Boolean): Resource<Boolean, HttpApiError> {
-        return withContext(dispatchers.IO) {
+        return withContext(coroutineDispatchers.IO) {
             if (shouldCacheBeUpdated(forceUpdate)) {
                 val apiRandomQuote = apiResponseInterpreter { quotesService.fetchRandomQuote() }
-                apiRandomQuote.onSuccess { quoteDTO ->
-                    quotesDao.insertRemotePageKey(
-                        originParams = randomQuoteOriginParams,
-                        key = 0
-                    )
-                    quotesDao.addQuotes(
-                        originParams = randomQuoteOriginParams,
-                        quotes = listOf(quoteConverters.toDb(quoteDTO))
-                    )
+                apiRandomQuote.onSuccess {
+                    updateDatabaseWithRandomQuote(it)
                 }.map { true }
             } else {
                 Resource.success(false)
@@ -76,17 +73,31 @@ class DefaultOneQuoteRepository @Inject constructor(
         }
     }
 
-    private suspend fun shouldCacheBeUpdated(forceUpdate: Boolean): Boolean {
-        val lastUpdatedMillis =
-            quotesDao.getLastUpdatedMillis(
-                type = randomQuoteOriginParams.type,
-                value = randomQuoteOriginParams.value,
-                searchPhrase = randomQuoteOriginParams.searchPhrase
+    private suspend fun updateDatabaseWithRandomQuote(quoteDTO: QuoteDTO) {
+        quotesDatabase.withTransaction {
+            quotesDao.insertRemotePageKey(
+                originParams = randomQuoteOriginParams,
+                key = 0
             )
-        val currentTimeMillis = System.currentTimeMillis()
-
-        return forceUpdate ||
-                lastUpdatedMillis == null ||
-                currentTimeMillis - lastUpdatedMillis > cacheTimeoutMillis
+            quotesDao.addQuotes(
+                originParams = randomQuoteOriginParams,
+                quotes = listOf(quoteConverters.toDb(quoteDTO))
+            )
+        }
     }
+
+    private suspend fun shouldCacheBeUpdated(forceUpdate: Boolean): Boolean =
+        withContext(coroutineDispatchers.Default) {
+            val lastUpdatedMillis =
+                quotesDao.getLastUpdatedMillis(
+                    type = randomQuoteOriginParams.type,
+                    value = randomQuoteOriginParams.value,
+                    searchPhrase = randomQuoteOriginParams.searchPhrase
+                )
+            val currentTimeMillis = System.currentTimeMillis()
+
+            forceUpdate ||
+                    lastUpdatedMillis == null ||
+                    currentTimeMillis - lastUpdatedMillis > cacheTimeoutMillis
+        }
 }

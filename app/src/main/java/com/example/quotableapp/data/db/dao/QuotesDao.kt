@@ -35,7 +35,7 @@ interface QuotesDao {
         value: String = "",
         searchPhrase: String = "",
         limit: Int = 1,
-    ): Flow<QuoteEntity>
+    ): Flow<List<QuoteEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addQuotes(quotes: List<QuoteEntity>)

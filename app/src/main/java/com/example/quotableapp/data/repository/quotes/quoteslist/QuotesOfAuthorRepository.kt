@@ -5,7 +5,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.common.mapPagingElements
+import com.example.quotableapp.common.mapInnerElements
 import com.example.quotableapp.data.converters.quote.QuoteConverters
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
@@ -38,7 +38,7 @@ class DefaultQuotesOfAuthorRepository @Inject constructor(
             remoteMediator = remoteMediator,
             pagingSourceFactory = { remoteMediator.persistenceManager.getPagingSource() }
         ).flow
-            .mapPagingElements { quoteDTO -> quoteConverters.toDomain(quoteDTO) }
+            .mapInnerElements { quoteDTO -> quoteConverters.toDomain(quoteDTO) }
             .flowOn(coroutineDispatchers.IO)
     }
 

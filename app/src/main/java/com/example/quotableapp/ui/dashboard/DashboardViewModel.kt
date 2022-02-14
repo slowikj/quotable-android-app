@@ -12,8 +12,8 @@ import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
-import com.example.quotableapp.ui.common.extensions.handleRequest
-import com.example.quotableapp.ui.common.extensions.setLoading
+import com.example.quotableapp.ui.common.extensions.handleOneShotRequest
+import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -35,11 +35,7 @@ class DashboardViewModel @Inject constructor(
     private val tagsRepository: TagsRepository
 ) : ViewModel() {
 
-    companion object {
-        const val ITEMS_TO_SHOW_NUM = 10
-    }
-
-    sealed class UiError {
+    sealed class UiError : Throwable() {
         object NetworkError : UiError()
     }
 
@@ -79,6 +75,7 @@ class DashboardViewModel @Inject constructor(
         requestTags()
         requestRandomQuote()
         startObservingRandomQuoteFlow()
+        startObservingExemplaryQuotesFlow()
     }
 
     fun onAuthorsShowMoreClick() {
@@ -106,41 +103,31 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun requestAuthors() {
-        requestData(
+        handleRequestWithData(
             stateFlow = _authors,
-            requestFunc = { authorsRepository.fetchFirstAuthors(limit = ITEMS_TO_SHOW_NUM) }
+            requestFunc = { authorsRepository.fetchFirstAuthors(limit = 10) }
         )
     }
 
-    fun requestQuotes() {
-        requestData(
+    fun requestQuotes(forceUpdate: Boolean = false) {
+        handleRequestWithoutData(
             stateFlow = _quotes,
-            requestFunc = { quotesRepository.fetchFirstQuotes(limit = ITEMS_TO_SHOW_NUM) }
+            requestFunc = { quotesRepository.fetchFirstQuotes(forceUpdate) }
         )
     }
 
     fun requestTags() {
-        requestData(
+        handleRequestWithData(
             stateFlow = _tags,
-            requestFunc = { tagsRepository.fetchFirstTags(limit = ITEMS_TO_SHOW_NUM) }
+            requestFunc = { tagsRepository.fetchFirstTags(limit = 10) }
         )
     }
 
     fun requestRandomQuote(forceUpdate: Boolean = false) {
-        if (_randomQuote.value.isLoading) return
-        viewModelScope.launch {
-            _randomQuote.setLoading()
-            val response = quotesRepository.fetchRandomQuote(forceUpdate)
-            response.fold(
-                onSuccess = {
-                    _randomQuote.value = _randomQuote.value.copy(error = null, isLoading = false)
-                },
-                onFailure = {
-                    _randomQuote.value =
-                        _randomQuote.value.copy(error = UiError.NetworkError, isLoading = false)
-                }
-            )
-        }
+        handleRequestWithoutData(
+            stateFlow = _randomQuote,
+            requestFunc = { quotesRepository.fetchRandomQuote(forceUpdate) }
+        )
     }
 
     private fun startObservingRandomQuoteFlow() {
@@ -149,11 +136,28 @@ class DashboardViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun <V> requestData(
+    private fun startObservingExemplaryQuotesFlow() {
+        quotesRepository.firstQuotesFlow
+            .onEach { _quotes.value = _quotes.value.copy(data = it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun <V> handleRequestWithData(
         stateFlow: MutableStateFlow<UiState<V, UiError>>,
         requestFunc: suspend () -> Resource<V, HttpApiError>
     ) {
-        stateFlow.handleRequest(
+        stateFlow.handleRequestWithResult(
+            coroutineScope = viewModelScope,
+            requestFunc = requestFunc,
+            errorConverter = { UiError.NetworkError }
+        )
+    }
+
+    private fun <V> handleRequestWithoutData(
+        stateFlow: MutableStateFlow<UiState<V, UiError>>,
+        requestFunc: suspend () -> Resource<Boolean, HttpApiError>
+    ) {
+        stateFlow.handleOneShotRequest(
             coroutineScope = viewModelScope,
             requestFunc = requestFunc,
             errorConverter = { UiError.NetworkError }

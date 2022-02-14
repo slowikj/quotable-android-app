@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.ui.common.UiState
-import com.example.quotableapp.ui.common.extensions.handleRequest
+import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
 import com.example.quotableapp.ui.common.formatters.formatToClipboard
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -21,7 +21,7 @@ class OneQuoteViewModel @Inject constructor(
     private val quoteRepository: QuotesRepository
 ) : ViewModel() {
 
-    sealed class UiError {
+    sealed class UiError : Throwable() {
         object IOError : UiError()
     }
 
@@ -54,7 +54,7 @@ class OneQuoteViewModel @Inject constructor(
     }
 
     fun requestData() {
-        _state.handleRequest(
+        _state.handleRequestWithResult(
             coroutineScope = viewModelScope,
             requestFunc = { quoteRepository.fetchQuote(quoteId) },
             errorConverter = { UiError.IOError }
