@@ -28,12 +28,13 @@ interface QuotesDao {
                 "(SELECT quoteId from quote_with_origin_join WHERE originId = " +
                 "(SELECT id from quote_origins WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase)) " +
                 "INNER JOIN quotes on quotes.id = quoteId " +
-                "LIMIT 1"
+                "LIMIT :limit"
     )
-    fun getFirstQuote(
+    fun getFirstQuotes(
         type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
         value: String = "",
-        searchPhrase: String = ""
+        searchPhrase: String = "",
+        limit: Int = 1,
     ): Flow<QuoteEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

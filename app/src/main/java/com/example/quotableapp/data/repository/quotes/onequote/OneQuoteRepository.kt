@@ -40,10 +40,11 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     override val randomQuoteFlow: Flow<Quote>
         get() = quotesDao
-            .getFirstQuote(
+            .getFirstQuotes(
                 type = randomQuoteOriginParams.type,
                 value = randomQuoteOriginParams.value,
-                searchPhrase = randomQuoteOriginParams.searchPhrase
+                searchPhrase = randomQuoteOriginParams.searchPhrase,
+                limit = 1
             )
             .filterNotNull()
             .map(quoteConverters::toDomain)
