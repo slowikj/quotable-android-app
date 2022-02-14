@@ -11,7 +11,8 @@ import androidx.room.PrimaryKey
             entity = AuthorOriginEntity::class,
             parentColumns = ["id"],
             childColumns = ["originId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.NO_ACTION,
+            onUpdate = ForeignKey.NO_ACTION
         )
     ]
 )

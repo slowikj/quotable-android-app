@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
             entity = QuoteOriginEntity::class,
             parentColumns = ["id"],
             childColumns = ["originId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.NO_ACTION
         )]
 )
 data class QuoteRemoteKeyEntity(
