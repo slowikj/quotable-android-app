@@ -10,10 +10,10 @@ import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
-import com.example.quotableapp.data.repository.quotes.onequote.OneQuoteRepository
 import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.extensions.handleRequest
+import com.example.quotableapp.ui.common.extensions.setLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -78,6 +78,7 @@ class DashboardViewModel @Inject constructor(
         requestQuotes()
         requestTags()
         requestRandomQuote()
+        startObservingRandomQuoteFlow()
     }
 
     fun onAuthorsShowMoreClick() {
@@ -125,11 +126,27 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
-    fun requestRandomQuote() {
-        requestData(
-            stateFlow = _randomQuote,
-            requestFunc = { quotesRepository.fetchRandomQuote() }
-        )
+    fun requestRandomQuote(forceUpdate: Boolean = false) {
+        if (_randomQuote.value.isLoading) return
+        viewModelScope.launch {
+            _randomQuote.setLoading()
+            val response = quotesRepository.fetchRandomQuote(forceUpdate)
+            response.fold(
+                onSuccess = {
+                    _randomQuote.value = _randomQuote.value.copy(error = null, isLoading = false)
+                },
+                onFailure = {
+                    _randomQuote.value =
+                        _randomQuote.value.copy(error = UiError.NetworkError, isLoading = false)
+                }
+            )
+        }
+    }
+
+    private fun startObservingRandomQuoteFlow() {
+        quotesRepository.randomQuoteFlow
+            .onEach { _randomQuote.value = _randomQuote.value.copy(data = it) }
+            .launchIn(viewModelScope)
     }
 
     private fun <V> requestData(

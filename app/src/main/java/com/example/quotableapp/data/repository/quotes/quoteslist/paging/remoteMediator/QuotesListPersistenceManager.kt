@@ -33,7 +33,7 @@ class QuotesListPersistenceManager @AssistedInject constructor(
         )
     }
 
-    override suspend fun getLastUpdated(): Long? = quotesDao.getLastUpdated(
+    override suspend fun getLastUpdated(): Long? = quotesDao.getLastUpdatedMillis(
         type = quoteOriginParams.type,
         value = quoteOriginParams.value,
         searchPhrase = quoteOriginParams.searchPhrase
@@ -54,7 +54,7 @@ class QuotesListPersistenceManager @AssistedInject constructor(
         database.withTransaction(block)
 
     override fun getPagingSource(): PagingSource<Int, QuoteEntity> =
-        quotesDao.getQuotes(
+        quotesDao.getQuotesSortedByAuthor(
             type = quoteOriginParams.type,
             value = quoteOriginParams.value,
             searchPhrase = quoteOriginParams.searchPhrase

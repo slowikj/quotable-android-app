@@ -3,6 +3,7 @@ package com.example.quotableapp.data.db.dao
 import androidx.paging.PagingSource
 import androidx.room.*
 import com.example.quotableapp.data.db.entities.quote.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface QuotesDao {
@@ -11,15 +12,29 @@ interface QuotesDao {
     @Query(
         "SELECT quotes.* from " +
                 "(SELECT quoteId from quote_with_origin_join WHERE originId = " +
-                "(SELECT id FROM quote_origins  WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase)) " +
+                "(SELECT id FROM quote_origins WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase)) " +
                 "INNER JOIN quotes on quotes.id = quoteId " +
                 "ORDER BY quotes.author"
     )
-    fun getQuotes(
+    fun getQuotesSortedByAuthor(
         type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
         value: String = "",
         searchPhrase: String = ""
     ): PagingSource<Int, QuoteEntity>
+
+    @Transaction
+    @Query(
+        "SELECT quotes.* FROM " +
+                "(SELECT quoteId from quote_with_origin_join WHERE originId = " +
+                "(SELECT id from quote_origins WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase)) " +
+                "INNER JOIN quotes on quotes.id = quoteId " +
+                "LIMIT 1"
+    )
+    fun getFirstQuote(
+        type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
+        value: String = "",
+        searchPhrase: String = ""
+    ): Flow<QuoteEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addQuotes(quotes: List<QuoteEntity>)
@@ -93,7 +108,7 @@ interface QuotesDao {
                 "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase " +
                 "LIMIT 1"
     )
-    fun getRemotePageKey(
+    suspend fun getRemotePageKey(
         type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
         value: String = "",
         searchPhrase: String = ""
@@ -106,7 +121,7 @@ interface QuotesDao {
                 "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase " +
                 "LIMIT 1"
     )
-    fun getLastUpdated(
+    suspend fun getLastUpdatedMillis(
         type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
         value: String = "",
         searchPhrase: String = ""
@@ -117,7 +132,7 @@ interface QuotesDao {
                 "WHERE originId = (SELECT id FROM quote_origins " +
                 "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase LIMIT 1)"
     )
-    fun deletePageRemoteKey(
+    suspend fun deletePageRemoteKey(
         type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
         value: String = "",
         searchPhrase: String = ""
