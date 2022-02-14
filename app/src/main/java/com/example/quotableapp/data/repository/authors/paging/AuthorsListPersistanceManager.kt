@@ -2,7 +2,7 @@ package com.example.quotableapp.data.repository.authors.paging
 
 import androidx.paging.PagingSource
 import androidx.room.withTransaction
-import com.example.quotableapp.data.db.QuotesDatabase
+import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
@@ -16,7 +16,7 @@ interface AuthorsListPersistenceManagerFactory {
 }
 
 class AuthorsListPersistenceManager @AssistedInject constructor(
-    private val database: QuotesDatabase,
+    private val database: QuotableDatabase,
     @Assisted private val originParams: AuthorOriginParams
 ) : PersistenceManager<AuthorEntity, Int> {
 

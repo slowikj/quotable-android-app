@@ -9,7 +9,7 @@ import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.common.mapInnerElements
 import com.example.quotableapp.data.common.Resource
 import com.example.quotableapp.data.converters.quote.QuoteConverters
-import com.example.quotableapp.data.db.QuotesDatabase
+import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.dao.QuotesDao
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
@@ -40,7 +40,7 @@ interface AllQuotesRepository {
 class DefaultAllQuotesRepository @Inject constructor(
     @CacheTimeout private val cacheTimeoutMillis: Long,
     private val quotesRemoteMediatorFactory: QuotesRemoteMediatorFactory,
-    private val quotesDatabase: QuotesDatabase,
+    private val quotableDatabase: QuotableDatabase,
     private val pagingConfig: PagingConfig,
     private val quotesConverters: QuoteConverters,
     private val apiResponseInterpreter: QuotableApiResponseInterpreter,
@@ -48,7 +48,7 @@ class DefaultAllQuotesRepository @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers
 ) : AllQuotesRepository {
 
-    private val quotesDao: QuotesDao = quotesDatabase.quotesDao()
+    private val quotesDao: QuotesDao = quotableDatabase.quotesDao()
 
     override fun fetchAllQuotes(searchPhrase: String?): Flow<PagingData<Quote>> {
         val remoteMediator = createAllQuotesRemoteMediator(searchPhrase)
@@ -88,7 +88,7 @@ class DefaultAllQuotesRepository @Inject constructor(
                     )
                 }
                 apiResponse.onSuccess { dto ->
-                    quotesDatabase.withTransaction {
+                    quotableDatabase.withTransaction {
                         quotesDao.insertRemotePageKey(
                             originParams = firstQuotesParams,
                             key = 1

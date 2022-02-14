@@ -3,7 +3,7 @@ package com.example.quotableapp.data.repository
 import androidx.paging.PagingConfig
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.common.DefaultCoroutineDispatchers
-import com.example.quotableapp.data.db.QuotesDatabase
+import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.dao.QuotesDao
 import dagger.Binds
 import dagger.Module
@@ -22,7 +22,7 @@ annotation class CacheTimeout
 object RepositoryModule {
 
     @Provides
-    fun provideQuotesDao(database: QuotesDatabase): QuotesDao = database.quotesDao()
+    fun provideQuotesDao(database: QuotableDatabase): QuotesDao = database.quotesDao()
 
     @Provides
     fun providePagingConfig(): PagingConfig =

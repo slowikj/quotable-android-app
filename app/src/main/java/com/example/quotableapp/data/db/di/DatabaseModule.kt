@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.quotableapp.data.db.QuotesDatabase
+import com.example.quotableapp.data.db.QuotableDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,8 +18,8 @@ import java.util.concurrent.Executors
 object DatabaseModule {
 
     @Provides
-    fun getQuotesDatabase(@ApplicationContext context: Context): QuotesDatabase =
-        Room.databaseBuilder(context, QuotesDatabase::class.java, "quotes_db.db")
+    fun getQuotesDatabase(@ApplicationContext context: Context): QuotableDatabase =
+        Room.databaseBuilder(context, QuotableDatabase::class.java, "quotes_db.db")
             .addCallback(object : RoomDatabase.Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)

@@ -13,7 +13,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class QuotesDaoTest {
 
-    private lateinit var db: QuotesDatabase
+    private lateinit var db: QuotableDatabase
     private lateinit var quotesDao: QuotesDao
 
     @Before

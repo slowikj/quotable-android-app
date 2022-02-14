@@ -29,7 +29,7 @@ import com.example.quotableapp.data.db.entities.quote.QuoteWithOriginJoin
     exportSchema = false
 )
 @TypeConverters(ConverterAdapters::class)
-abstract class QuotesDatabase : RoomDatabase() {
+abstract class QuotableDatabase : RoomDatabase() {
 
     abstract fun quotesDao(): QuotesDao
 

@@ -4,7 +4,7 @@ import androidx.room.withTransaction
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.common.Resource
 import com.example.quotableapp.data.converters.quote.QuoteConverters
-import com.example.quotableapp.data.db.QuotesDatabase
+import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.dao.QuotesDao
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
@@ -32,7 +32,7 @@ class DefaultOneQuoteRepository @Inject constructor(
     @CacheTimeout private val cacheTimeoutMillis: Long,
     private val quotesService: QuotesService,
     private val quoteConverters: QuoteConverters,
-    private val quotesDatabase: QuotesDatabase,
+    private val quotableDatabase: QuotableDatabase,
     private val apiResponseInterpreter: QuotableApiResponseInterpreter
 ) : OneQuoteRepository {
 
@@ -41,7 +41,7 @@ class DefaultOneQuoteRepository @Inject constructor(
             QuoteOriginParams(type = QuoteOriginParams.Type.RANDOM)
     }
 
-    private val quotesDao: QuotesDao = quotesDatabase.quotesDao()
+    private val quotesDao: QuotesDao = quotableDatabase.quotesDao()
 
     override val randomQuoteFlow: Flow<Quote>
         get() = quotesDao
@@ -76,7 +76,7 @@ class DefaultOneQuoteRepository @Inject constructor(
     }
 
     private suspend fun updateDatabaseWithRandomQuote(quoteDTO: QuoteDTO) {
-        quotesDatabase.withTransaction {
+        quotableDatabase.withTransaction {
             quotesDao.insertRemotePageKey(
                 originParams = randomQuoteOriginParams,
                 key = 0

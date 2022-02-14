@@ -2,7 +2,7 @@ package com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteM
 
 import androidx.paging.PagingSource
 import androidx.room.withTransaction
-import com.example.quotableapp.data.db.QuotesDatabase
+import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.db.dao.QuotesDao
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
@@ -17,7 +17,7 @@ interface QuotesListPersistenceManagerFactory {
 }
 
 class QuotesListPersistenceManager @AssistedInject constructor(
-    private val database: QuotesDatabase,
+    private val database: QuotableDatabase,
     @Assisted private val quoteOriginParams: QuoteOriginParams
 ) : PersistenceManager<QuoteEntity, Int> {
 

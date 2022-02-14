@@ -11,7 +11,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class RemoteKeysDaoTest {
 
-    private lateinit var db: QuotesDatabase
+    private lateinit var db: QuotableDatabase
     private lateinit var remoteKeysDao: RemoteKeysDao
 
     @Before
