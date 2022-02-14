@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.quotableapp.data.db.dao.AuthorsDao
 import com.example.quotableapp.data.db.dao.QuotesDao
-import com.example.quotableapp.data.db.entities.*
+import com.example.quotableapp.data.db.entities.ConverterAdapters
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.db.entities.author.AuthorOriginEntity
 import com.example.quotableapp.data.db.entities.author.AuthorRemoteKeyEntity

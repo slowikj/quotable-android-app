@@ -9,7 +9,6 @@ import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
-import com.example.quotableapp.data.repository.authors.paging.AssistedAuthorsRemoteMediatorFactory
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

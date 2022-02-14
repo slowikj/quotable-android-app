@@ -4,7 +4,7 @@ import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.model.QuoteDTO
 
-class DefaultQuoteConverters: QuoteConverters {
+class DefaultQuoteConverters : QuoteConverters {
 
     override fun toDb(quoteDTO: QuoteDTO): QuoteEntity = QuoteEntity(
         id = quoteDTO.id,

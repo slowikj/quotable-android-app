@@ -8,7 +8,10 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
-import com.example.quotableapp.ui.common.extensions.*
+import com.example.quotableapp.ui.common.extensions.RecyclerViewComposite
+import com.example.quotableapp.ui.common.extensions.copyQuoteToClipBoardWithToast
+import com.example.quotableapp.ui.common.extensions.setupWith
+import com.example.quotableapp.ui.common.extensions.showErrorToast
 import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect

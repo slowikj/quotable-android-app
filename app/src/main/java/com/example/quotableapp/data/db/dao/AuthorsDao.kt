@@ -3,7 +3,6 @@ package com.example.quotableapp.data.db.dao
 import androidx.paging.PagingSource
 import androidx.room.*
 import com.example.quotableapp.data.db.entities.author.*
-import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 
 @Dao
 interface AuthorsDao {

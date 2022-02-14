@@ -13,7 +13,9 @@ import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.repository.CacheTimeout
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -49,7 +51,7 @@ class DefaultOneQuoteRepository @Inject constructor(
                 searchPhrase = randomQuoteOriginParams.searchPhrase,
                 limit = 1
             )
-            .filterNot { it.isNullOrEmpty()}
+            .filterNot { it.isNullOrEmpty() }
             .map { it.first() }
             .map(quoteConverters::toDomain)
 

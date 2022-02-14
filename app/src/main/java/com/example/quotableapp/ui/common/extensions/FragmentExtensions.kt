@@ -7,7 +7,6 @@ import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.fragment.app.Fragment
 import com.example.quotableapp.R
-import com.example.quotableapp.ui.common.quoteslist.QuotesListFragment
 
 fun Fragment.showErrorToast() {
     showToast(getString(R.string.error_occurred))

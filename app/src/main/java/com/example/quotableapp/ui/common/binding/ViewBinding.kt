@@ -14,7 +14,7 @@ object ViewBinding {
             .load(url)
             .into(view)
     }
-    
+
     @JvmStatic
     @BindingAdapter("bindFirstMeaningfulTag")
     fun bindFirstMeaningfulTag(view: TextView, tags: List<String>) {
