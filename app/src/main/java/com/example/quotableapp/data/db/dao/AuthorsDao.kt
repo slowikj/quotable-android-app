@@ -21,6 +21,15 @@ interface AuthorsDao {
         searchPhrase: String = ""
     ): PagingSource<Int, AuthorEntity>
 
+    fun getAuthors(
+        params: AuthorOriginParams
+    ): PagingSource<Int, AuthorEntity> {
+        return getAuthors(
+            type = params.type,
+            searchPhrase = params.searchPhrase
+        )
+    }
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAuthors(entries: List<AuthorEntity>)
 
@@ -40,6 +49,15 @@ interface AuthorsDao {
         type: AuthorOriginParams.Type,
         searchPhrase: String = ""
     ): Long?
+
+    suspend fun getOriginId(
+        params: AuthorOriginParams
+    ): Long? {
+        return getOriginId(
+            type = params.type,
+            searchPhrase = params.searchPhrase
+        )
+    }
 
     @Transaction
     suspend fun add(entries: List<AuthorEntity>, originParams: AuthorOriginParams) {
@@ -68,6 +86,15 @@ interface AuthorsDao {
         searchPhrase: String = ""
     )
 
+    suspend fun deleteAll(
+        params: AuthorOriginParams
+    ) {
+        return deleteAll(
+            type = params.type,
+            searchPhrase = params.searchPhrase
+        )
+    }
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(remoteKeyEntity: AuthorRemoteKeyEntity)
 
@@ -94,6 +121,15 @@ interface AuthorsDao {
         searchPhrase: String = ""
     ): Long?
 
+    suspend fun getLastUpdated(
+        params: AuthorOriginParams
+    ): Long? {
+        return getLastUpdated(
+            type = params.type,
+            searchPhrase = params.searchPhrase
+        )
+    }
+
     @Transaction
     @Query(
         "SELECT pageKey from author_remote_keys " +
@@ -104,6 +140,15 @@ interface AuthorsDao {
         searchPhrase: String = ""
     ): Int?
 
+    suspend fun getPageKey(
+        params: AuthorOriginParams
+    ): Int? {
+        return getPageKey(
+            type = params.type,
+            searchPhrase = params.searchPhrase
+        )
+    }
+
     @Query(
         "DELETE FROM author_remote_keys " +
                 "WHERE originId = (SELECT id from author_origins WHERE type = :type AND searchPhrase = :searchPhrase)"
@@ -112,5 +157,14 @@ interface AuthorsDao {
         type: AuthorOriginParams.Type,
         searchPhrase: String = ""
     )
+
+    suspend fun deletePageKey(
+        params: AuthorOriginParams
+    ) {
+        return deletePageKey(
+            type = params.type,
+            searchPhrase = params.searchPhrase
+        )
+    }
 
 }

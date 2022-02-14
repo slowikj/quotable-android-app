@@ -23,17 +23,14 @@ class AuthorsListPersistenceManager @AssistedInject constructor(
     private val authorsDao = database.authorsDao()
 
     override suspend fun deleteAll() {
-        authorsDao.deleteAll(type = originParams.type, searchPhrase = originParams.searchPhrase)
-        authorsDao.deletePageKey(type = originParams.type, searchPhrase = originParams.searchPhrase)
+        authorsDao.deleteAll(originParams)
+        authorsDao.deletePageKey(originParams)
     }
 
-    override suspend fun getLastUpdated(): Long? = authorsDao.getLastUpdated(
-        type = originParams.type,
-        searchPhrase = originParams.searchPhrase
-    )
+    override suspend fun getLastUpdated(): Long? = authorsDao.getLastUpdated(originParams)
 
     override suspend fun getLatestPageKey(): Int? =
-        authorsDao.getPageKey(type = originParams.type, searchPhrase = originParams.searchPhrase)
+        authorsDao.getPageKey(originParams)
 
     override suspend fun append(entries: List<AuthorEntity>, pageKey: Int) {
         authorsDao.addRemoteKey(originParams = originParams, pageKey = pageKey)
@@ -46,7 +43,7 @@ class AuthorsListPersistenceManager @AssistedInject constructor(
 
     override fun getPagingSource(): PagingSource<Int, AuthorEntity> {
         return database.authorsDao()
-            .getAuthors(type = originParams.type, searchPhrase = originParams.searchPhrase)
+            .getAuthors(originParams)
     }
 
 }
