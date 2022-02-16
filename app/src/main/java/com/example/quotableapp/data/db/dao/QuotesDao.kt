@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface QuotesDao {
 
+    // QUOTES ---------------------------------------------------
+
     @Transaction
     @Query(
         "SELECT quotes.* from " +
@@ -63,27 +65,6 @@ interface QuotesDao {
     suspend fun addQuotes(quotes: List<QuoteEntity>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addOrigin(originEntity: QuoteOriginEntity)
-
-    @Query(
-        "SELECT id FROM quote_origins " +
-                "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase"
-    )
-    suspend fun getOriginId(
-        type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
-        value: String = "",
-        searchPhrase: String = ""
-    ): Long?
-
-    suspend fun getOriginId(params: QuoteOriginParams): Long? {
-        return getOriginId(
-            type = params.type,
-            value = params.value,
-            searchPhrase = params.searchPhrase
-        )
-    }
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun add(quoteWithOrigin: QuoteWithOriginJoin)
 
     @Transaction
@@ -108,6 +89,31 @@ interface QuotesDao {
         originId?.let { deleteQuoteEntriesFrom(it) }
     }
 
+    // ORIGIN ---------------------------------------------------
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addOrigin(originEntity: QuoteOriginEntity)
+
+    @Query(
+        "SELECT id FROM quote_origins " +
+                "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase"
+    )
+    suspend fun getOriginId(
+        type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
+        value: String = "",
+        searchPhrase: String = ""
+    ): Long?
+
+    suspend fun getOriginId(params: QuoteOriginParams): Long? {
+        return getOriginId(
+            type = params.type,
+            value = params.value,
+            searchPhrase = params.searchPhrase
+        )
+    }
+
+    // REMOTE KEY ---------------------------------------------------
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(quoteRemoteKeyEntity: QuoteRemoteKeyEntity)
 
@@ -121,6 +127,28 @@ interface QuotesDao {
             lastUpdated = System.currentTimeMillis()
         )
         insert(pageKeyEntity)
+    }
+
+    @Transaction
+    @Query(
+        "DELETE FROM quote_remote_keys " +
+                "WHERE originId = (SELECT id FROM quote_origins " +
+                "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase LIMIT 1)"
+    )
+    suspend fun deletePageRemoteKey(
+        type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
+        value: String = "",
+        searchPhrase: String = ""
+    )
+
+    suspend fun deletePageRemoteKey(
+        params: QuoteOriginParams
+    ) {
+        return deletePageRemoteKey(
+            type = params.type,
+            value = params.value,
+            searchPhrase = params.searchPhrase
+        )
     }
 
     @Transaction
@@ -169,25 +197,4 @@ interface QuotesDao {
         )
     }
 
-    @Transaction
-    @Query(
-        "DELETE FROM quote_remote_keys " +
-                "WHERE originId = (SELECT id FROM quote_origins " +
-                "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase LIMIT 1)"
-    )
-    suspend fun deletePageRemoteKey(
-        type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
-        value: String = "",
-        searchPhrase: String = ""
-    )
-
-    suspend fun deletePageRemoteKey(
-        params: QuoteOriginParams
-    ) {
-        return deletePageRemoteKey(
-            type = params.type,
-            value = params.value,
-            searchPhrase = params.searchPhrase
-        )
-    }
 }
