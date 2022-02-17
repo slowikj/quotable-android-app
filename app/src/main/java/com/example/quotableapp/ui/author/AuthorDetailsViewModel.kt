@@ -7,14 +7,11 @@ import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.ui.common.UiState
-import com.example.quotableapp.ui.common.extensions.setData
-import com.example.quotableapp.ui.common.extensions.setError
-import com.example.quotableapp.ui.common.extensions.setLoading
+import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
@@ -34,7 +31,7 @@ class AuthorDetailsViewModel
 
     private val authorSlug: String = savedStateHandle[AUTHOR_SLUG_TAG]!!
 
-    sealed class UiError {
+    sealed class UiError : Throwable() {
         object IOError : UiError()
     }
 
@@ -50,12 +47,11 @@ class AuthorDetailsViewModel
     }
 
     private fun fetchAuthor() {
-        _state.setLoading()
-        viewModelScope.launch {
-            val res = authorsRepository.fetchAuthor(authorSlug)
-            res.onSuccess { _state.setData(it) }
-                .onFailure { _state.setError(UiError.IOError) }
-        }
+        _state.handleRequestWithResult(
+            coroutineScope = viewModelScope,
+            requestFunc = { authorsRepository.fetchAuthor(authorSlug) },
+            errorConverter = { UiError.IOError }
+        )
     }
 
 }

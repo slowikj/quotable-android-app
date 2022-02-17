@@ -1,8 +1,6 @@
 package com.example.quotableapp.data.converters.author
 
-import com.example.quotableapp.data.converters.author.AuthorConverters
-import com.example.quotableapp.data.converters.author.AuthorPhotoUrlCreator
-import com.example.quotableapp.data.db.entities.AuthorEntity
+import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.model.AuthorDTO
 
@@ -15,7 +13,6 @@ class DefaultAuthorConverters(
             link = authorDTO.link,
             bio = authorDTO.bio,
             description = authorDTO.description,
-            id = authorDTO.id,
             name = authorDTO.name,
             quoteCount = authorDTO.quoteCount,
             slug = authorDTO.slug,
@@ -29,7 +26,6 @@ class DefaultAuthorConverters(
             link = authorDTO.link,
             bio = authorDTO.bio,
             description = authorDTO.description,
-            id = authorDTO.id,
             name = authorDTO.name,
             quoteCount = authorDTO.quoteCount,
             slug = authorDTO.slug,
@@ -42,7 +38,6 @@ class DefaultAuthorConverters(
             link = authorEntity.link,
             bio = authorEntity.bio,
             description = authorEntity.description,
-            id = authorEntity.id,
             name = authorEntity.name,
             quoteCount = authorEntity.quoteCount,
             slug = authorEntity.slug,

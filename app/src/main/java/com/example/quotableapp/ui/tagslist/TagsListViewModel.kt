@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
-import com.example.quotableapp.ui.common.extensions.handleRequest
+import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -20,7 +20,7 @@ class TagsListViewModel @Inject constructor(
     private val tagsRepository: TagsRepository
 ) : ViewModel() {
 
-    sealed class UiError {
+    sealed class UiError : Throwable() {
         object NetworkError : UiError()
     }
 
@@ -39,7 +39,7 @@ class TagsListViewModel @Inject constructor(
     }
 
     fun fetchTags() {
-        _tags.handleRequest(
+        _tags.handleRequestWithResult(
             coroutineScope = viewModelScope,
             requestFunc = { tagsRepository.fetchAllTags() },
             errorConverter = { UiError.NetworkError }

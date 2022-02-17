@@ -2,52 +2,46 @@ package com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteM
 
 import androidx.paging.PagingSource
 import androidx.room.withTransaction
-import com.example.quotableapp.data.db.QuotesDatabase
+import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.db.dao.QuotesDao
-import com.example.quotableapp.data.db.dao.RemoteKeyDao
-import com.example.quotableapp.data.db.entities.QuoteEntity
-import com.example.quotableapp.data.db.entities.RemoteKeyEntity
-import javax.inject.Inject
+import com.example.quotableapp.data.db.entities.quote.QuoteEntity
+import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 
-class QuotesListPersistenceManager @Inject constructor(
-    private val database: QuotesDatabase
+@AssistedFactory
+interface QuotesListPersistenceManagerFactory {
+    fun create(quoteOriginParams: QuoteOriginParams): QuotesListPersistenceManager
+}
+
+class QuotesListPersistenceManager @AssistedInject constructor(
+    private val database: QuotableDatabase,
+    @Assisted private val quoteOriginParams: QuoteOriginParams
 ) : PersistenceManager<QuoteEntity, Int> {
 
     private val quotesDao: QuotesDao
         get() = database.quotesDao()
 
-    private val remoteKeysDao: RemoteKeyDao
-        get() = database.remoteKeysDao()
-
     override suspend fun deleteAll() {
-        quotesDao.deleteAll()
-        remoteKeysDao.delete(RemoteKeyEntity.Type.QUOTES_LIST)
+        quotesDao.deleteQuoteEntriesFrom(quoteOriginParams)
+        quotesDao.deletePageRemoteKey(quoteOriginParams)
     }
 
-    override suspend fun getLastUpdated(): Long? = getLatestKeyEntity()?.lastUpdated
+    override suspend fun getLastUpdated(): Long? = quotesDao.getLastUpdatedMillis(quoteOriginParams)
 
-    override suspend fun getLatestPageKey(): Int? {
-        return getLatestKeyEntity()?.pageKey
-    }
+    override suspend fun getLatestPageKey(): Int? = quotesDao.getRemotePageKey(quoteOriginParams)
 
     override suspend fun append(entries: List<QuoteEntity>, pageKey: Int) {
-        remoteKeysDao.update(prepareRemoteKey(pageKey))
-        quotesDao.add(entries)
+        quotesDao.insertRemotePageKey(quoteOriginParams, pageKey)
+        quotesDao.addQuotes(originParams = quoteOriginParams, quotes = entries)
     }
 
     override suspend fun <R> withTransaction(block: suspend () -> R): R =
         database.withTransaction(block)
 
-    override fun getPagingSource(): PagingSource<Int, QuoteEntity> = quotesDao.getQuotes()
+    override fun getPagingSource(): PagingSource<Int, QuoteEntity> =
+        quotesDao.getQuotesSortedByAuthor(quoteOriginParams)
 
-    private fun prepareRemoteKey(pageKey: Int): RemoteKeyEntity =
-        RemoteKeyEntity(
-            pageKey = pageKey,
-            lastUpdated = System.currentTimeMillis(),
-            type = RemoteKeyEntity.Type.QUOTES_LIST
-        )
-
-    private suspend fun getLatestKeyEntity(): RemoteKeyEntity? =
-        remoteKeysDao.getLatest(RemoteKeyEntity.Type.QUOTES_LIST).lastOrNull()
 }

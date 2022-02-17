@@ -10,7 +10,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.quotableapp.databinding.FragmentOneQuoteBinding
 import com.example.quotableapp.ui.common.extensions.copyQuoteToClipBoardWithToast
-import com.example.quotableapp.ui.common.extensions.copyToClipBoardWithToast
 import com.example.quotableapp.ui.common.extensions.handle
 import com.example.quotableapp.ui.common.extensions.showErrorToast
 import com.example.quotableapp.ui.common.rvAdapters.TagsAdapter

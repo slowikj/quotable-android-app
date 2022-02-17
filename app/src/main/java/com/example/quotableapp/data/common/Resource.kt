@@ -2,11 +2,19 @@ package com.example.quotableapp.data.common
 
 sealed class Resource<Value, ErrorType : Throwable>() {
 
-    data class Success<DTO, ErrorType : Throwable>(val value: DTO) :
-        Resource<DTO, ErrorType>()
+    companion object {
+        fun <Value, ErrorType : Throwable> success(value: Value): Success<Value, ErrorType> =
+            Success(value)
 
-    data class Failure<DTO, ErrorType : Throwable>(val error: ErrorType) :
-        Resource<DTO, ErrorType>()
+        fun <Value, ErrorType : Throwable> failure(error: ErrorType): Failure<Value, ErrorType> =
+            Failure(error)
+    }
+
+    data class Success<Value, ErrorType : Throwable>(val value: Value) :
+        Resource<Value, ErrorType>()
+
+    data class Failure<Value, ErrorType : Throwable>(val error: ErrorType) :
+        Resource<Value, ErrorType>()
 
     val isSuccess: Boolean
         get() = this is Success

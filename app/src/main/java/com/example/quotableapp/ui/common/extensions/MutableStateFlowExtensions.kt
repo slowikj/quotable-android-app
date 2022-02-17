@@ -6,38 +6,48 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-fun <V, DE, RE : Throwable> MutableStateFlow<UiState<V, DE>>.handleRequest(
+fun <V, PresentationError : Throwable, RepositoryError : Throwable> MutableStateFlow<UiState<V, PresentationError>>.handleRequestWithResult(
     coroutineScope: CoroutineScope,
-    requestFunc: suspend () -> Resource<V, RE>,
-    errorConverter: (RE) -> (DE)
+    requestFunc: suspend () -> Resource<V, RepositoryError>,
+    errorConverter: (RepositoryError) -> (PresentationError)
 ) {
     if (value.isLoading) return
     coroutineScope.launch {
-        this@handleRequest.setLoading()
+        this@handleRequestWithResult.set(isLoading = true)
         val response = requestFunc()
         response.onSuccess {
-            this@handleRequest.setData(it)
+            this@handleRequestWithResult.set(data = it, isLoading = false)
         }.onFailure {
-            this@handleRequest.setError(errorConverter(it))
+            this@handleRequestWithResult.set(error = errorConverter(it), isLoading = false)
         }
     }
 }
 
-fun <V, E> MutableStateFlow<UiState<V, E>>.setLoading() {
-    value = value.copy(isLoading = true)
+fun <V, PresentationError : Throwable, RepositoryError : Throwable> MutableStateFlow<UiState<V, PresentationError>>.handleOneShotRequest(
+    coroutineScope: CoroutineScope,
+    requestFunc: suspend () -> Resource<Boolean, RepositoryError>,
+    errorConverter: (RepositoryError) -> (PresentationError)
+) {
+    if (value.isLoading) return
+    coroutineScope.launch {
+        this@handleOneShotRequest.set(isLoading = true)
+        val response = requestFunc()
+        response.onSuccess {
+            this@handleOneShotRequest.set(isLoading = false)
+        }.onFailure {
+            this@handleOneShotRequest.set(error = errorConverter(it), isLoading = false)
+        }
+    }
 }
 
-fun <V, E> MutableStateFlow<UiState<V, E>>.setData(data: V) {
+fun <V, E> MutableStateFlow<UiState<V, E>>.set(
+    isLoading: Boolean? = null,
+    data: V? = null,
+    error: E? = null
+) {
     value = value.copy(
-        isLoading = false,
-        error = null,
-        data = data
-    )
-}
-
-fun <V, E> MutableStateFlow<UiState<V, E>>.setError(error: E) {
-    value = value.copy(
-        isLoading = false,
-        error = error
+        isLoading = isLoading ?: value.isLoading,
+        data = data ?: value.data,
+        error = error ?: value.error
     )
 }

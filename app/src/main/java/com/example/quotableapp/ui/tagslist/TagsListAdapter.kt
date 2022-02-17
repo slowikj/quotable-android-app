@@ -13,7 +13,11 @@ class TagsListAdapter(private val onItemClick: (Tag) -> Unit) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            binding = ItemListTagBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            binding = ItemListTagBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            ),
             onItemClick = onItemClick
         )
     }

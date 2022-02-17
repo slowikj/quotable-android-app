@@ -1,13 +1,10 @@
-package com.example.quotableapp.data.repository.di
+package com.example.quotableapp.data.repository
 
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.common.DefaultCoroutineDispatchers
-import com.example.quotableapp.data.repository.authors.AuthorsRepository
-import com.example.quotableapp.data.repository.authors.DefaultAuthorsRepository
-import com.example.quotableapp.data.repository.quotes.DefaultQuotesRepository
-import com.example.quotableapp.data.repository.quotes.QuotesRepository
+import com.example.quotableapp.data.db.QuotableDatabase
+import com.example.quotableapp.data.db.dao.QuotesDao
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -23,6 +20,9 @@ annotation class CacheTimeout
 @Module
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
+
+    @Provides
+    fun provideQuotesDao(database: QuotableDatabase): QuotesDao = database.quotesDao()
 
     @Provides
     fun providePagingConfig(): PagingConfig =
@@ -45,12 +45,6 @@ object RepositoryModule {
         @Binds
         fun bindCoroutineDispatchers(dispatchers: DefaultCoroutineDispatchers): CoroutineDispatchers
 
-        @ExperimentalPagingApi
-        @Binds
-        fun bindAuthorsRepository(repository: DefaultAuthorsRepository): AuthorsRepository
-
-        @Binds
-        fun bindQuotesRepository(repository: DefaultQuotesRepository): QuotesRepository
     }
 
 }
