@@ -42,7 +42,7 @@ interface AuthorsDao {
     }
 
     @Query(
-        "SELECT id from quote_origins " +
+        "SELECT id from author_origins " +
                 "WHERE type = :type AND searchPhrase = :searchPhrase"
     )
     suspend fun getOriginId(

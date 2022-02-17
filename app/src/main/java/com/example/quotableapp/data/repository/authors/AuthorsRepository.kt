@@ -49,8 +49,8 @@ class DefaultAuthorsRepository @Inject constructor(
                 originParams = AuthorOriginParams(type = AuthorOriginParams.Type.ALL)
             ) { page: Int, limit: Int ->
                 authorsService.fetchAuthors(
-                    page,
-                    limit
+                    page = page,
+                    limit = limit
                 )
             }
         return Pager(
@@ -72,8 +72,7 @@ class DefaultAuthorsRepository @Inject constructor(
                     sortBy = AuthorsService.SortByType.QuoteCount,
                     orderType = AuthorsService.OrderType.Desc
                 )
-            }
-                .map { dto ->
+            }.map { dto ->
                     dto.results.map { authorConverters.toDomain(it) }
                 }
         }
