@@ -14,6 +14,7 @@ import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.extensions.handleOneShotRequest
 import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
+import com.example.quotableapp.ui.common.extensions.set
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -71,11 +72,12 @@ class DashboardViewModel @Inject constructor(
 
     init {
         requestAuthors()
-        requestQuotes()
-        requestTags()
-        requestRandomQuote()
+        requestQuotes(forceUpdate = false)
+        requestTags(forceUpdate = false)
+        requestRandomQuote(forceUpdate = false)
         startObservingRandomQuoteFlow()
         startObservingExemplaryQuotesFlow()
+        startObservingTagsFlow()
     }
 
     fun onAuthorsShowMoreClick() {
@@ -109,21 +111,21 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
-    fun requestQuotes(forceUpdate: Boolean = false) {
+    fun requestQuotes(forceUpdate: Boolean = true) {
         handleRequestWithoutData(
             stateFlow = _quotes,
             requestFunc = { quotesRepository.fetchFirstQuotes(forceUpdate) }
         )
     }
 
-    fun requestTags() {
-        handleRequestWithData(
+    fun requestTags(forceUpdate: Boolean = true) {
+        handleRequestWithoutData(
             stateFlow = _tags,
-            requestFunc = { tagsRepository.fetchFirstTags(limit = 10) }
+            requestFunc = { tagsRepository.fetchFirstTags(forceUpdate) }
         )
     }
 
-    fun requestRandomQuote(forceUpdate: Boolean = false) {
+    fun requestRandomQuote(forceUpdate: Boolean = true) {
         handleRequestWithoutData(
             stateFlow = _randomQuote,
             requestFunc = { quotesRepository.fetchRandomQuote(forceUpdate) }
@@ -132,13 +134,19 @@ class DashboardViewModel @Inject constructor(
 
     private fun startObservingRandomQuoteFlow() {
         quotesRepository.randomQuoteFlow
-            .onEach { _randomQuote.value = _randomQuote.value.copy(data = it) }
+            .onEach { _randomQuote.set(data = it) }
             .launchIn(viewModelScope)
     }
 
     private fun startObservingExemplaryQuotesFlow() {
         quotesRepository.firstQuotesFlow
-            .onEach { _quotes.value = _quotes.value.copy(data = it) }
+            .onEach { _quotes.set(data = it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun startObservingTagsFlow() {
+        tagsRepository.firstTags
+            .onEach { _tags.set(data = it) }
             .launchIn(viewModelScope)
     }
 
