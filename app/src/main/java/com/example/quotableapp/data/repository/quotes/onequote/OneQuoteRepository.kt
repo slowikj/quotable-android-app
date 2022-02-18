@@ -64,9 +64,8 @@ class DefaultOneQuoteRepository @Inject constructor(
         return withContext(coroutineDispatchers.IO) {
             if (shouldCacheBeUpdated(forceUpdate)) {
                 val apiRandomQuote = apiResponseInterpreter { quotesService.fetchRandomQuote() }
-                apiRandomQuote.onSuccess {
-                    updateDatabaseWithRandomQuote(it)
-                }.map { true }
+                apiRandomQuote.onSuccess { updateDatabaseWithRandomQuote(it) }
+                    .map { true }
             } else {
                 Resource.success(false)
             }
@@ -88,8 +87,9 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     private suspend fun shouldCacheBeUpdated(forceUpdate: Boolean): Boolean =
         withContext(coroutineDispatchers.Default) {
-            val lastUpdatedMillis =
-                quotesDao.getLastUpdatedMillis(params = randomQuoteOriginParams)
+            val lastUpdatedMillis = quotesDao.getLastUpdatedMillis(
+                params = randomQuoteOriginParams
+            )
             val currentTimeMillis = System.currentTimeMillis()
 
             forceUpdate ||

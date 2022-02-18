@@ -71,13 +71,14 @@ class DashboardViewModel @Inject constructor(
     val randomQuote: StateFlow<RandomQuoteState> = _randomQuote.asStateFlow()
 
     init {
-        requestAuthors()
+        requestAuthors(forceUpdate = false)
         requestQuotes(forceUpdate = false)
         requestTags(forceUpdate = false)
         requestRandomQuote(forceUpdate = false)
         startObservingRandomQuoteFlow()
         startObservingExemplaryQuotesFlow()
         startObservingTagsFlow()
+        startObservingAuthorsFlow()
     }
 
     fun onAuthorsShowMoreClick() {
@@ -104,10 +105,10 @@ class DashboardViewModel @Inject constructor(
         emit(NavigationAction.ToTag(tag))
     }
 
-    fun requestAuthors() {
-        handleRequestWithData(
+    fun requestAuthors(forceUpdate: Boolean = true) {
+        handleRequestWithoutData(
             stateFlow = _authors,
-            requestFunc = { authorsRepository.fetchFirstAuthors(limit = 10) }
+            requestFunc = { authorsRepository.fetchFirstAuthors(forceUpdate) }
         )
     }
 
@@ -147,6 +148,12 @@ class DashboardViewModel @Inject constructor(
     private fun startObservingTagsFlow() {
         tagsRepository.firstTags
             .onEach { _tags.set(data = it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun startObservingAuthorsFlow() {
+        authorsRepository.firstAuthorsFlow
+            .onEach { _authors.set(data = it) }
             .launchIn(viewModelScope)
     }
 

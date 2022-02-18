@@ -3,6 +3,7 @@ package com.example.quotableapp.data.db.dao
 import androidx.paging.PagingSource
 import androidx.room.*
 import com.example.quotableapp.data.db.entities.author.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AuthorsDao {
@@ -27,6 +28,30 @@ interface AuthorsDao {
         return getAuthors(
             type = params.type,
             searchPhrase = params.searchPhrase
+        )
+    }
+
+    @Transaction
+    @Query(
+        "SELECT authors.* FROM (" +
+                "   SELECT authorSlug FROM author_with_origin_join " +
+                "   INNER JOIN author_origins on author_origins.id = originId " +
+                "   WHERE author_origins.type = :type AND author_origins.searchPhrase = :searchPhrase) " +
+                "INNER JOIN authors on authors.slug = authorSlug " +
+                "ORDER BY authors.quoteCount DESC " +
+                "LIMIT :limit"
+    )
+    fun getAuthors(
+        type: AuthorOriginParams.Type,
+        searchPhrase: String = "",
+        limit: Int = Int.MAX_VALUE
+    ): Flow<List<AuthorEntity>>
+
+    fun getAuthors(originParams: AuthorOriginParams, limit: Int): Flow<List<AuthorEntity>> {
+        return getAuthors(
+            type = originParams.type,
+            searchPhrase = originParams.searchPhrase,
+            limit = limit
         )
     }
 

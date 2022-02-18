@@ -6,6 +6,8 @@ import com.example.quotableapp.data.converters.author.AuthorConverters
 import com.example.quotableapp.data.converters.author.AuthorPhotoUrlCreator
 import com.example.quotableapp.data.converters.author.DefaultAuthorConverters
 import com.example.quotableapp.data.converters.author.DefaultAuthorPhotoUrlCreator
+import com.example.quotableapp.data.db.QuotableDatabase
+import com.example.quotableapp.data.db.dao.AuthorsDao
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.repository.authors.paging.AuthorsListDTOResponseToEntitiesConverter
@@ -34,6 +36,10 @@ object AuthorsRepositoryModule {
     fun provideAuthorConverters(authorPhotoUrlCreator: AuthorPhotoUrlCreator): AuthorConverters {
         return DefaultAuthorConverters(authorPhotoUrlCreator)
     }
+
+    @Provides
+    fun provideAuthorsDao(quotableDatabase: QuotableDatabase): AuthorsDao =
+        quotableDatabase.authorsDao()
 
     @Module
     @InstallIn(SingletonComponent::class)
