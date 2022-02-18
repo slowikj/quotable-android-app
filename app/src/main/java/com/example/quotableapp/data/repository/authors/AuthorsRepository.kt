@@ -1,15 +1,18 @@
 package com.example.quotableapp.data.repository.authors
 
 import androidx.paging.*
+import androidx.room.withTransaction
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.common.Resource
 import com.example.quotableapp.data.converters.author.AuthorConverters
+import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.dao.AuthorsDao
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
+import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.repository.CacheTimeout
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +37,7 @@ class DefaultAuthorsRepository @Inject constructor(
     private val authorsService: AuthorsService,
     private val authorsDao: AuthorsDao,
     @CacheTimeout private val cacheTimeoutMillis: Long,
+    private val quotableDatabase: QuotableDatabase,
     private val authorsRemoteMediatorFactory: AuthorsRemoteMediatorFactory,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val authorConverters: AuthorConverters,
@@ -94,10 +98,7 @@ class DefaultAuthorsRepository @Inject constructor(
                 }
                 apiResponse.fold(
                     onSuccess = {
-                        authorsDao.add(
-                            entries = it.results.map(authorConverters::toDb),
-                            originParams = FIRST_AUTHORS_ORIGIN_PARAMS
-                        )
+                        addFirstQuotesToDatabase(it)
                         Resource.success(true)
                     },
                     onFailure = {
@@ -107,6 +108,19 @@ class DefaultAuthorsRepository @Inject constructor(
             } else {
                 Resource.success(false)
             }
+        }
+    }
+
+    private suspend fun addFirstQuotesToDatabase(responseDTO: AuthorsResponseDTO) {
+        quotableDatabase.withTransaction {
+            authorsDao.addRemoteKey(
+                originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
+                pageKey = 0
+            )
+            authorsDao.add(
+                entries = responseDTO.results.map(authorConverters::toDb),
+                originParams = FIRST_AUTHORS_ORIGIN_PARAMS
+            )
         }
     }
 
