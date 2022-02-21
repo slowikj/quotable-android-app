@@ -42,6 +42,6 @@ class QuotesListPersistenceManager @AssistedInject constructor(
         database.withTransaction(block)
 
     override fun getPagingSource(): PagingSource<Int, QuoteEntity> =
-        quotesDao.getQuotesSortedByAuthor(quoteOriginParams)
+        quotesDao.getQuotesPagingSourceSortedByAuthor(quoteOriginParams)
 
 }

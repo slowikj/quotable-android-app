@@ -14,6 +14,7 @@ import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.extensions.handleOneShotRequest
 import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
+import com.example.quotableapp.ui.common.extensions.set
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -70,12 +71,14 @@ class DashboardViewModel @Inject constructor(
     val randomQuote: StateFlow<RandomQuoteState> = _randomQuote.asStateFlow()
 
     init {
-        requestAuthors()
-        requestQuotes()
-        requestTags()
-        requestRandomQuote()
+        requestAuthors(forceUpdate = false)
+        requestQuotes(forceUpdate = false)
+        requestTags(forceUpdate = false)
+        requestRandomQuote(forceUpdate = false)
         startObservingRandomQuoteFlow()
         startObservingExemplaryQuotesFlow()
+        startObservingTagsFlow()
+        startObservingAuthorsFlow()
     }
 
     fun onAuthorsShowMoreClick() {
@@ -102,28 +105,28 @@ class DashboardViewModel @Inject constructor(
         emit(NavigationAction.ToTag(tag))
     }
 
-    fun requestAuthors() {
-        handleRequestWithData(
+    fun requestAuthors(forceUpdate: Boolean = true) {
+        handleRequestWithoutData(
             stateFlow = _authors,
-            requestFunc = { authorsRepository.fetchFirstAuthors(limit = 10) }
+            requestFunc = { authorsRepository.fetchFirstAuthors(forceUpdate) }
         )
     }
 
-    fun requestQuotes(forceUpdate: Boolean = false) {
+    fun requestQuotes(forceUpdate: Boolean = true) {
         handleRequestWithoutData(
             stateFlow = _quotes,
             requestFunc = { quotesRepository.fetchFirstQuotes(forceUpdate) }
         )
     }
 
-    fun requestTags() {
-        handleRequestWithData(
+    fun requestTags(forceUpdate: Boolean = true) {
+        handleRequestWithoutData(
             stateFlow = _tags,
-            requestFunc = { tagsRepository.fetchFirstTags(limit = 10) }
+            requestFunc = { tagsRepository.fetchFirstTags(forceUpdate) }
         )
     }
 
-    fun requestRandomQuote(forceUpdate: Boolean = false) {
+    fun requestRandomQuote(forceUpdate: Boolean = true) {
         handleRequestWithoutData(
             stateFlow = _randomQuote,
             requestFunc = { quotesRepository.fetchRandomQuote(forceUpdate) }
@@ -132,13 +135,25 @@ class DashboardViewModel @Inject constructor(
 
     private fun startObservingRandomQuoteFlow() {
         quotesRepository.randomQuoteFlow
-            .onEach { _randomQuote.value = _randomQuote.value.copy(data = it) }
+            .onEach { _randomQuote.set(data = it) }
             .launchIn(viewModelScope)
     }
 
     private fun startObservingExemplaryQuotesFlow() {
         quotesRepository.firstQuotesFlow
-            .onEach { _quotes.value = _quotes.value.copy(data = it) }
+            .onEach { _quotes.set(data = it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun startObservingTagsFlow() {
+        tagsRepository.firstTags
+            .onEach { _tags.set(data = it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun startObservingAuthorsFlow() {
+        authorsRepository.firstAuthorsFlow
+            .onEach { _authors.set(data = it) }
             .launchIn(viewModelScope)
     }
 

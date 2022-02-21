@@ -12,12 +12,14 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.util.concurrent.Executors
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
     @Provides
+    @Singleton
     fun getQuotesDatabase(@ApplicationContext context: Context): QuotableDatabase =
         Room.databaseBuilder(context, QuotableDatabase::class.java, "quotes_db.db")
             .addCallback(object : RoomDatabase.Callback() {
