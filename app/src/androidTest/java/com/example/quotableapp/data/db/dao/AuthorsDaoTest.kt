@@ -1,5 +1,6 @@
 package com.example.quotableapp.data.db.dao
 
+import androidx.paging.PagingSource
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.example.quotableapp.data.DataTestUtil
@@ -243,4 +244,69 @@ class AuthorsDaoTest {
             }
         }
     }
+
+    // AUTHORS PAGING SOURCE --------------------------------
+
+    @Test
+    fun when_AddedThreeAuthors_then_AuthorsPagingSourceReturnsFirstTwo_If_PageSizeIsTwo() =
+        runBlocking {
+            // ARRANGE
+            val allAuthors = listOf(
+                AuthorEntity(
+                    slug = "1",
+                    link = "",
+                    bio = "",
+                    description = "",
+                    name = "",
+                    quoteCount = 1,
+                    dateAdded = "",
+                    dateModified = ""
+                ),
+                AuthorEntity(
+                    slug = "2",
+                    link = "",
+                    bio = "",
+                    description = "",
+                    name = "",
+                    quoteCount = 3,
+                    dateAdded = "",
+                    dateModified = ""
+                ),
+                AuthorEntity(
+                    slug = "3",
+                    link = "",
+                    bio = "",
+                    description = "",
+                    name = "",
+                    quoteCount = 10,
+                    dateAdded = "",
+                    dateModified = ""
+                )
+            )
+            val originParams = AuthorOriginParams(type = AuthorOriginParams.Type.ALL)
+
+            // ACT
+            authorsDao.add(entries = allAuthors, originParams = originParams)
+
+            // ASSERT
+            val pagingSource = authorsDao.getAuthorsPagingSource(originParams)
+            val loadResult = pagingSource.load(
+                PagingSource.LoadParams.Refresh(
+                    key = 0,
+                    loadSize = 2,
+                    placeholdersEnabled = true
+                )
+            )
+
+            assertThat(loadResult).isEqualTo(
+                PagingSource.LoadResult.Page(
+                    data = allAuthors.subList(0, 2),
+                    prevKey = null,
+                    nextKey = 2,
+                    itemsBefore = 0,
+                    itemsAfter = 1
+                )
+            )
+
+        }
 }

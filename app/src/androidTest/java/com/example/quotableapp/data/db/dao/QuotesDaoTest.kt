@@ -1,5 +1,6 @@
 package com.example.quotableapp.data.db.dao
 
+import androidx.paging.PagingSource
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.example.quotableapp.data.DataTestUtil
@@ -10,7 +11,6 @@ import com.example.quotableapp.data.db.entities.quote.QuoteOriginEntity
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -248,5 +248,62 @@ class QuotesDaoTest {
         quotesDao.getFirstQuotesSortedById(params = originParams, limit = 4).test {
             assertThat(awaitItem()).isEqualTo(quoteEntities.sortedBy { it.id })
         }
+    }
+
+    // QUOTES PAGING SOURCE --------------------------------
+    @Test
+    fun when_AddedThreeQuotes_then_PagingSourceReturnFirstTwo_ifPageSizeIsTwo() = runBlocking {
+        // ARRANGE
+        val originParams = QuoteOriginParams(
+            type = QuoteOriginParams.Type.OF_AUTHOR,
+            value = "marie-curie",
+            searchPhrase = ""
+        )
+        val quoteEntities = listOf(
+            QuoteEntity(
+                id = "123",
+                content = "Nothing in life is to be feared, it is only to be understood",
+                author = "Marie Curie",
+                authorSlug = "marie-curie",
+                tags = listOf("science", "famous-quotes")
+            ),
+            QuoteEntity(
+                id = "124",
+                content = "Be less curious about people and more curious about ideas",
+                author = "Marie Curie",
+                authorSlug = "marie-curie",
+                tags = listOf("science", "famous-quotes")
+            ),
+            QuoteEntity(
+                id = "125",
+                content = "I was taught that the way of progress was neither swift nor easy",
+                author = "Marie Curie",
+                authorSlug = "marie-curie",
+                tags = listOf("science", "famous-quotes")
+            )
+        )
+
+        // ACT
+        quotesDao.addQuotes(originParams = originParams, quotes = quoteEntities)
+
+
+        // ASSERT
+        val pagingSource = quotesDao.getQuotesPagingSourceSortedByAuthor(originParams)
+        val loadResult = pagingSource.load(
+            PagingSource.LoadParams.Refresh(
+                key = 0,
+                loadSize = 2,
+                placeholdersEnabled = true
+            )
+        )
+        assertThat(loadResult).isEqualTo(
+            PagingSource.LoadResult.Page(
+                data = quoteEntities.subList(0, 2),
+                prevKey = null,
+                nextKey = 2,
+                itemsBefore = 0,
+                itemsAfter = 1
+            )
+        )
     }
 }
