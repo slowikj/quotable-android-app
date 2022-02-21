@@ -35,7 +35,7 @@ class TagsDaoTest {
     }
 
     @Test
-    fun addOriginEntity_thenReturnSuccessfullyId() = runBlocking {
+    fun when_AddedOriginEntity_then_ReturnSuccessfullyId() = runBlocking {
         // ARRANGE
         val originType = TagOriginType.ALL
         val originEntity = TagOriginEntity(
@@ -51,7 +51,7 @@ class TagsDaoTest {
     }
 
     @Test
-    fun addOriginEntity_thenReturnSuccessfullyLastUpdated() = runBlocking {
+    fun when_AddedOriginEntity_then_ReturnSuccessfullyLastUpdated() = runBlocking {
         // ARRANGE
         val originType = TagOriginType.ALL
         val lastUpdatedMillis = 123L
@@ -68,31 +68,29 @@ class TagsDaoTest {
     }
 
     @Test
-    fun whenQueryAbsentTagOriginEntity_thenReturnNullForLastUpdated() = runBlocking {
+    fun when_TagOriginEntityIsAbsent_thenReturnNullForLastUpdated() = runBlocking {
         // ARRANGE
         val absentTagType = TagOriginType.ALL
 
         // ACT
-        val res = tagsDao.getLastUpdatedMillis(absentTagType)
 
         // ASSERT
-        assertThat(res).isNull()
+        assertThat(tagsDao.getLastUpdatedMillis(absentTagType)).isNull()
     }
 
     @Test
-    fun whenQueryAbsentOrigin_thenReturnNullForId() = runBlocking {
+    fun when_AbsentOrigin_then_ReturnNullForId() = runBlocking {
         // ARRANGE
         val absentTagType = TagOriginType.ALL
 
         // ACT
-        val res = tagsDao.getTagOriginId(absentTagType)
 
         // ASSERT
-        assertThat(res).isNull()
+        assertThat(tagsDao.getTagOriginId(absentTagType)).isNull()
     }
 
     @Test
-    fun whenAddedTagsForOrigin_thenGetReturnThoseTagsOrderedByName() = runBlocking {
+    fun when_AddedTagsForOrigin_then_GetReturnThoseTagsOrderedByName() = runBlocking {
         // ARRANGE
         val tags = listOf(
             TagEntity(id = "123", name = "x", quoteCount = 123),
@@ -100,46 +98,44 @@ class TagsDaoTest {
             TagEntity(id = "12223", name = "axx", quoteCount = 1233),
         )
         val originType = TagOriginType.DASHBOARD_EXEMPLARY
-        tagsDao.add(tags = tags, originType = originType)
 
         // ACT
-        val resTagsFlow = tagsDao.getTags(type = originType)
+        tagsDao.add(tags = tags, originType = originType)
 
         // ASSERT
-        resTagsFlow.test {
+        tagsDao.getTags(type = originType).test {
             assertThat(awaitItem()).isEqualTo(tags.sortedBy { it.name })
             cancelAndConsumeRemainingEvents()
         }
     }
 
     @Test
-    fun whenAddedTagsFromMultipleOrigins_thenGetReturnOnlyTagsRelatedToQueryOrigin() = runBlocking {
-        // ARRANGE
-        val firstOriginType = TagOriginType.DASHBOARD_EXEMPLARY
-        val tagsFromFirstOrigin = listOf(
-            TagEntity(id = "1", name = "x", quoteCount = 123),
-            TagEntity(id = "2", name = "y", quoteCount = 1233),
-            TagEntity(id = "3", name = "z", quoteCount = 1233),
-        )
-        val secondOriginType = TagOriginType.ALL
-        val tagsFromSecondOrigin = listOf(
-            TagEntity(id = "878", name = "asasd", quoteCount = 123),
-            TagEntity(id = "1", name = "x", quoteCount = 1233),
-            TagEntity(id = "12223", name = "axx", quoteCount = 1233),
-            TagEntity(id = "1", name = "x", quoteCount = 123),
-            TagEntity(id = "3", name = "z", quoteCount = 1233),
-        )
+    fun when_AddedTagsFromMultipleOrigins_then_GetReturnOnlyTagsRelatedToQueryOrigin() =
+        runBlocking {
+            // ARRANGE
+            val firstOriginType = TagOriginType.DASHBOARD_EXEMPLARY
+            val tagsFromFirstOrigin = listOf(
+                TagEntity(id = "1", name = "x", quoteCount = 123),
+                TagEntity(id = "2", name = "y", quoteCount = 1233),
+                TagEntity(id = "3", name = "z", quoteCount = 1233),
+            )
+            val secondOriginType = TagOriginType.ALL
+            val tagsFromSecondOrigin = listOf(
+                TagEntity(id = "878", name = "asasd", quoteCount = 123),
+                TagEntity(id = "1", name = "x", quoteCount = 1233),
+                TagEntity(id = "12223", name = "axx", quoteCount = 1233),
+                TagEntity(id = "1", name = "x", quoteCount = 123),
+                TagEntity(id = "3", name = "z", quoteCount = 1233),
+            )
 
-        tagsDao.add(tags = tagsFromFirstOrigin, originType = firstOriginType)
-        tagsDao.add(tags = tagsFromSecondOrigin, originType = secondOriginType)
+            // ACT
+            tagsDao.add(tags = tagsFromFirstOrigin, originType = firstOriginType)
+            tagsDao.add(tags = tagsFromSecondOrigin, originType = secondOriginType)
 
-        // ACT
-        val resTagsFlow = tagsDao.getTags(type = firstOriginType)
-
-        // ASSERT
-        resTagsFlow.test {
-            assertThat(awaitItem()).isEqualTo(tagsFromFirstOrigin.sortedBy { it.name })
-            cancelAndConsumeRemainingEvents()
+            // ASSERT
+            tagsDao.getTags(type = firstOriginType).test {
+                assertThat(awaitItem()).isEqualTo(tagsFromFirstOrigin.sortedBy { it.name })
+                cancelAndConsumeRemainingEvents()
+            }
         }
-    }
 }

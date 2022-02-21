@@ -36,41 +36,39 @@ class AuthorsDaoTest {
     // REMOTE KEY -----------------------------------
 
     @Test
-    fun testInsertPageKey_thenReturnThisPageKey() = runBlocking {
+    fun when_InsertedPageKey_then_GetterReturnsThisPageKey() = runBlocking {
         // ARRANGE
         val key = 123
         val originParams = AuthorOriginParams(
             type = AuthorOriginParams.Type.ALL,
             searchPhrase = "xzy"
         )
-        authorsDao.addRemoteKey(originParams = originParams, pageKey = key)
 
         // ACT
-        val res = authorsDao.getPageKey(originParams)
+        authorsDao.addRemoteKey(originParams = originParams, pageKey = key)
 
         // ASSERT
-        assertThat(res).isEqualTo(key)
+        assertThat(authorsDao.getPageKey(originParams)).isEqualTo(key)
     }
 
     @Test
-    fun testInsertPageKey_thenLastUpdatedReturnNonNull() = runBlocking {
+    fun when_InsertedPageKey_then_LastUpdatedReturnsNonNull() = runBlocking {
         // ARRANGE
         val key = 123
         val originParams = AuthorOriginParams(
             type = AuthorOriginParams.Type.ALL,
             searchPhrase = "xyz"
         )
-        authorsDao.addRemoteKey(originParams = originParams, pageKey = key)
 
         // ACT
-        val res = authorsDao.getLastUpdated(params = originParams)
+        authorsDao.addRemoteKey(originParams = originParams, pageKey = key)
 
         // ASSERT
-        assertThat(res).isNotNull()
+        assertThat(authorsDao.getLastUpdated(params = originParams)).isNotNull()
     }
 
     @Test
-    fun testLastUpdatedReturnsNullForAbsentOrigin() = runBlocking {
+    fun when_AbsentOrigin_then_LastUpdatedReturnsNullForIt() = runBlocking {
         // ARRANGE
         val params = AuthorOriginParams(
             type = AuthorOriginParams.Type.ALL,
@@ -78,34 +76,32 @@ class AuthorsDaoTest {
         )
 
         // ACT
-        val res = authorsDao.getPageKey(params)
 
         // ASSERT
-        assertThat(res).isNull()
+        assertThat(authorsDao.getPageKey(params)).isNull()
     }
 
     @Test
-    fun whenRemoteKeyWasRemoved_thenPageKeyReturnsNull() = runBlocking {
+    fun when_RemoteKeyWasRemoved_then_PageKeyReturnsNull() = runBlocking {
         // ARRANGE
         val params = AuthorOriginParams(
             type = AuthorOriginParams.Type.ALL,
             searchPhrase = "xzy"
         )
         val key = 123
-        authorsDao.addRemoteKey(originParams = params, pageKey = key)
 
         // ACT
+        authorsDao.addRemoteKey(originParams = params, pageKey = key)
         authorsDao.deletePageKey(params)
-        val res = authorsDao.getPageKey(params)
 
         // ASSERT
-        assertThat(res).isNull()
+        assertThat(authorsDao.getPageKey(params)).isNull()
     }
 
     // ORIGIN --------------------------------
 
     @Test
-    fun whenAddedOrigin_thenReturnIdNonNull() = runBlocking {
+    fun when_AddedOrigin_thenReturnIdNonNull() = runBlocking {
         // ARRANGE
         val originParams = AuthorOriginParams(
             AuthorOriginParams.Type.ALL,
@@ -121,7 +117,7 @@ class AuthorsDaoTest {
     }
 
     @Test
-    fun whenAbsentOrigin_thenReturnIdNull() = runBlocking {
+    fun when_AbsentOrigin_then_ReturnIdNull() = runBlocking {
         // ARRANGE
         val originParams = AuthorOriginParams(
             AuthorOriginParams.Type.ALL,
@@ -129,14 +125,13 @@ class AuthorsDaoTest {
         )
 
         // ACT
-        val res = authorsDao.getOriginId(originParams)
 
         // ASSERT
-        assertThat(res).isNull()
+        assertThat(authorsDao.getOriginId(originParams)).isNull()
     }
 
     @Test
-    fun testInsertSeveralOrigins() = runBlocking {
+    fun when_SeveralOriginsAdded_then_ReturnNotNullForAllThose() = runBlocking {
         // ARRANGE
         val origins = listOf(
             AuthorOriginParams(AuthorOriginParams.Type.ALL, "xyz"),
@@ -145,19 +140,18 @@ class AuthorsDaoTest {
             AuthorOriginParams(AuthorOriginParams.Type.ALL, "c"),
             AuthorOriginParams(AuthorOriginParams.Type.EXAMPLE_FROM_DASHBOARD, ""),
         )
-        origins.forEach { authorsDao.addOrigin(it) }
 
         // ACT
-        val res = origins.map { authorsDao.getOriginId(it) }
+        origins.forEach { authorsDao.addOrigin(it) }
 
         // ASSERT
-        res.forEach { assertThat(it).isNotNull() }
+        origins.map { authorsDao.getOriginId(it) }.forEach { assertThat(it).isNotNull() }
     }
 
     // AUTHORS --------------------------------
 
     @Test
-    fun whenAddedAuthorsOfSeveralOrigins_thenReturnOnlyFromQueryOrigin() = runBlocking {
+    fun when_AddedAuthorsOfSeveralOrigins_then_ReturnOnlyFromQueryOrigin() = runBlocking {
         // ARRANGE
         val origins = listOf(
             AuthorOriginParams(AuthorOriginParams.Type.ALL, "xyz"),
@@ -231,16 +225,17 @@ class AuthorsDaoTest {
             allAuthors.subList(1, 2),
             allAuthors
         )
+
+
+        // ACT
         for ((originParams, authors) in origins.zip(authorsPerOrigin)) {
             authorsDao.add(entries = authors, originParams = originParams)
         }
 
-        // ACT
+        // ASSERT
         val resFlows = origins.map {
             authorsDao.getAuthorsSortedByQuoteCountDesc(originParams = it)
         }
-
-        // ASSERT
         for ((expectedAuthors, resultAuthors) in authorsPerOrigin.zip(resFlows)) {
             resultAuthors.test {
                 assertThat(awaitItem()).isEqualTo(expectedAuthors.sortedByDescending { it.quoteCount })

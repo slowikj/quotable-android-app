@@ -45,7 +45,7 @@ class QuotesDaoTest {
     // REMOTE KEY -----------------------------------
 
     @Test
-    fun insertPageRemoteKeyWithOriginParams_thenGetterReturnsThisKey() = runBlocking {
+    fun when_InsertedPageRemoteKeyWithOriginParams_then_GetterReturnsThisKey() = runBlocking {
         // ARRANGE
         val originParams = QuoteOriginParams(
             type = QuoteOriginParams.Type.ALL,
@@ -62,7 +62,7 @@ class QuotesDaoTest {
     }
 
     @Test
-    fun insertPageKeyWithExisting_thenReplaceWithNever() = runBlocking {
+    fun when_InsertedPageKeyWithExistingOrigin_then_ReplaceTheKey() = runBlocking {
         // ARRANGE
         val originParams = QuoteOriginParams(
             type = QuoteOriginParams.Type.ALL,
@@ -81,7 +81,7 @@ class QuotesDaoTest {
     }
 
     @Test
-    fun insertTwoSeparateKeysAndRemoveFirst_thenShouldReturnNull() = runBlocking {
+    fun when_InsertedTwoSeparateKeysAndRemoveFirst_then_GetterShouldReturnNull() = runBlocking {
         // ARRANGE
         val originParams = listOf(
             QuoteOriginParams(
@@ -112,7 +112,7 @@ class QuotesDaoTest {
     // ORIGIN --------------------------------
 
     @Test
-    fun insertNewOrigin() = runBlocking {
+    fun when_InsertedNewOrigin_thenGetterReturnsNotNullOriginId() = runBlocking {
         // ARRANGE
         val originParams = QuoteOriginParams(
             type = QuoteOriginParams.Type.ALL,
@@ -129,7 +129,7 @@ class QuotesDaoTest {
     }
 
     @Test
-    fun whenInsertTheSameOrigin_thenIgnore() = runBlocking {
+    fun when_InsertedTheSameOrigin_then_DoNotReplace() = runBlocking {
         // ARRANGE
         val originParams = QuoteOriginParams(
             type = QuoteOriginParams.Type.ALL,
@@ -149,41 +149,42 @@ class QuotesDaoTest {
     }
 
     @Test
-    fun insertSeveralOriginsWithDistinctParams() = runBlocking {
-        // ARRANGE
-        val originParams = listOf(
-            QuoteOriginParams(
-                type = QuoteOriginParams.Type.ALL,
-                value = "",
-                searchPhrase = "abc"
-            ),
-            QuoteOriginParams(
-                type = QuoteOriginParams.Type.OF_AUTHOR,
-                value = "",
-                searchPhrase = ""
-            ),
-            QuoteOriginParams(
-                type = QuoteOriginParams.Type.OF_TAG,
-                value = "",
-                searchPhrase = ""
+    fun when_InsertedSeveralOriginsWithDistinctParams_then_GetOriginIdReturnsForEachNotNull() =
+        runBlocking {
+            // ARRANGE
+            val originParams = listOf(
+                QuoteOriginParams(
+                    type = QuoteOriginParams.Type.ALL,
+                    value = "",
+                    searchPhrase = "abc"
+                ),
+                QuoteOriginParams(
+                    type = QuoteOriginParams.Type.OF_AUTHOR,
+                    value = "",
+                    searchPhrase = ""
+                ),
+                QuoteOriginParams(
+                    type = QuoteOriginParams.Type.OF_TAG,
+                    value = "",
+                    searchPhrase = ""
+                )
             )
-        )
 
-        // ACT
-        originParams.forEach {
-            quotesDao.addOrigin(QuoteOriginEntity(params = it))
-        }
+            // ACT
+            originParams.forEach {
+                quotesDao.addOrigin(QuoteOriginEntity(params = it))
+            }
 
-        // ASSERT
-        originParams.forEach {
-            assertThat(quotesDao.getOriginId(it)).isNotNull()
+            // ASSERT
+            originParams.forEach {
+                assertThat(quotesDao.getOriginId(it)).isNotNull()
+            }
         }
-    }
 
     // QUOTES  --------------------------------
 
     @Test
-    fun addQuoteWithOriginParams_thenGetFirstQuotesReturnsIt() = runBlocking {
+    fun when_AddedQuoteWithOriginParams_thenGetFirstQuotesReturnsIt() = runBlocking {
         // ARRANGE
         val originParams = QuoteOriginParams(
             type = QuoteOriginParams.Type.OF_AUTHOR,
@@ -197,20 +198,19 @@ class QuotesDaoTest {
             authorSlug = "marie-curie",
             tags = listOf("science", "famous-quotes")
         )
-        quotesDao.addQuotes(originParams = originParams, quotes = listOf(quoteEntity))
 
         // ACT
-        val resFlow = quotesDao.getFirstQuotesSortedById(originParams)
+        quotesDao.addQuotes(originParams = originParams, quotes = listOf(quoteEntity))
 
         // ASSERT
-        resFlow.test {
+        quotesDao.getFirstQuotesSortedById(originParams).test {
             assertThat(awaitItem()).isEqualTo(listOf(quoteEntity))
             cancelAndConsumeRemainingEvents()
         }
     }
 
     @Test
-    fun addSeveralQuotesOfSameOrigin_thenGetFirstQuotesReturnsThem() = runBlocking {
+    fun when_AddedSeveralQuotesOfSameOrigin_thenGetFirstQuotesReturnsThem() = runBlocking {
         // ARRANGE
         val originParams = QuoteOriginParams(
             type = QuoteOriginParams.Type.OF_AUTHOR,
@@ -240,13 +240,12 @@ class QuotesDaoTest {
                 tags = listOf("science", "famous-quotes")
             )
         )
-        quotesDao.addQuotes(originParams, quoteEntities)
 
         // ACT
-        val resFlow = quotesDao.getFirstQuotesSortedById(params = originParams, limit = 4)
+        quotesDao.addQuotes(originParams, quoteEntities)
 
         // ASSERT
-        resFlow.test {
+        quotesDao.getFirstQuotesSortedById(params = originParams, limit = 4).test {
             assertThat(awaitItem()).isEqualTo(quoteEntities.sortedBy { it.id })
         }
     }
