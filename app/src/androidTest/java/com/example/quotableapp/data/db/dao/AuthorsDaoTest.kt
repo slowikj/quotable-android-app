@@ -1,18 +1,20 @@
 package com.example.quotableapp.data.db.dao
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import app.cash.turbine.test
 import com.example.quotableapp.data.DataTestUtil
 import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 @RunWith(AndroidJUnit4::class)
 class AuthorsDaoTest {
 
@@ -234,13 +236,16 @@ class AuthorsDaoTest {
         }
 
         // ACT
-        val res = origins.map {
-            authorsDao.getAuthorsSortedByQuoteCountDesc(originParams = it).first()
+        val resFlows = origins.map {
+            authorsDao.getAuthorsSortedByQuoteCountDesc(originParams = it)
         }
 
         // ASSERT
-        for ((expected, result) in authorsPerOrigin.zip(res)) {
-            assertThat(result).isEqualTo(expected)
+        for ((expectedAuthors, resultAuthors) in authorsPerOrigin.zip(resFlows)) {
+            resultAuthors.test {
+                assertThat(awaitItem()).isEqualTo(expectedAuthors)
+                cancelAndConsumeRemainingEvents()
+            }
         }
     }
 }

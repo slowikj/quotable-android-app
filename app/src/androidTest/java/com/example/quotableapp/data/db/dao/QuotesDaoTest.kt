@@ -1,6 +1,7 @@
 package com.example.quotableapp.data.db.dao
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import app.cash.turbine.test
 import com.example.quotableapp.data.DataTestUtil
 import com.example.quotableapp.data.MainCoroutineRule
 import com.example.quotableapp.data.db.QuotableDatabase
@@ -196,13 +197,16 @@ class QuotesDaoTest {
             authorSlug = "marie-curie",
             tags = listOf("science", "famous-quotes")
         )
-
-        // ACT
         quotesDao.addQuotes(originParams = originParams, quotes = listOf(quoteEntity))
 
+        // ACT
+        val resFlow = quotesDao.getFirstQuotesSortedById(originParams)
+
         // ASSERT
-        val res = quotesDao.getFirstQuotesSortedById(originParams).first()
-        assertThat(res).isEqualTo(listOf(quoteEntity))
+        resFlow.test {
+            assertThat(awaitItem()).isEqualTo(listOf(quoteEntity))
+            cancelAndConsumeRemainingEvents()
+        }
     }
 
     @Test
@@ -239,9 +243,11 @@ class QuotesDaoTest {
         quotesDao.addQuotes(originParams, quoteEntities)
 
         // ACT
-        val res = quotesDao.getFirstQuotesSortedById(params = originParams, limit = 4).first()
+        val resFlow = quotesDao.getFirstQuotesSortedById(params = originParams, limit = 4)
 
         // ASSERT
-        assertThat(res).isEqualTo(quoteEntities)
+        resFlow.test {
+            assertThat(awaitItem()).isEqualTo(quoteEntities.sortedBy { it.id })
+        }
     }
 }

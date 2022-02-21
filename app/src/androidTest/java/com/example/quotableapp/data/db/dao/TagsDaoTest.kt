@@ -1,19 +1,21 @@
 package com.example.quotableapp.data.db.dao
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import app.cash.turbine.test
 import com.example.quotableapp.data.DataTestUtil
 import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.entities.tag.TagEntity
 import com.example.quotableapp.data.db.entities.tag.TagOriginEntity
 import com.example.quotableapp.data.db.entities.tag.TagOriginType
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 @RunWith(AndroidJUnit4::class)
 class TagsDaoTest {
 
@@ -101,10 +103,13 @@ class TagsDaoTest {
         tagsDao.add(tags = tags, originType = originType)
 
         // ACT
-        val res = tagsDao.getTags(type = originType).first()
+        val resTagsFlow = tagsDao.getTags(type = originType)
 
         // ASSERT
-        assertThat(res).isEqualTo(tags)
+        resTagsFlow.test {
+            assertThat(awaitItem()).isEqualTo(tags)
+            cancelAndConsumeRemainingEvents()
+        }
     }
 
     @Test
@@ -129,9 +134,12 @@ class TagsDaoTest {
         tagsDao.add(tags = tagsFromSecondOrigin, originType = secondOriginType)
 
         // ACT
-        val res = tagsDao.getTags(type = firstOriginType).first()
+        val resTagsFlow = tagsDao.getTags(type = firstOriginType)
 
         // ASSERT
-        assertThat(res).isEqualTo(tagsFromFirstOrigin)
+        resTagsFlow.test {
+            assertThat(awaitItem()).isEqualTo(tagsFromFirstOrigin)
+            cancelAndConsumeRemainingEvents()
+        }
     }
 }
