@@ -34,7 +34,7 @@ interface TagsDao {
         "SELECT id FROM tag_origins " +
                 "WHERE type = :type"
     )
-    suspend fun getTagOrigin(type: TagOriginType): Int?
+    suspend fun getTagOriginId(type: TagOriginType): Int?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addTagsWithOrigins(entries: List<TagWithOriginJoin>)
@@ -42,7 +42,7 @@ interface TagsDao {
     @Transaction
     suspend fun add(tags: List<TagEntity>, originType: TagOriginType) {
         add(TagOriginEntity(type = originType, lastUpdatedMillis = System.currentTimeMillis()))
-        val originId = getTagOrigin(originType)!!
+        val originId = getTagOriginId(originType)!!
         add(tags)
         addTagsWithOrigins(
             tags.map { TagWithOriginJoin(tagId = it.id, originId = originId) }
