@@ -230,7 +230,7 @@ class AuthorsDaoTest {
             allAuthors.subList(0, 3),
             allAuthors.subList(1, 2),
             allAuthors
-        ).map { authorsList -> authorsList.sortedByDescending { it.quoteCount } }
+        )
         for ((originParams, authors) in origins.zip(authorsPerOrigin)) {
             authorsDao.add(entries = authors, originParams = originParams)
         }
@@ -243,7 +243,7 @@ class AuthorsDaoTest {
         // ASSERT
         for ((expectedAuthors, resultAuthors) in authorsPerOrigin.zip(resFlows)) {
             resultAuthors.test {
-                assertThat(awaitItem()).isEqualTo(expectedAuthors)
+                assertThat(awaitItem()).isEqualTo(expectedAuthors.sortedByDescending { it.quoteCount })
                 cancelAndConsumeRemainingEvents()
             }
         }

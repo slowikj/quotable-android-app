@@ -98,7 +98,7 @@ class TagsDaoTest {
             TagEntity(id = "123", name = "x", quoteCount = 123),
             TagEntity(id = "1223", name = "ax", quoteCount = 1233),
             TagEntity(id = "12223", name = "axx", quoteCount = 1233),
-        ).sortedBy { it.name }
+        )
         val originType = TagOriginType.DASHBOARD_EXEMPLARY
         tagsDao.add(tags = tags, originType = originType)
 
@@ -107,7 +107,7 @@ class TagsDaoTest {
 
         // ASSERT
         resTagsFlow.test {
-            assertThat(awaitItem()).isEqualTo(tags)
+            assertThat(awaitItem()).isEqualTo(tags.sortedBy { it.name })
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -120,7 +120,7 @@ class TagsDaoTest {
             TagEntity(id = "1", name = "x", quoteCount = 123),
             TagEntity(id = "2", name = "y", quoteCount = 1233),
             TagEntity(id = "3", name = "z", quoteCount = 1233),
-        ).sortedBy { it.name }
+        )
         val secondOriginType = TagOriginType.ALL
         val tagsFromSecondOrigin = listOf(
             TagEntity(id = "878", name = "asasd", quoteCount = 123),
@@ -128,7 +128,7 @@ class TagsDaoTest {
             TagEntity(id = "12223", name = "axx", quoteCount = 1233),
             TagEntity(id = "1", name = "x", quoteCount = 123),
             TagEntity(id = "3", name = "z", quoteCount = 1233),
-        ).sortedBy { it.name }
+        )
 
         tagsDao.add(tags = tagsFromFirstOrigin, originType = firstOriginType)
         tagsDao.add(tags = tagsFromSecondOrigin, originType = secondOriginType)
@@ -138,7 +138,7 @@ class TagsDaoTest {
 
         // ASSERT
         resTagsFlow.test {
-            assertThat(awaitItem()).isEqualTo(tagsFromFirstOrigin)
+            assertThat(awaitItem()).isEqualTo(tagsFromFirstOrigin.sortedBy { it.name })
             cancelAndConsumeRemainingEvents()
         }
     }
