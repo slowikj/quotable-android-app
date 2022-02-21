@@ -126,7 +126,10 @@ class DefaultAuthorsRepository @Inject constructor(
 
     override val firstAuthorsFlow: Flow<List<Author>>
         get() = authorsDao
-            .getAuthors(originParams = FIRST_AUTHORS_ORIGIN_PARAMS, limit = FIRST_AUTHORS_LIMIT)
+            .getAuthorsSortedByQuoteCountDesc(
+                originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
+                limit = FIRST_AUTHORS_LIMIT
+            )
             .distinctUntilChanged()
             .filterNotNull()
             .map { list -> list.map(authorConverters::toDomain) }

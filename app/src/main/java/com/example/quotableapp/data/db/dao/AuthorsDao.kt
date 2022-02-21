@@ -17,15 +17,15 @@ interface AuthorsDao {
                 "INNER JOIN authors on authors.slug = authorSlug " +
                 "ORDER BY authors.name"
     )
-    fun getAuthors(
+    fun getAuthorsPagingSource(
         type: AuthorOriginParams.Type,
         searchPhrase: String = ""
     ): PagingSource<Int, AuthorEntity>
 
-    fun getAuthors(
+    fun getAuthorsPagingSource(
         params: AuthorOriginParams
     ): PagingSource<Int, AuthorEntity> {
-        return getAuthors(
+        return getAuthorsPagingSource(
             type = params.type,
             searchPhrase = params.searchPhrase
         )
@@ -41,14 +41,17 @@ interface AuthorsDao {
                 "ORDER BY authors.quoteCount DESC " +
                 "LIMIT :limit"
     )
-    fun getAuthors(
+    fun getAuthorsSortedByQuoteCountDesc(
         type: AuthorOriginParams.Type,
         searchPhrase: String = "",
         limit: Int = Int.MAX_VALUE
     ): Flow<List<AuthorEntity>>
 
-    fun getAuthors(originParams: AuthorOriginParams, limit: Int): Flow<List<AuthorEntity>> {
-        return getAuthors(
+    fun getAuthorsSortedByQuoteCountDesc(
+        originParams: AuthorOriginParams,
+        limit: Int = Int.MAX_VALUE
+    ): Flow<List<AuthorEntity>> {
+        return getAuthorsSortedByQuoteCountDesc(
             type = originParams.type,
             searchPhrase = originParams.searchPhrase,
             limit = limit
@@ -57,6 +60,19 @@ interface AuthorsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAuthors(entries: List<AuthorEntity>)
+
+    @Transaction
+    suspend fun add(entries: List<AuthorEntity>, originParams: AuthorOriginParams) {
+        addOrigin(originParams = originParams)
+        val originId = getOriginId(
+            type = originParams.type,
+            searchPhrase = originParams.searchPhrase
+        )!!
+        addAuthors(entries)
+        entries.forEach { author ->
+            add(AuthorWithOriginJoin(originId = originId, authorSlug = author.slug))
+        }
+    }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addOrigin(originEntity: AuthorOriginEntity)
@@ -82,19 +98,6 @@ interface AuthorsDao {
             type = params.type,
             searchPhrase = params.searchPhrase
         )
-    }
-
-    @Transaction
-    suspend fun add(entries: List<AuthorEntity>, originParams: AuthorOriginParams) {
-        addOrigin(originParams = originParams)
-        val originId = getOriginId(
-            type = originParams.type,
-            searchPhrase = originParams.searchPhrase
-        )!!
-        addAuthors(entries)
-        entries.forEach { author ->
-            add(AuthorWithOriginJoin(originId = originId, authorSlug = author.slug))
-        }
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

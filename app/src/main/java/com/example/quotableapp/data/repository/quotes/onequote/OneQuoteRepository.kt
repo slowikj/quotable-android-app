@@ -45,7 +45,7 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     override val randomQuoteFlow: Flow<Quote>
         get() = quotesDao
-            .getFirstQuotes(
+            .getFirstQuotesSortedById(
                 params = randomQuoteOriginParams,
                 limit = 1
             )

@@ -201,7 +201,7 @@ class QuotesDaoTest {
         quotesDao.addQuotes(originParams = originParams, quotes = listOf(quoteEntity))
 
         // ASSERT
-        val res = quotesDao.getFirstQuotes(originParams).first()
+        val res = quotesDao.getFirstQuotesSortedById(originParams).first()
         assertThat(res).isEqualTo(listOf(quoteEntity))
     }
 
@@ -239,7 +239,7 @@ class QuotesDaoTest {
         quotesDao.addQuotes(originParams, quoteEntities)
 
         // ACT
-        val res = quotesDao.getFirstQuotes(params = originParams, limit = 4).first()
+        val res = quotesDao.getFirstQuotesSortedById(params = originParams, limit = 4).first()
 
         // ASSERT
         assertThat(res).isEqualTo(quoteEntities)

@@ -43,7 +43,7 @@ class AuthorsListPersistenceManager @AssistedInject constructor(
 
     override fun getPagingSource(): PagingSource<Int, AuthorEntity> {
         return database.authorsDao()
-            .getAuthors(originParams)
+            .getAuthorsPagingSource(originParams)
     }
 
 }

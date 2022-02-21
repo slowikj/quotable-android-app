@@ -70,7 +70,7 @@ class DefaultAllQuotesRepository @Inject constructor(
     }
 
     override val firstQuotesFlow: Flow<List<Quote>>
-        get() = quotesDao.getFirstQuotes(
+        get() = quotesDao.getFirstQuotesSortedById(
             params = firstQuotesParams,
             limit = FIRST_QUOTES_LIMIT
         ).filterNotNull()

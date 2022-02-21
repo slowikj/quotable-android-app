@@ -18,16 +18,16 @@ interface QuotesDao {
                 "INNER JOIN quotes on quotes.id = quoteId " +
                 "ORDER BY quotes.author"
     )
-    fun getQuotesSortedByAuthor(
+    fun getQuotesPagingSourceSortedByAuthor(
         type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
         value: String = "",
         searchPhrase: String = ""
     ): PagingSource<Int, QuoteEntity>
 
-    fun getQuotesSortedByAuthor(
+    fun getQuotesPagingSourceSortedByAuthor(
         params: QuoteOriginParams
     ): PagingSource<Int, QuoteEntity> {
-        return getQuotesSortedByAuthor(
+        return getQuotesPagingSourceSortedByAuthor(
             type = params.type,
             value = params.value,
             searchPhrase = params.searchPhrase
@@ -40,20 +40,21 @@ interface QuotesDao {
                 "(SELECT quoteId from quote_with_origin_join WHERE originId = " +
                 "(SELECT id from quote_origins WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase)) " +
                 "INNER JOIN quotes on quotes.id = quoteId " +
+                "ORDER BY id " +
                 "LIMIT :limit"
     )
-    fun getFirstQuotes(
+    fun getFirstQuotesSortedById(
         type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
         value: String = "",
         searchPhrase: String = "",
         limit: Int = 1,
     ): Flow<List<QuoteEntity>>
 
-    fun getFirstQuotes(
+    fun getFirstQuotesSortedById(
         params: QuoteOriginParams,
         limit: Int = 1,
     ): Flow<List<QuoteEntity>> {
-        return getFirstQuotes(
+        return getFirstQuotesSortedById(
             type = params.type,
             value = params.value,
             searchPhrase = params.searchPhrase,
