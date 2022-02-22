@@ -10,6 +10,5 @@ object DataTestUtil {
         Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
             T::class.java
-        ).allowMainThreadQueries()
-            .build()
+        ).build()
 }
