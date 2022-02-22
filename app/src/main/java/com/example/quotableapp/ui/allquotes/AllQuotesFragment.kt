@@ -5,6 +5,8 @@ import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
@@ -21,12 +23,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
 @ExperimentalCoroutinesApi
 @ExperimentalPagingApi
 @ExperimentalTime
 @FlowPreview
+@InternalCoroutinesApi
 @AndroidEntryPoint
 class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
 
@@ -50,7 +54,6 @@ class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
         return binding.root
     }
 
-    @InternalCoroutinesApi
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_fragment_all_quotes, menu)
         prepareSearchView(menu)
@@ -93,8 +96,9 @@ class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
     }
 
     private fun observeOnSearchQueryChanged(searchView: SearchView) {
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launch {
             searchView.getQueryTextChangedStateFlow()
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .collectLatest {
                     listViewModel.onSearchQueryChanged(it)
                 }

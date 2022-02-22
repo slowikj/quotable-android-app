@@ -3,7 +3,9 @@ package com.example.quotableapp.ui.common.quoteslist
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quotableapp.data.model.Quote
@@ -78,10 +80,12 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
     }
 
     private fun setupActionsHandler() {
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            launch { collectQuotesFlow() }
-            launch { collectNavigationActions() }
-            launch { collectPlainActions() }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch { collectQuotesFlow() }
+                launch { collectNavigationActions() }
+                launch { collectPlainActions() }
+            }
         }
     }
 

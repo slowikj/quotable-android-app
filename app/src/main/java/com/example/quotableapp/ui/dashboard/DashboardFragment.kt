@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -58,12 +60,14 @@ class DashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupCategories()
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            launch { viewModel.quotes.collectLatest { handle(it) } }
-            launch { viewModel.authors.collectLatest { handle(it) } }
-            launch { viewModel.tags.collectLatest { handle(it) } }
-            launch { viewModel.randomQuote.collectLatest { handle(it) } }
-            launch { viewModel.navigationActions.collectLatest { handle(it) } }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch { viewModel.quotes.collectLatest { handle(it) } }
+                launch { viewModel.authors.collectLatest { handle(it) } }
+                launch { viewModel.tags.collectLatest { handle(it) } }
+                launch { viewModel.randomQuote.collectLatest { handle(it) } }
+                launch { viewModel.navigationActions.collectLatest { handle(it) } }
+            }
         }
     }
 

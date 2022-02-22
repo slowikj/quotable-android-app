@@ -69,7 +69,7 @@ class AuthorsListFragment : Fragment() {
 
     private fun setupViewModelEventsHandling() {
         viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { collectNavigationActions() }
                 launch { collectAuthorsFlow() }
                 launch { collectPlainActions() }

@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
@@ -16,6 +18,7 @@ import com.example.quotableapp.ui.common.quoteslist.QuotesListFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
 @ExperimentalPagingApi
@@ -47,10 +50,13 @@ class AuthorFragment : QuotesListFragment<AuthorQuotesViewModel>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            authorDetailsViewModel.state.collectLatest {
-                binding.collapsingToolbar.dataLoadHandler.handle(it)
-            }
+        viewLifecycleOwner.lifecycleScope.launch {
+            authorDetailsViewModel
+                .state
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+                .collectLatest {
+                    binding.collapsingToolbar.dataLoadHandler.handle(it)
+                }
         }
 
         binding.collapsingToolbar.dataLoadHandler.btnRetry.setOnClickListener {
