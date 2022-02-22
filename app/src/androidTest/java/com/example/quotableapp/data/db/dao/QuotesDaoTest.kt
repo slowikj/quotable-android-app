@@ -24,9 +24,6 @@ import kotlin.time.ExperimentalTime
 @RunWith(AndroidJUnit4::class)
 class QuotesDaoTest {
 
-    @get:Rule
-    val mainCoroutineRule = MainCoroutineRule()
-
     private lateinit var quotableDatabase: QuotableDatabase
 
     private lateinit var quotesDao: QuotesDao
