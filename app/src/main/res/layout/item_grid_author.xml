@@ -11,13 +11,13 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/AppTheme.AuthorItem"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/AppTheme.AuthorItem">
+        android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/appCompatImageView"
-            loadImage="@{model.photoUrl}"
+            loadImageWithPlaceholder="@{model.photoUrl}"
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:padding="8dp"
