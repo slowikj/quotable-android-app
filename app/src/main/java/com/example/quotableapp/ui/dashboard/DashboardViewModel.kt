@@ -63,6 +63,13 @@ class DashboardViewModel @Inject constructor(
         startObservingAuthorsFlow()
     }
 
+    fun refreshAll() {
+        requestAuthors(forceUpdate = true)
+        requestQuotes(forceUpdate = true)
+        requestTags(forceUpdate = true)
+        requestRandomQuote(forceUpdate = true)
+    }
+
     fun requestAuthors(forceUpdate: Boolean = true) {
         handleRequestWithoutData(
             stateFlow = _authors,

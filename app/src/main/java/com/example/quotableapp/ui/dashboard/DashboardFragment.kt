@@ -68,6 +68,10 @@ class DashboardFragment : Fragment() {
                 launch { viewModel.randomQuote.collectLatest { handle(it) } }
             }
         }
+        binding.swipeToRefresh.setOnRefreshListener {
+            viewModel.refreshAll()
+            binding.swipeToRefresh.isRefreshing = false
+        }
     }
 
     @JvmName("handleQuoteListState")
