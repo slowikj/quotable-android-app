@@ -74,14 +74,17 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     private suspend fun updateDatabaseWithRandomQuote(quoteDTO: QuoteDTO) {
         quotableDatabase.withTransaction {
-            quotesDao.insertRemotePageKey(
-                originParams = randomQuoteOriginParams,
-                key = 0
-            )
-            quotesDao.addQuotes(
-                originParams = randomQuoteOriginParams,
-                quotes = listOf(quoteConverters.toDb(quoteDTO))
-            )
+            quotesDao.apply {
+                deleteQuoteEntriesFrom(originParams = randomQuoteOriginParams)
+                insertRemotePageKey(
+                    originParams = randomQuoteOriginParams,
+                    key = 0
+                )
+                addQuotes(
+                    originParams = randomQuoteOriginParams,
+                    quotes = listOf(quoteConverters.toDb(quoteDTO))
+                )
+            }
         }
     }
 
