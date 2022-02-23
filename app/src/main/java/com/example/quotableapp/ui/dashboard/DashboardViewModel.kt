@@ -40,24 +40,6 @@ class DashboardViewModel @Inject constructor(
         object NetworkError : UiError()
     }
 
-    sealed class NavigationAction {
-        object ToAllQuotes : NavigationAction()
-
-        object ToAllAuthors : NavigationAction()
-
-        object ToAllTags : NavigationAction()
-
-        data class ToQuote(val quoteId: String) : NavigationAction()
-
-        data class ToAuthor(val authorSlug: String) : NavigationAction()
-
-        data class ToTag(val tag: Tag) : NavigationAction()
-
-    }
-
-    private val _navigationActions = MutableSharedFlow<NavigationAction>()
-    val navigationActions: SharedFlow<NavigationAction> = _navigationActions.asSharedFlow()
-
     private val _authors = MutableStateFlow(AuthorListState())
     val authors: StateFlow<AuthorListState> = _authors.asStateFlow()
 
@@ -79,30 +61,6 @@ class DashboardViewModel @Inject constructor(
         startObservingExemplaryQuotesFlow()
         startObservingTagsFlow()
         startObservingAuthorsFlow()
-    }
-
-    fun onAuthorsShowMoreClick() {
-        emit(NavigationAction.ToAllAuthors)
-    }
-
-    fun onQuotesShowMoreClick() {
-        emit(NavigationAction.ToAllQuotes)
-    }
-
-    fun onTagsShowMoreClick() {
-        emit(NavigationAction.ToAllTags)
-    }
-
-    fun onAuthorClick(author: Author) {
-        emit(NavigationAction.ToAuthor(authorSlug = author.slug))
-    }
-
-    fun onQuoteClick(quote: Quote) {
-        emit(NavigationAction.ToQuote(quoteId = quote.id))
-    }
-
-    fun onTagClick(tag: Tag) {
-        emit(NavigationAction.ToTag(tag))
     }
 
     fun requestAuthors(forceUpdate: Boolean = true) {
@@ -179,9 +137,4 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
-    private fun emit(navigationAction: NavigationAction) {
-        viewModelScope.launch {
-            _navigationActions.emit(navigationAction)
-        }
-    }
 }

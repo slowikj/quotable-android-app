@@ -20,7 +20,6 @@ import com.example.quotableapp.ui.common.extensions.showErrorToast
 import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -34,7 +33,7 @@ class AuthorsListFragment : Fragment() {
     private lateinit var binding: FragmentAuthorsListBinding
 
     private val authorsListAdapter = AuthorsListAdapter(
-        onItemClick = { listViewModel.onAuthorClick(it) }
+        onItemClick = { showAuthorFragment(it) }
     )
 
     private lateinit var recyclerViewComposite: RecyclerViewComposite
@@ -55,7 +54,7 @@ class AuthorsListFragment : Fragment() {
         setUpAuthorListRecyclerView()
         setupViewModelEventsHandling()
         binding.recyclerviewLayout.dataLoadHandler.btnRetry.setOnClickListener {
-            listViewModel.onRefresh()
+            authorsListAdapter.refresh()
         }
     }
 
@@ -70,16 +69,14 @@ class AuthorsListFragment : Fragment() {
     private fun setupViewModelEventsHandling() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { collectNavigationActions() }
-                launch { collectAuthorsFlow() }
-                launch { collectPlainActions() }
+                collectAuthorsFlow()
             }
         }
     }
 
     private fun setupListAdapter() {
         recyclerViewComposite.swipeRefreshLayout
-            ?.setOnRefreshListener { listViewModel.onRefresh() }
+            ?.setOnRefreshListener { authorsListAdapter.refresh() }
         authorsListAdapter.setupWith(
             recyclerViewComposite = recyclerViewComposite,
             lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
@@ -99,25 +96,9 @@ class AuthorsListFragment : Fragment() {
         }
     }
 
-    private suspend fun collectPlainActions() {
-        listViewModel.action.collect {
-            when (it) {
-                is AuthorsListViewModel.Action.RefreshList -> authorsListAdapter.refresh()
-            }
-        }
-    }
-
     private suspend fun collectAuthorsFlow() {
         listViewModel.fetchAuthors().collectLatest {
             authorsListAdapter.submitData(it)
-        }
-    }
-
-    private suspend fun collectNavigationActions() {
-        listViewModel.navigationAction.collect {
-            when (it) {
-                is AuthorsListViewModel.NavigationAction.ToAuthor -> showAuthorFragment(it.author)
-            }
         }
     }
 

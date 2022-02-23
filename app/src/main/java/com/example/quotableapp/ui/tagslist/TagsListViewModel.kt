@@ -26,13 +26,6 @@ class TagsListViewModel @Inject constructor(
         object NetworkError : UiError()
     }
 
-    sealed class NavigationAction {
-        data class ToTagQuotes(val tag: Tag) : NavigationAction()
-    }
-
-    private val _navigationActions = MutableSharedFlow<NavigationAction>()
-    val navigationActions: SharedFlow<NavigationAction> = _navigationActions.asSharedFlow()
-
     private val _tags = MutableStateFlow(TagsListState())
     val tags: StateFlow<TagsListState> = _tags.asStateFlow()
 
@@ -47,12 +40,6 @@ class TagsListViewModel @Inject constructor(
             requestFunc = { tagsRepository.fetchAllTags(forceRefresh) },
             errorConverter = { UiError.NetworkError }
         )
-    }
-
-    fun onTagClick(tag: Tag) {
-        viewModelScope.launch {
-            _navigationActions.emit(NavigationAction.ToTagQuotes(tag))
-        }
     }
 
     private fun startObservingTagsFlow() {

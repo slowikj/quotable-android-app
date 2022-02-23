@@ -53,8 +53,10 @@ class TagQuotesFragment : QuotesListFragment<TagQuotesListViewModel>() {
     }
 
     override fun showQuotesOfTag(tag: String) {
-        val action = TagQuotesFragmentDirections.showQuotesOfTag(tag)
-        findNavController().navigate(action)
+        if (tagDetailsViewModel.tagName != tag) {
+            val action = TagQuotesFragmentDirections.showQuotesOfTag(tag)
+            findNavController().navigate(action)
+        }
     }
 
 }

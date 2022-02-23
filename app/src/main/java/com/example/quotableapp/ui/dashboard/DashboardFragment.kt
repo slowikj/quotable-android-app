@@ -35,15 +35,15 @@ class DashboardFragment : Fragment() {
     private val viewModel: DashboardViewModel by viewModels()
 
     private val authorsAdapter by lazy {
-        AuthorsAdapter(onClick = { viewModel.onAuthorClick(it) })
+        AuthorsAdapter(onClick = { showAuthor(it.slug) })
     }
 
     private val quotesAdapter: QuotesAdapter by lazy {
-        QuotesAdapter(onClick = { viewModel.onQuoteClick(it) })
+        QuotesAdapter(onClick = { showQuote(it.id) })
     }
 
     private val tagsAdapter: TagsAdapter by lazy {
-        TagsAdapter(onClick = { viewModel.onTagClick(it) })
+        TagsAdapter(onClick = { showQuotesOfTag(it) })
     }
 
     override fun onCreateView(
@@ -66,7 +66,6 @@ class DashboardFragment : Fragment() {
                 launch { viewModel.authors.collectLatest { handle(it) } }
                 launch { viewModel.tags.collectLatest { handle(it) } }
                 launch { viewModel.randomQuote.collectLatest { handle(it) } }
-                launch { viewModel.navigationActions.collectLatest { handle(it) } }
             }
         }
     }
@@ -94,17 +93,6 @@ class DashboardFragment : Fragment() {
             quoteLayout.model = randomQuoteState.data
         }
     }
-
-    @JvmName("handleNavigationAction")
-    private fun handle(navigationAction: DashboardViewModel.NavigationAction) =
-        when (navigationAction) {
-            is DashboardViewModel.NavigationAction.ToQuote -> showQuote(navigationAction.quoteId)
-            is DashboardViewModel.NavigationAction.ToAuthor -> showAuthor(navigationAction.authorSlug)
-            is DashboardViewModel.NavigationAction.ToAllQuotes -> showAllQuotes()
-            is DashboardViewModel.NavigationAction.ToAllAuthors -> showAllAuthors()
-            is DashboardViewModel.NavigationAction.ToTag -> showQuotesOfTag(navigationAction.tag)
-            is DashboardViewModel.NavigationAction.ToAllTags -> showAllTags()
-        }
 
     private fun showQuote(quoteId: String) {
         val action = DashboardFragmentDirections.showOneQuote(quoteId)
@@ -155,7 +143,7 @@ class DashboardFragment : Fragment() {
                 viewModel.requestRandomQuote()
             }
             quoteLayout.root.setOnClickListener {
-                viewModel.onQuoteClick(viewModel.randomQuote.value.data!!)
+                viewModel.randomQuote.value.data?.let { showQuote(it.id) }
             }
         }
     }
@@ -164,7 +152,7 @@ class DashboardFragment : Fragment() {
         setupCategoryEntry(
             binding = binding.rowTags,
             listAdapter = tagsAdapter,
-            onCategoryClickListener = { viewModel.onTagsShowMoreClick() },
+            onCategoryClickListener = { showAllTags() },
             onDataRetryRequest = { viewModel.requestTags() }
         )
     }
@@ -173,7 +161,7 @@ class DashboardFragment : Fragment() {
         setupCategoryEntry(
             binding = binding.rowAuthors,
             listAdapter = authorsAdapter,
-            onCategoryClickListener = { viewModel.onAuthorsShowMoreClick() },
+            onCategoryClickListener = { showAllAuthors() },
             onDataRetryRequest = { viewModel.requestAuthors() })
     }
 
@@ -181,7 +169,7 @@ class DashboardFragment : Fragment() {
         setupCategoryEntry(
             binding = binding.rowQuotes,
             listAdapter = quotesAdapter,
-            onCategoryClickListener = { viewModel.onQuotesShowMoreClick() },
+            onCategoryClickListener = { showAllQuotes() },
             onDataRetryRequest = { viewModel.requestQuotes() })
     }
 

@@ -24,7 +24,7 @@ class TagsListFragment : Fragment() {
 
     private val viewModel: TagsListViewModel by viewModels()
 
-    private val tagsAdapter = TagsListAdapter(onItemClick = { viewModel.onTagClick(it) })
+    private val tagsAdapter = TagsListAdapter(onItemClick = { showQuotesOfTag(it) })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,16 +42,7 @@ class TagsListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { handleTagsList() }
-                launch { handleNavigationActions() }
-            }
-        }
-    }
-
-    private suspend fun handleNavigationActions() {
-        viewModel.navigationActions.collectLatest {
-            when (it) {
-                is TagsListViewModel.NavigationAction.ToTagQuotes -> showQuotesOfTag(it.tag)
+                handleTagsList()
             }
         }
     }

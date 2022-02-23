@@ -19,24 +19,10 @@ import kotlinx.coroutines.launch
 abstract class QuotesListViewModel constructor(
     protected val savedStateHandle: SavedStateHandle,
     protected val dispatchers: CoroutineDispatchers
-) : ViewModel(), OnQuoteClickListener {
-
-    sealed class NavigationAction {
-
-        data class ToDetails(val quote: Quote) : NavigationAction()
-
-        data class ToQuotesOfAuthor(val authorSlug: String) : NavigationAction()
-        data class ToQuotesOfTag(val tag: String) : NavigationAction()
-    }
-
-    protected val _navigationActions = MutableSharedFlow<NavigationAction>()
-    val navigationAction = _navigationActions.asSharedFlow()
+) : ViewModel() {
 
     sealed class Action {
 
-        data class CopyToClipboard(val formattedQuote: String) : Action()
-
-        object RefreshQuotes : Action()
         object Error : Action()
     }
 
@@ -46,34 +32,4 @@ abstract class QuotesListViewModel constructor(
     protected val _quotes = MutableStateFlow<PagingData<Quote>?>(null)
     val quotes: StateFlow<PagingData<Quote>?> = _quotes
 
-    fun onRefresh() {
-        viewModelScope.launch {
-            _actions.emit(Action.RefreshQuotes)
-        }
-    }
-
-    override fun onItemClick(quote: Quote) {
-        viewModelScope.launch {
-            _navigationActions.emit(NavigationAction.ToDetails(quote))
-        }
-    }
-
-    override fun onAuthorClick(authorSlug: String) {
-        viewModelScope.launch {
-            _navigationActions.emit(NavigationAction.ToQuotesOfAuthor(authorSlug))
-        }
-    }
-
-    override fun onTagClick(tag: String) {
-        viewModelScope.launch {
-            _navigationActions.emit(NavigationAction.ToQuotesOfTag(tag))
-        }
-    }
-
-    override fun onItemLongClick(quote: Quote): Boolean {
-        viewModelScope.launch {
-            _actions.emit(Action.CopyToClipboard(quote.formatToClipboard()))
-        }
-        return true
-    }
 }

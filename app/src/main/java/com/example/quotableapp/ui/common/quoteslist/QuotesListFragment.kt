@@ -10,10 +10,12 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
+import com.example.quotableapp.ui.common.OnQuoteClickListener
 import com.example.quotableapp.ui.common.extensions.RecyclerViewComposite
 import com.example.quotableapp.ui.common.extensions.copyQuoteToClipBoardWithToast
 import com.example.quotableapp.ui.common.extensions.setupWith
 import com.example.quotableapp.ui.common.extensions.showErrorToast
+import com.example.quotableapp.ui.common.formatters.formatToClipboard
 import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
@@ -33,7 +35,26 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
 
     protected lateinit var recyclerViewComposite: RecyclerViewComposite
 
-    private val quotesAdapter by lazy { QuotesAdapter(onClickHandler = listViewModel) }
+    private val quotesAdapter by lazy {
+        QuotesAdapter(onClickHandler = object : OnQuoteClickListener {
+            override fun onItemClick(quote: Quote) {
+                showQuote(quote)
+            }
+
+            override fun onItemLongClick(quote: Quote): Boolean {
+                copyQuoteToClipBoardWithToast(quote.formatToClipboard())
+                return true
+            }
+
+            override fun onAuthorClick(authorSlug: String) {
+                showAuthorFragment(authorSlug)
+            }
+
+            override fun onTagClick(tag: String) {
+                showQuotesOfTag(tag)
+            }
+        })
+    }
 
     protected abstract fun showQuote(quote: Quote)
 
@@ -46,9 +67,9 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
         recyclerViewComposite = prepareRecyclerViewComposite()
         setupQuotesRecyclerView()
         setupQuotesAdapter()
-        setupActionsHandler()
+        setupFlowsHandler()
         recyclerViewLayoutBinding.dataLoadHandler.btnRetry.setOnClickListener {
-            listViewModel.onRefresh()
+            quotesAdapter.refresh()
         }
     }
 
@@ -62,7 +83,7 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
 
     private fun setupQuotesAdapter() {
         recyclerViewComposite.swipeRefreshLayout
-            ?.setOnRefreshListener { listViewModel.onRefresh() }
+            ?.setOnRefreshListener { quotesAdapter.refresh() }
         quotesAdapter.setupWith(
             recyclerViewComposite = recyclerViewComposite,
             lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
@@ -79,11 +100,10 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
         }
     }
 
-    private fun setupActionsHandler() {
+    private fun setupFlowsHandler() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { collectQuotesFlow() }
-                launch { collectNavigationActions() }
                 launch { collectPlainActions() }
             }
         }
@@ -98,21 +118,8 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
         listViewModel.actions.collect { handlePlainActions(it) }
     }
 
-    private suspend fun collectNavigationActions() {
-        listViewModel.navigationAction.collect { handleNavigation(it) }
-    }
-
     private fun handlePlainActions(action: QuotesListViewModel.Action) =
         when (action) {
             is QuotesListViewModel.Action.Error -> showErrorToast()
-            is QuotesListViewModel.Action.CopyToClipboard -> copyQuoteToClipBoardWithToast(action.formattedQuote)
-            is QuotesListViewModel.Action.RefreshQuotes -> quotesAdapter.refresh()
-        }
-
-    private fun handleNavigation(action: QuotesListViewModel.NavigationAction) =
-        when (action) {
-            is QuotesListViewModel.NavigationAction.ToQuotesOfAuthor -> showAuthorFragment(action.authorSlug)
-            is QuotesListViewModel.NavigationAction.ToDetails -> showQuote(action.quote)
-            is QuotesListViewModel.NavigationAction.ToQuotesOfTag -> showQuotesOfTag(action.tag)
         }
 }

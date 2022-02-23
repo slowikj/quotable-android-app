@@ -25,7 +25,7 @@ class TagQuotesListViewModel @Inject constructor(
         const val TAG_ID = "tag"
     }
 
-    private val keyword: String
+    val keyword: String
         get() = savedStateHandle[TAG_ID]!!
 
     init {
@@ -34,14 +34,6 @@ class TagQuotesListViewModel @Inject constructor(
                 .flowOn(dispatchers.IO)
                 .cachedIn(viewModelScope)
                 .collectLatest { _quotes.value = it }
-        }
-    }
-
-    override fun onTagClick(tag: String) {
-        if (tag != keyword) {
-            viewModelScope.launch {
-                _navigationActions.emit(NavigationAction.ToQuotesOfTag(tag))
-            }
         }
     }
 }
