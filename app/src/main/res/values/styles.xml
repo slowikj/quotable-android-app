@@ -114,13 +114,14 @@
     </style>
 
     <style name="AuthorBio">
-        <item name="android:background">@color/colorPrimary</item>
-        <item name="background">@color/colorPrimary</item>
+        <item name="android:background">@color/colorPrimaryDark</item>
+        <item name="background">@color/colorPrimaryDark</item>
     </style>
 
     <style name="AuthorBio.Text" parent="TextAppearance.AppCompat">
-        <item name="android:textSize">12sp</item>
-        <item name="android:textColor">@color/white_87</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/white_60</item>
+        <item name="android:lineSpacingExtra">7dp</item>
     </style>
 
 </resources>

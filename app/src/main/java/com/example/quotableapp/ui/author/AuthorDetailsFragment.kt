@@ -1,6 +1,7 @@
 package com.example.quotableapp.ui.author
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,8 +33,8 @@ class AuthorDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAuthorDetailsBinding.inflate(inflater, container, false).apply {
-            lifecycleOwner = viewLifecycleOwner
-            viewModel = viewModel
+            lifecycleOwner = this@AuthorDetailsFragment.viewLifecycleOwner
+            viewModel = this@AuthorDetailsFragment.viewModel
         }
         return binding.root
     }
