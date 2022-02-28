@@ -18,6 +18,7 @@ import com.example.quotableapp.ui.common.extensions.changeToolbarColorOnVisibili
 import com.example.quotableapp.ui.common.extensions.getColor
 import com.example.quotableapp.ui.common.extensions.getQueryTextChangedStateFlow
 import com.example.quotableapp.ui.common.quoteslist.QuotesListFragment
+import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -32,17 +33,20 @@ import kotlin.time.ExperimentalTime
 @FlowPreview
 @InternalCoroutinesApi
 @AndroidEntryPoint
-class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
+class AllQuotesFragment : QuotesListFragment() {
 
     private val focusColor by lazy { getColor(R.color.colorAccent) }
     private val notFocusedColor by lazy { getColor(R.color.colorPrimaryDark) }
 
     private lateinit var binding: FragmentAllQuotesBinding
 
+    override val quotesProvider: QuotesProvider
+        get() = viewModel
+
     override val recyclerViewLayoutBinding: RefreshableRecyclerviewBinding
         get() = binding.recyclerviewLayout
 
-    override val listViewModel: AllQuotesListViewModel by viewModels()
+    private val viewModel: AllQuotesListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -91,7 +95,7 @@ class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
             )
         }
 
-        searchView.setQuery(listViewModel.lastSearchQuery.value, true)
+        searchView.setQuery(viewModel.lastSearchQuery.value, true)
         observeOnSearchQueryChanged(searchView)
     }
 
@@ -100,7 +104,7 @@ class AllQuotesFragment : QuotesListFragment<AllQuotesListViewModel>() {
             searchView.getQueryTextChangedStateFlow()
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .collectLatest {
-                    listViewModel.onSearchQueryChanged(it)
+                    viewModel.onSearchQueryChanged(it)
                 }
         }
     }

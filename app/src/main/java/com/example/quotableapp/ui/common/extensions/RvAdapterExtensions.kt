@@ -18,7 +18,8 @@ data class RecyclerViewComposite(
     val emptyListLayout: View? = null,
     val errorLayout: View? = null,
     val swipeRefreshLayout: SwipeRefreshLayout? = null,
-    val loadingLayout: View? = null
+    val loadingLayout: View? = null,
+    val retryView: View? = null,
 )
 
 @FlowPreview
@@ -28,6 +29,11 @@ fun <T : PagingDataAdapter<*, *>> T.setupWith(
     onError: ((Throwable) -> Unit)? = null
 ) {
     val pagingAdapter = this
+    recyclerViewComposite.swipeRefreshLayout
+        ?.setOnRefreshListener { pagingAdapter.refresh() }
+    recyclerViewComposite.retryView
+        ?.setOnClickListener { pagingAdapter.refresh() }
+
     lifecycleCoroutineScope.launchWhenStarted {
         pagingAdapter.loadStateFlow
             .debounce(100)

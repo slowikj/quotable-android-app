@@ -4,17 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.findFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.*
 import androidx.paging.ExperimentalPagingApi
-import com.example.quotableapp.data.model.Quote
+import com.example.quotableapp.R
 import com.example.quotableapp.databinding.FragmentAuthorBinding
-import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
 import com.example.quotableapp.ui.common.extensions.handle
-import com.example.quotableapp.ui.common.quoteslist.QuotesListFragment
+import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
@@ -25,16 +23,11 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 @FlowPreview
 @AndroidEntryPoint
-class AuthorFragment : QuotesListFragment<AuthorQuotesViewModel>() {
+class AuthorFragment : Fragment() {
 
-    override val listViewModel: AuthorQuotesViewModel by viewModels()
-
-    private val authorDetailsViewModel: AuthorDetailsViewModel by viewModels()
+    private val viewModel: AuthorViewModel by viewModels(ownerProducer = { this })
 
     private lateinit var binding: FragmentAuthorBinding
-
-    override val recyclerViewLayoutBinding: RefreshableRecyclerviewBinding
-        get() = binding.recyclerviewLayout
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,7 +35,7 @@ class AuthorFragment : QuotesListFragment<AuthorQuotesViewModel>() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAuthorBinding.inflate(inflater, container, false).apply {
-            collapsingToolbar.authorDetailsViewModel = authorDetailsViewModel
+            collapsingToolbar.viewModel = viewModel
             collapsingToolbar.lifecycleOwner = this@AuthorFragment.viewLifecycleOwner
         }
         return binding.root
@@ -50,30 +43,31 @@ class AuthorFragment : QuotesListFragment<AuthorQuotesViewModel>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        handleToolbar()
+        setupViewPager()
+    }
+
+    private fun setupViewPager() {
+        val adapter = AuthorViewPagerAdapter(binding.viewPager.findFragment())
+        binding.viewPager.adapter = adapter
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> getString(R.string.viewpager_author_tab_bio)
+                1 -> getString(R.string.viewpager_author_tab_quotes)
+                else -> ""
+            }
+        }.attach()
+    }
+
+    private fun handleToolbar() {
         viewLifecycleOwner.lifecycleScope.launch {
-            authorDetailsViewModel
-                .state
+            viewModel
+                .author
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .collectLatest {
                     binding.collapsingToolbar.dataLoadHandler.handle(it)
                 }
         }
-
-        binding.collapsingToolbar.dataLoadHandler.btnRetry.setOnClickListener {
-            authorDetailsViewModel.onRefresh()
-        }
     }
 
-    override fun showQuote(quote: Quote) {
-        val action = AuthorFragmentDirections.showOneQuote(quote.id)
-        findNavController().navigate(action)
-    }
-
-    override fun showAuthorFragment(authorSlug: String) {
-    }
-
-    override fun showQuotesOfTag(tag: String) {
-        val action = AuthorFragmentDirections.showQuotesOfTag(tag)
-        findNavController().navigate(action)
-    }
 }

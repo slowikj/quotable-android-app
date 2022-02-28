@@ -1,14 +1,18 @@
-package com.example.quotableapp.ui.tagquotes
+package com.example.quotableapp.ui.author
 
 import android.os.Bundle
+import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import androidx.paging.ExperimentalPagingApi
+import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.databinding.FragmentTagQuotesBinding
+import com.example.quotableapp.databinding.FragmentAuthorDetailsBinding
+import com.example.quotableapp.databinding.FragmentAuthorQuotesBinding
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
 import com.example.quotableapp.ui.common.quoteslist.QuotesListFragment
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
@@ -16,17 +20,18 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlin.time.ExperimentalTime
 
+@FlowPreview
 @ExperimentalPagingApi
 @ExperimentalTime
-@FlowPreview
 @AndroidEntryPoint
-class TagQuotesFragment : QuotesListFragment() {
+class AuthorQuotesFragment : QuotesListFragment() {
 
-    private lateinit var binding: FragmentTagQuotesBinding
+    private val viewModel: AuthorViewModel by viewModels(ownerProducer = { requireParentFragment() })
 
-    private val viewModel: TagQuotesListViewModel by viewModels()
+    override val quotesProvider: QuotesProvider
+        get() = viewModel
 
-    override val quotesProvider: QuotesProvider = viewModel
+    private lateinit var binding: FragmentAuthorQuotesBinding
 
     override val recyclerViewLayoutBinding: RefreshableRecyclerviewBinding
         get() = binding.recyclerviewLayout
@@ -36,28 +41,20 @@ class TagQuotesFragment : QuotesListFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentTagQuotesBinding.inflate(inflater, container, false).apply {
-            lifecycleOwner = this@TagQuotesFragment.viewLifecycleOwner
-            tagName = viewModel.tagName
-        }
+        binding = FragmentAuthorQuotesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun showAuthorFragment(authorSlug: String) {
-        val action = TagQuotesFragmentDirections.showAuthor(authorSlug)
+    override fun showQuote(quote: Quote) {
+        val action = AuthorQuotesFragmentDirections.showOneQuote(quote.id)
         findNavController().navigate(action)
     }
 
-    override fun showQuote(quote: Quote) {
-        val action = TagQuotesFragmentDirections.showOneQuote(quote.id)
-        findNavController().navigate(action)
+    override fun showAuthorFragment(authorSlug: String) {
     }
 
     override fun showQuotesOfTag(tag: String) {
-        if (viewModel.tagName != tag) {
-            val action = TagQuotesFragmentDirections.showQuotesOfTag(tag)
-            findNavController().navigate(action)
-        }
+        val action = AuthorQuotesFragmentDirections.showQuotesOfTag(tag)
+        findNavController().navigate(action)
     }
-
 }

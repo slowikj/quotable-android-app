@@ -28,7 +28,9 @@
         <entry key="app/src/main/res/layout/dashboard_recycler_view_item.xml" value="0.4925925925925926" />
         <entry key="app/src/main/res/layout/empty_list.xml" value="0.2708333333333333" />
         <entry key="app/src/main/res/layout/fragment_all_quotes.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/fragment_author.xml" value="0.14" />
+        <entry key="app/src/main/res/layout/fragment_author.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_author_details.xml" value="0.35280797101449274" />
+        <entry key="app/src/main/res/layout/fragment_author_quotes.xml" value="0.32155797101449274" />
         <entry key="app/src/main/res/layout/fragment_authors_list.xml" value="0.33469202898550726" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.1962962962962963" />
         <entry key="app/src/main/res/layout/fragment_one_quote.xml" value="0.33" />
@@ -55,7 +57,7 @@
         <entry key="app/src/main/res/layout/row_dashboard_rv.xml" value="0.1" />
         <entry key="app/src/main/res/layout/tmp.xml" value="0.32382246376811596" />
         <entry key="app/src/main/res/layout/tmp_fragment.xml" value="0.33469202898550726" />
-        <entry key="app/src/main/res/layout/toolbar_author_collapsing.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/toolbar_author_collapsing.xml" value="0.5" />
         <entry key="app/src/main/res/layout/toolbar_default_collapsing.xml" value="0.23177083333333334" />
         <entry key="app/src/main/res/menu/menu_bottom_nav.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/menu/menu_fragment_all_quotes.xml" value="0.25833333333333336" />

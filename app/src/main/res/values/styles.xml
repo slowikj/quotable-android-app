@@ -112,4 +112,15 @@
     <style name="AuthorToolbar.Subtitle">
         <item name="android:textColor">@color/white_87</item>
     </style>
+
+    <style name="AuthorBio">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="background">@color/colorPrimary</item>
+    </style>
+
+    <style name="AuthorBio.Text" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/white_87</item>
+    </style>
+
 </resources>

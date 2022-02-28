@@ -5,11 +5,36 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/dashboardFragment">
 
+    <fragment
+        android:id="@+id/authorFragment"
+        android:name="com.example.quotableapp.ui.author.AuthorFragment"
+        android:label="AuthorFragment">
+        <argument
+            android:name="authorSlug"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/authorQuotesFragment"
+        android:name="com.example.quotableapp.ui.author.AuthorQuotesFragment"
+        android:label="AuthorQuotesFragment">
+        <action
+            android:id="@+id/showOneQuote"
+            app:destination="@id/oneQuoteFragment" />
+        <action
+            android:id="@+id/showQuotesOfTag"
+            app:destination="@id/tagQuotesFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/authorDetailsFragment"
+        android:name="com.example.quotableapp.ui.author.AuthorDetailsFragment"
+        android:label="AuthorDetailsFragment" />
 
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="com.example.quotableapp.ui.dashboard.DashboardFragment"
-        android:label="DashboardFragment" >
+        android:label="DashboardFragment">
         <action
             android:id="@+id/showAllAuthors"
             app:destination="@id/authorsListFragment" />
@@ -48,10 +73,10 @@
     <fragment
         android:id="@+id/tagQuotesFragment"
         android:name="com.example.quotableapp.ui.tagquotes.TagQuotesFragment"
-        android:label="TagQuotesFragment" >
+        android:label="TagQuotesFragment">
         <argument
             android:name="tag"
-            app:argType="string"/>
+            app:argType="string" />
         <action
             android:id="@+id/showOneQuote"
             app:destination="@id/oneQuoteFragment" />
@@ -63,20 +88,6 @@
             app:destination="@id/tagQuotesFragment" />
     </fragment>
 
-    <fragment
-        android:id="@+id/authorFragment"
-        android:name="com.example.quotableapp.ui.author.AuthorFragment"
-        android:label="AuthorFragment" >
-        <argument
-            android:name="authorSlug"
-            app:argType="string"/>
-        <action
-            android:id="@+id/showOneQuote"
-            app:destination="@id/oneQuoteFragment" />
-        <action
-            android:id="@+id/showQuotesOfTag"
-            app:destination="@id/tagQuotesFragment" />
-    </fragment>
 
     <fragment
         android:id="@+id/authorsListFragment"
@@ -93,7 +104,7 @@
         android:label="OneQuoteFragment">
         <argument
             android:name="quoteId"
-            app:argType="string"/>
+            app:argType="string" />
         <action
             android:id="@+id/showAuthor"
             app:destination="@id/authorFragment" />
@@ -105,7 +116,7 @@
         android:id="@+id/tagsListFragment"
         android:name="com.example.quotableapp.ui.tagslist.TagsListFragment"
         android:label="fragment_tags_list"
-        tools:layout="@layout/fragment_tags_list" >
+        tools:layout="@layout/fragment_tags_list">
         <action
             android:id="@+id/showQuotesOfTag"
             app:destination="@id/tagQuotesFragment" />
