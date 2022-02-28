@@ -26,7 +26,8 @@ class TagQuotesFragment : QuotesListFragment() {
 
     private val viewModel: TagQuotesListViewModel by viewModels()
 
-    override val quotesProvider: QuotesProvider = viewModel
+    override val quotesProvider: QuotesProvider
+        get() = viewModel
 
     override val recyclerViewLayoutBinding: RefreshableRecyclerviewBinding
         get() = binding.recyclerviewLayout
