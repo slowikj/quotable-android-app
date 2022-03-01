@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
@@ -40,8 +41,9 @@ class AuthorViewModel @Inject constructor(
     private val authorSlug: String
         get() = savedStateHandle[AUTHOR_KEY]!!
 
-    override val quotes: StateFlow<PagingData<Quote>?> =
+    override val quotes: Flow<PagingData<Quote>?> =
         quotesRepository.fetchQuotesOfAuthor(authorSlug)
+            .cachedIn(viewModelScope)
             .stateIn(
                 initialValue = null,
                 scope = viewModelScope,
