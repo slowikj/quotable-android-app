@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
@@ -30,8 +31,10 @@ class TagQuotesListViewModel @Inject constructor(
     val tagName: String
         get() = savedStateHandle[TAG_ID]!!
 
-    override val quotes: Flow<PagingData<Quote>?>
-        get() = quotesRepository.fetchQuotesOfTag(tagName)
+    override val quotes: Flow<PagingData<Quote>?> =
+        quotesRepository
+            .fetchQuotesOfTag(tagName)
+            .cachedIn(viewModelScope)
             .stateIn(
                 initialValue = null,
                 scope = viewModelScope,

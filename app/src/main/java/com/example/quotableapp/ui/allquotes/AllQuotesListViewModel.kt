@@ -35,12 +35,13 @@ class AllQuotesListViewModel @Inject constructor(
 
     val lastSearchQuery: LiveData<String> = _lastSearchQuery
 
-    override val quotes: Flow<PagingData<Quote>?>
-        get() = _lastSearchQuery
+    override val quotes: Flow<PagingData<Quote>?> =
+        _lastSearchQuery
             .asFlow()
             .debounce(SEARCH_VIEW_DEBOUNCE_TIME_MILLIS)
             .distinctUntilChanged()
             .flatMapLatest { quotesRepository.fetchAllQuotes(it) }
+            .cachedIn(viewModelScope)
             .stateIn(
                 initialValue = null,
                 scope = viewModelScope,
