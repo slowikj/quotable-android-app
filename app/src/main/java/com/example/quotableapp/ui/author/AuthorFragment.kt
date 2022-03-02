@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.findFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
+import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.R
 import com.example.quotableapp.databinding.FragmentAuthorBinding
@@ -44,7 +45,35 @@ class AuthorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         handleToolbar()
+        handleNavigationFlow()
         setupViewPager()
+    }
+
+    private fun handleNavigationFlow() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel
+                .navigationActions
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+                .collectLatest {
+                    handle(it)
+                }
+        }
+    }
+
+    private fun handle(action: AuthorViewModel.NavigationAction) =
+        when (action) {
+            is AuthorViewModel.NavigationAction.ToOneQuote -> showOneQuote(action.quoteId)
+            is AuthorViewModel.NavigationAction.ToQuotesOfTag -> showQuotesOfTag(action.tag)
+        }
+
+    private fun showOneQuote(quoteId: String) {
+        val action = AuthorFragmentDirections.showOneQuote(quoteId)
+        findNavController().navigate(action)
+    }
+
+    private fun showQuotesOfTag(tag: String) {
+        val action = AuthorFragmentDirections.showQuotesOfTag(tag)
+        findNavController().navigate(action)
     }
 
     private fun setupViewPager() {

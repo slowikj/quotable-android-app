@@ -16,6 +16,7 @@ import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
@@ -38,6 +39,15 @@ class AuthorViewModel @Inject constructor(
         object IOError : UiError()
     }
 
+    sealed class NavigationAction {
+        data class ToQuotesOfTag(val tag: String) : NavigationAction()
+
+        data class ToOneQuote(val quoteId: String) : NavigationAction()
+    }
+
+    private val _navigationActions = MutableSharedFlow<NavigationAction>()
+    val navigationActions = _navigationActions.asSharedFlow()
+
     private val authorSlug: String
         get() = savedStateHandle[AUTHOR_KEY]!!
 
@@ -59,6 +69,18 @@ class AuthorViewModel @Inject constructor(
 
     fun onAuthorRefresh() {
         fetchAuthor()
+    }
+
+    fun onTagClick(tag: String) {
+        viewModelScope.launch {
+            _navigationActions.emit(NavigationAction.ToQuotesOfTag(tag))
+        }
+    }
+
+    fun onQuoteClick(quote: Quote) {
+        viewModelScope.launch {
+            _navigationActions.emit(NavigationAction.ToOneQuote(quote.id))
+        }
     }
 
     private fun fetchAuthor() {

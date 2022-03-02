@@ -22,12 +22,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/authorQuotesFragment"
-        android:name="com.example.quotableapp.ui.author.AuthorQuotesFragment"
-        android:label="AuthorQuotesFragment">
-    </fragment>
-
-    <fragment
         android:id="@+id/authorDetailsFragment"
         android:name="com.example.quotableapp.ui.author.AuthorDetailsFragment"
         android:label="AuthorDetailsFragment" />
