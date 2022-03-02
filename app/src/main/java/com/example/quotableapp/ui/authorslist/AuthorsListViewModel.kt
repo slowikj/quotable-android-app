@@ -23,7 +23,7 @@ class AuthorsListViewModel
     private val dispatchers: CoroutineDispatchers
 ) : ViewModel() {
 
-    fun fetchAuthors(): Flow<PagingData<Author>> =
+    val authors: Flow<PagingData<Author>> =
         authorsRepository.fetchAllAuthors()
             .flowOn(dispatchers.IO)
             .cachedIn(viewModelScope)

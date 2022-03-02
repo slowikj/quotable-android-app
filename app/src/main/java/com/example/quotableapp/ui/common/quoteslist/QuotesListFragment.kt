@@ -11,10 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
 import com.example.quotableapp.ui.common.OnQuoteClickListener
-import com.example.quotableapp.ui.common.extensions.RecyclerViewComposite
-import com.example.quotableapp.ui.common.extensions.copyQuoteToClipBoardWithToast
-import com.example.quotableapp.ui.common.extensions.setupWith
-import com.example.quotableapp.ui.common.extensions.showErrorToast
+import com.example.quotableapp.ui.common.extensions.*
 import com.example.quotableapp.ui.common.formatters.formatToClipboard
 import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
 import kotlinx.coroutines.FlowPreview
@@ -27,9 +24,9 @@ import kotlin.time.ExperimentalTime
 @FlowPreview
 @ExperimentalTime
 @ExperimentalPagingApi
-abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fragment() {
+abstract class QuotesListFragment : Fragment() {
 
-    protected abstract val listViewModel: ListViewModelType
+    protected abstract val quotesProvider: QuotesProvider
 
     protected abstract val recyclerViewLayoutBinding: RefreshableRecyclerviewBinding
 
@@ -64,26 +61,13 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recyclerViewComposite = prepareRecyclerViewComposite()
+        recyclerViewComposite = recyclerViewLayoutBinding.prepareComposite()
         setupQuotesRecyclerView()
         setupQuotesAdapter()
         setupFlowsHandler()
-        recyclerViewLayoutBinding.dataLoadHandler.btnRetry.setOnClickListener {
-            quotesAdapter.refresh()
-        }
     }
 
-    private fun prepareRecyclerViewComposite() = RecyclerViewComposite(
-        recyclerView = recyclerViewLayoutBinding.rvQuotes,
-        emptyListLayout = recyclerViewLayoutBinding.emptyListLayout.root,
-        errorLayout = recyclerViewLayoutBinding.dataLoadHandler.errorHandler,
-        swipeRefreshLayout = recyclerViewLayoutBinding.swipeToRefresh,
-        loadingLayout = recyclerViewLayoutBinding.dataLoadHandler.progressBar
-    )
-
     private fun setupQuotesAdapter() {
-        recyclerViewComposite.swipeRefreshLayout
-            ?.setOnRefreshListener { quotesAdapter.refresh() }
         quotesAdapter.setupWith(
             recyclerViewComposite = recyclerViewComposite,
             lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
@@ -92,34 +76,21 @@ abstract class QuotesListFragment<ListViewModelType : QuotesListViewModel> : Fra
     }
 
     private fun setupQuotesRecyclerView() {
-        recyclerViewComposite.recyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = quotesAdapter.withLoadStateFooter(
-                footer = DefaultLoadingAdapter { quotesAdapter.retry() }
-            )
-        }
+        recyclerViewComposite.recyclerView.setUpLinearWithFooter(quotesAdapter)
     }
 
     private fun setupFlowsHandler() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { collectQuotesFlow() }
-                launch { collectPlainActions() }
             }
         }
     }
 
     private suspend fun collectQuotesFlow() {
-        listViewModel.quotes.filterNotNull()
+        quotesProvider
+            .quotes
+            .filterNotNull()
             .collectLatest { quotesAdapter.submitData(it) }
     }
-
-    private suspend fun collectPlainActions() {
-        listViewModel.actions.collect { handlePlainActions(it) }
-    }
-
-    private fun handlePlainActions(action: QuotesListViewModel.Action) =
-        when (action) {
-            is QuotesListViewModel.Action.Error -> showErrorToast()
-        }
 }

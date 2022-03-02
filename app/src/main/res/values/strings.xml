@@ -14,4 +14,6 @@
     <string name="dashboard_random_quote_title">Random Quote</string>
     <string name="all_quotes">All quotes</string>
     <string name="clipboard_copied_message">Copied to clipboard! </string>
+    <string name="viewpager_author_tab_bio">Bio</string>
+    <string name="viewpager_author_tab_quotes">Quotes</string>
 </resources>

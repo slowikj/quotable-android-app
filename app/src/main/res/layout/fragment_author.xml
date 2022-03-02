@@ -1,15 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/AppTheme.DefaultWindow"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    style="@style/AppTheme.DefaultWindow">
+    android:layout_height="match_parent">
 
     <include
         android:id="@+id/collapsing_toolbar"
         layout="@layout/toolbar_author_collapsing" />
 
-    <include
-        android:id="@+id/recyclerview_layout"
-        layout="@layout/refreshable_recyclerview" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            app:tabIconTint="@color/colorAccent"
+            app:tabIndicatorColor="@color/white_87"
+            app:tabSelectedTextColor="@color/white_100"
+            app:tabTextColor="@color/white_30" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -97,7 +97,7 @@ class AuthorsListFragment : Fragment() {
     }
 
     private suspend fun collectAuthorsFlow() {
-        listViewModel.fetchAuthors().collectLatest {
+        listViewModel.authors.collectLatest {
             authorsListAdapter.submitData(it)
         }
     }
