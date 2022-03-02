@@ -12,18 +12,19 @@
         <argument
             android:name="authorSlug"
             app:argType="string" />
-    </fragment>
 
-    <fragment
-        android:id="@+id/authorQuotesFragment"
-        android:name="com.example.quotableapp.ui.author.AuthorQuotesFragment"
-        android:label="AuthorQuotesFragment">
         <action
             android:id="@+id/showOneQuote"
             app:destination="@id/oneQuoteFragment" />
         <action
             android:id="@+id/showQuotesOfTag"
             app:destination="@id/tagQuotesFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/authorQuotesFragment"
+        android:name="com.example.quotableapp.ui.author.AuthorQuotesFragment"
+        android:label="AuthorQuotesFragment">
     </fragment>
 
     <fragment

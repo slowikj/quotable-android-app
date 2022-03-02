@@ -14,6 +14,7 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentAuthorDetailsBinding
 import com.example.quotableapp.databinding.FragmentAuthorQuotesBinding
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
+import com.example.quotableapp.ui.authorslist.AuthorsListFragmentDirections
 import com.example.quotableapp.ui.common.quoteslist.QuotesListFragment
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,7 +47,7 @@ class AuthorQuotesFragment : QuotesListFragment() {
     }
 
     override fun showQuote(quote: Quote) {
-        val action = AuthorQuotesFragmentDirections.showOneQuote(quote.id)
+        val action = AuthorFragmentDirections.showOneQuote(quote.id)
         findNavController().navigate(action)
     }
 
@@ -54,7 +55,7 @@ class AuthorQuotesFragment : QuotesListFragment() {
     }
 
     override fun showQuotesOfTag(tag: String) {
-        val action = AuthorQuotesFragmentDirections.showQuotesOfTag(tag)
+        val action = AuthorFragmentDirections.showQuotesOfTag(tag)
         findNavController().navigate(action)
     }
 }
