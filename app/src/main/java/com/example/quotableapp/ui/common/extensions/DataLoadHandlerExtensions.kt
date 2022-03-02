@@ -5,7 +5,7 @@ import com.example.quotableapp.databinding.LoadDataHandlerLineBinding
 import com.example.quotableapp.ui.common.UiState
 
 fun LoadDataHandlerLineBinding.handle(state: UiState<*, *>) {
-    tvError.isVisible = state.error != null && !state.isLoading
-    btnRetry.isVisible = state.error != null && !state.isLoading
+    tvError.isVisible = state.run { error != null && !isLoading && data == null } //state.error != null && !state.isLoading
+    btnRetry.isVisible = state.run { error != null && !isLoading && data == null } //state.error != null && !state.isLoading
     progressBar.isVisible = state.isLoading
 }
