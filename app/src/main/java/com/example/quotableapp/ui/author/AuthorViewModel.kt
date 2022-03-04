@@ -64,11 +64,15 @@ class AuthorViewModel @Inject constructor(
     val author: StateFlow<AuthorDetailsUiState> = _author.asStateFlow()
 
     init {
-        fetchAuthor()
+        onAuthorRefresh()
     }
 
     fun onAuthorRefresh() {
-        fetchAuthor()
+        _author.handleRequestWithResult(
+            coroutineScope = viewModelScope,
+            requestFunc = { authorsRepository.fetchAuthor(authorSlug) },
+            errorConverter = { UiError.IOError }
+        )
     }
 
     fun onTagClick(tag: String) {
@@ -81,14 +85,6 @@ class AuthorViewModel @Inject constructor(
         viewModelScope.launch {
             _navigationActions.emit(NavigationAction.ToOneQuote(quote.id))
         }
-    }
-
-    private fun fetchAuthor() {
-        _author.handleRequestWithResult(
-            coroutineScope = viewModelScope,
-            requestFunc = { authorsRepository.fetchAuthor(authorSlug) },
-            errorConverter = { UiError.IOError }
-        )
     }
 
 }
