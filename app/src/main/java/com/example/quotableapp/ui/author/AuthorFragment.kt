@@ -47,6 +47,9 @@ class AuthorFragment : Fragment() {
         handleToolbar()
         handleNavigationFlow()
         setupViewPager()
+        binding.collapsingToolbar.dataLoadHandler.btnRetry.setOnClickListener {
+            viewModel.onAuthorRefresh()
+        }
     }
 
     private fun handleNavigationFlow() {

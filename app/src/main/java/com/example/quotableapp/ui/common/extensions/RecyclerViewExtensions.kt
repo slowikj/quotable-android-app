@@ -11,7 +11,8 @@ fun RefreshableRecyclerviewBinding.prepareComposite() = RecyclerViewComposite(
     emptyListLayout = emptyListLayout.root,
     errorLayout = dataLoadHandler.errorHandler,
     swipeRefreshLayout = swipeToRefresh,
-    loadingLayout = dataLoadHandler.progressBar
+    loadingLayout = dataLoadHandler.progressBar,
+    retryView = dataLoadHandler.btnRetry
 )
 
 fun <T : PagingDataAdapter<*, *>> RecyclerView.setUpLinearWithFooter(pagingAdapter: T) {
