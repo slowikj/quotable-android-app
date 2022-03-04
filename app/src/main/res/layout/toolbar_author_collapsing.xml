@@ -11,7 +11,6 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
-        style="@style/AppTheme.DefaultWindow"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:fitsSystemWindows="true">
