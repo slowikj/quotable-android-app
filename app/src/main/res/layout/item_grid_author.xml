@@ -40,17 +40,19 @@
             tools:text="Author name" />
 
         <TextView
-            android:id="@+id/tv_quote_count"
+            android:id="@+id/tv_subtitle"
             style="@style/AppTheme.AuthorItem.Subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="@{String.valueOf(model.quoteCount) + ` quote(s)`}"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@{model.description}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/author_name"
-            tools:text="5 quote(s)" />
+            tools:text="Famous person" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
