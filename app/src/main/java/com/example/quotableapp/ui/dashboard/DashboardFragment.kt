@@ -93,7 +93,7 @@ class DashboardFragment : Fragment() {
     private fun handle(randomQuoteState: UiState<Quote, DashboardViewModel.UiError>) {
         with(binding.rowRandomQuote) {
             dataLoadHandler.handle(randomQuoteState)
-            quoteLayout.root.isVisible = randomQuoteState.data != null
+            quoteLayout.root.isVisible = randomQuoteState.data != null && !randomQuoteState.isLoading
             quoteLayout.model = randomQuoteState.data
         }
     }
@@ -130,7 +130,7 @@ class DashboardFragment : Fragment() {
 
     private fun <M> DashboardRecyclerViewItemBinding.handleUiState(state: UiState<List<M>, DashboardViewModel.UiError>) {
         dataLoadHandler.handle(state)
-        rvItems.isVisible = state.data != null
+        rvItems.isVisible = state.data != null && !state.isLoading
         (rvItems.adapter as? ListAdapter<M, *>)?.submitList(state.data)
     }
 
