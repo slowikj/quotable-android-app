@@ -17,7 +17,8 @@
         <ScrollView
             style="@style/AppTheme.Dashboard"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 style="@style/AppTheme.Dashboard"

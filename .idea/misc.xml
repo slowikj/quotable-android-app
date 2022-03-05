@@ -53,7 +53,7 @@
         <entry key="app/src/main/res/layout/load_data_handler_line.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/main_layout.xml" value="0.24909420289855072" />
         <entry key="app/src/main/res/layout/one_quote_fragment.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/quote_card_details.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/quote_card_details.xml" value="0.33" />
         <entry key="app/src/main/res/layout/quote_fragment.xml" value="0.33" />
         <entry key="app/src/main/res/layout/refreshable_recyclerview.xml" value="0.5" />
         <entry key="app/src/main/res/layout/row_dashboard_rv.xml" value="0.1" />
