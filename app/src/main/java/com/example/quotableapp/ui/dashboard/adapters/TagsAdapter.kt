@@ -29,7 +29,7 @@ class TagsAdapter(private val onClick: (Tag) -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(tag: Tag) {
             binding.name = tag.name
-            binding.root.setOnClickListener { onClick(tag) }
+            binding.btnName.setOnClickListener { onClick(tag) }
         }
     }
 }

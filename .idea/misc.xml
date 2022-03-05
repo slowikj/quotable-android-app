@@ -15,6 +15,7 @@
         <entry key="app/src/main/res/drawable/person_selector.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/drawable/person_unchecked.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/drawable/recycler_item_background.xml" value="0.371875" />
+        <entry key="app/src/main/res/font/roboto.xml" value="0.38645833333333335" />
         <entry key="app/src/main/res/layout/activity_author.xml" value="0.27853260869565216" />
         <entry key="app/src/main/res/layout/activity_base_host.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/activity_host_author.xml" value="0.14513677811550152" />
@@ -29,7 +30,7 @@
         <entry key="app/src/main/res/layout/empty_list.xml" value="0.2708333333333333" />
         <entry key="app/src/main/res/layout/fragment_all_quotes.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_author.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/fragment_author_details.xml" value="0.35280797101449274" />
+        <entry key="app/src/main/res/layout/fragment_author_details.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_author_quotes.xml" value="0.32155797101449274" />
         <entry key="app/src/main/res/layout/fragment_authors_list.xml" value="0.33469202898550726" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.1962962962962963" />
@@ -41,10 +42,11 @@
         <entry key="app/src/main/res/layout/item_author.xml" value="0.4759259259259259" />
         <entry key="app/src/main/res/layout/item_grid_author.xml" value="0.5" />
         <entry key="app/src/main/res/layout/item_grid_quote.xml" value="0.67" />
-        <entry key="app/src/main/res/layout/item_grid_tag.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/item_grid_tag.xml" value="1.0" />
         <entry key="app/src/main/res/layout/item_list_quote.xml" value="0.17725752508361203" />
         <entry key="app/src/main/res/layout/item_list_tag.xml" value="0.5" />
         <entry key="app/src/main/res/layout/item_loading.xml" value="0.290625" />
+        <entry key="app/src/main/res/layout/item_plain_tag.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/item_quote.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_tag.xml" value="0.5" />
         <entry key="app/src/main/res/layout/load_data_handler.xml" value="0.2653985507246377" />
