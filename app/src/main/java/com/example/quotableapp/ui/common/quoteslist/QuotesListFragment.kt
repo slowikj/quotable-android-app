@@ -7,16 +7,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.ExperimentalPagingApi
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
 import com.example.quotableapp.ui.common.OnQuoteClickListener
-import com.example.quotableapp.ui.common.animations.SpringAddItemAnimator
 import com.example.quotableapp.ui.common.extensions.*
 import com.example.quotableapp.ui.common.formatters.formatToClipboard
-import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -78,7 +75,7 @@ abstract class QuotesListFragment : Fragment() {
 
     private fun setupQuotesRecyclerView() {
         recyclerViewComposite.recyclerView.apply {
-            itemAnimator = SpringAddItemAnimator()
+            itemAnimator = SlideInUpAnimator()
             setUpLinearWithFooter(quotesAdapter)
         }
     }
