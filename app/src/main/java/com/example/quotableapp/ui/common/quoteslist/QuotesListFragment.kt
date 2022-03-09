@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
 import com.example.quotableapp.ui.common.OnQuoteClickListener
+import com.example.quotableapp.ui.common.animations.SpringAddItemAnimator
 import com.example.quotableapp.ui.common.extensions.*
 import com.example.quotableapp.ui.common.formatters.formatToClipboard
 import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
@@ -76,7 +77,10 @@ abstract class QuotesListFragment : Fragment() {
     }
 
     private fun setupQuotesRecyclerView() {
-        recyclerViewComposite.recyclerView.setUpLinearWithFooter(quotesAdapter)
+        recyclerViewComposite.recyclerView.apply {
+            itemAnimator = SpringAddItemAnimator()
+            setUpLinearWithFooter(quotesAdapter)
+        }
     }
 
     private fun setupFlowsHandler() {
