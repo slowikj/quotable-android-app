@@ -7,11 +7,9 @@ import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.extensions.handleOneShotRequest
-import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
 import com.example.quotableapp.ui.common.extensions.set
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 typealias TagsListState = UiState<List<Tag>, TagsListViewModel.UiError>

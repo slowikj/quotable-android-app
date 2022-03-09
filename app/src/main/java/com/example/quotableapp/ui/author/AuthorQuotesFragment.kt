@@ -1,20 +1,14 @@
 package com.example.quotableapp.ui.author
 
 import android.os.Bundle
-import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import androidx.paging.ExperimentalPagingApi
-import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.databinding.FragmentAuthorDetailsBinding
 import com.example.quotableapp.databinding.FragmentAuthorQuotesBinding
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
-import com.example.quotableapp.ui.authorslist.AuthorsListFragmentDirections
 import com.example.quotableapp.ui.common.quoteslist.QuotesListFragment
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.AndroidEntryPoint

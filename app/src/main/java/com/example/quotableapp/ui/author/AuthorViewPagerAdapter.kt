@@ -1,8 +1,6 @@
 package com.example.quotableapp.ui.author
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Lifecycle
 import androidx.paging.ExperimentalPagingApi
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import kotlinx.coroutines.FlowPreview

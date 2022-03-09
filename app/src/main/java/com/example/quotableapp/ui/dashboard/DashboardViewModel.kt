@@ -17,7 +17,6 @@ import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
 import com.example.quotableapp.ui.common.extensions.set
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 typealias AuthorListState = UiState<List<Author>, DashboardViewModel.UiError>

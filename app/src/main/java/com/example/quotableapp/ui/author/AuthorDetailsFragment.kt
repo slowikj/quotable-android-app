@@ -1,7 +1,6 @@
 package com.example.quotableapp.ui.author
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.navGraphViewModels
 import androidx.paging.ExperimentalPagingApi
-import com.example.quotableapp.R
 import com.example.quotableapp.databinding.FragmentAuthorDetailsBinding
 import com.example.quotableapp.ui.common.extensions.handle
 import dagger.hilt.android.AndroidEntryPoint

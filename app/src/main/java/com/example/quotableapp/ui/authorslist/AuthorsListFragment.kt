@@ -19,6 +19,7 @@ import com.example.quotableapp.ui.common.extensions.setupWith
 import com.example.quotableapp.ui.common.extensions.showErrorToast
 import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import jp.wasabeef.recyclerview.animators.OvershootInLeftAnimator
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -93,6 +94,7 @@ class AuthorsListFragment : Fragment() {
             adapter = authorsListAdapter.withLoadStateFooter(
                 DefaultLoadingAdapter { authorsListAdapter.retry() }
             )
+            itemAnimator = OvershootInLeftAnimator()
         }
     }
 
