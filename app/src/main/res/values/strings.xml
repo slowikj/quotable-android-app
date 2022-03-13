@@ -16,4 +16,6 @@
     <string name="clipboard_copied_message">Copied to clipboard! </string>
     <string name="viewpager_author_tab_bio">Bio</string>
     <string name="viewpager_author_tab_quotes">Quotes</string>
+    <string name="dashboard_title">Explore</string>
+    <string name="tags_title">Tags</string>
 </resources>

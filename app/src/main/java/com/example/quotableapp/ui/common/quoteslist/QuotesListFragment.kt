@@ -36,9 +36,16 @@ abstract class QuotesListFragment : Fragment() {
                 showQuote(quote)
             }
 
-            override fun onItemLongClick(quote: Quote): Boolean {
+            override fun onLikeClick(quote: Quote) {
+                showToast("Will be implemented soon :)") // TODO
+            }
+
+            override fun onShareClick(quote: Quote) {
+                showToast("Will be implemented soon :)") // TODO
+            }
+
+            override fun onCopyClick(quote: Quote) {
                 copyQuoteToClipBoardWithToast(quote.formatToClipboard())
-                return true
             }
 
             override fun onAuthorClick(authorSlug: String) {

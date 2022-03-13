@@ -11,39 +11,40 @@
             type="com.example.quotableapp.data.model.Quote" />
     </data>
 
-
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <com.google.android.material.card.MaterialCardView
+        app:shapeAppearance="?attr/shapeAppearanceSmallComponent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
-        android:padding="8dp">
+        android:layout_margin="@dimen/small_space"
+        app:cardBackgroundColor="?attr/colorSurface">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            style="@style/AppTheme.QuoteItem"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="@dimen/small_space">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivQuote"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_quote"
+                android:layout_width="@dimen/small_quote_img_dim"
+                android:layout_height="@dimen/small_quote_img_dim"
+                android:src="@drawable/ic_quote_surface"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvContent"
-                style="@style/AppTheme.QuoteItem.Main"
+                style="?attr/textAppearanceBody2"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="@dimen/small_space"
+                android:layout_marginTop="@dimen/small_space"
+                android:layout_marginEnd="@dimen/small_space"
                 android:ellipsize="end"
                 android:maxLines="7"
                 android:text="@{model.content}"
+                android:textColor="?attr/colorOnSurface"
                 app:layout_constraintBottom_toTopOf="@+id/tvAuthor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -51,9 +52,9 @@
                 app:layout_constraintVertical_bias="0.0"
                 tools:text="Lorem ipsum, lorem ipsum, lorem ipsum Lorem ipsum, lorem ipsum, lorem ipsum Lorem ipsum, lorem ipsum, lorem ipsum Lorem ipsum, lorem ipsum, lorem ipsum" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvAuthor"
-                style="@style/AppTheme.QuoteItem.Title"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
@@ -65,10 +66,11 @@
                 app:layout_constraintVertical_bias="1.0"
                 tools:text="Author" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvMainTag"
-                style="@style/AppTheme.QuoteItem.Subtitle"
+                android:textAppearance="?attr/textAppearanceSubtitle2"
                 bindFirstMeaningfulTag="@{model.tags}"
+                android:textColor="?attr/colorSecondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -78,5 +80,5 @@
                 app:layout_constraintStart_toStartOf="parent"
                 tools:text="good tag" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </com.google.android.material.card.MaterialCardView>
 </layout>

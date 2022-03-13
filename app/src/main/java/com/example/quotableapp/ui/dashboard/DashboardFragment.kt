@@ -93,8 +93,8 @@ class DashboardFragment : Fragment() {
     private fun handle(randomQuoteState: UiState<Quote, DashboardViewModel.UiError>) {
         with(binding.rowRandomQuote) {
             dataLoadHandler.handle(randomQuoteState)
-            quoteLayout.root.isVisible = randomQuoteState.data != null && !randomQuoteState.isLoading
-            quoteLayout.model = randomQuoteState.data
+            this.dataGroup.isVisible = randomQuoteState.data != null && !randomQuoteState.isLoading
+            this.model = randomQuoteState.data
         }
     }
 
@@ -146,8 +146,11 @@ class DashboardFragment : Fragment() {
             dataLoadHandler.btnRetry.setOnClickListener {
                 viewModel.requestRandomQuote()
             }
-            quoteLayout.root.setOnClickListener {
+            root.setOnClickListener {
                 viewModel.randomQuote.value.data?.let { showQuote(it.id) }
+            }
+            btnRefresh.setOnClickListener {
+                viewModel.requestRandomQuote()
             }
         }
     }

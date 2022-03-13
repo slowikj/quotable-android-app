@@ -5,39 +5,43 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="title"
             type="String" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/AppTheme.Dashboard.Category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:background="?attr/selectableItemBackground"
+        android:paddingHorizontal="@dimen/small_space"
+        android:paddingVertical="@dimen/larger_space">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvTitle"
-            style="@style/AppTheme.Dashboard.Category.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{title}"
+            android:textAppearance="?textAppearanceHeadline6"
+            android:textColor="?attr/colorOnBackground"
+            app:layout_constraintBottom_toBottomOf="@+id/ivSeeMore"
             app:layout_constraintEnd_toStartOf="@+id/ivSeeMore"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/ivSeeMore"
             tools:text="Title" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivSeeMore"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_arrow_see_more"
-            app:layout_constraintBottom_toBottomOf="@+id/tvTitle"
+            android:layout_width="@dimen/image_button_small_dim"
+            android:layout_height="@dimen/image_button_small_dim"
+            android:src="@drawable/ic_arrow_see_more_on_bg"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/tvTitle"
-            app:layout_constraintTop_toTopOf="@+id/tvTitle" />
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

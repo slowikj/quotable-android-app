@@ -14,6 +14,7 @@ import com.example.quotableapp.databinding.FragmentOneQuoteBinding
 import com.example.quotableapp.ui.common.extensions.copyQuoteToClipBoardWithToast
 import com.example.quotableapp.ui.common.extensions.handle
 import com.example.quotableapp.ui.common.extensions.showErrorToast
+import com.example.quotableapp.ui.common.extensions.showToast
 import com.example.quotableapp.ui.common.rvAdapters.TagsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -48,8 +49,11 @@ class OneQuoteFragment : Fragment() {
 
     private fun setupUi() {
         with(binding.quoteLayout) {
-            author.setOnClickListener { viewModel.onAuthorClick() }
-            root.setOnLongClickListener { viewModel.onQuoteLongClick() }
+            tvAuthor.setOnClickListener { viewModel.onAuthorClick() }
+            ivAuthor.setOnClickListener { viewModel.onAuthorClick() }
+            btnCopy.setOnClickListener { viewModel.onCopyClick() }
+            btnLike.setOnClickListener { showToast("TODO: Implemented soon!") } // TODO
+            btnShare.setOnClickListener { showToast("TODO: Implemented soon!") } //TODO
             rvTags.adapter = tagsAdapter
         }
         binding.dataLoadHandler.btnRetry.setOnClickListener { viewModel.requestData() }
@@ -64,7 +68,7 @@ class OneQuoteFragment : Fragment() {
         }
     }
 
-    private fun handle(state: OneQuoteUiState) {
+    private fun handle(state: QuoteUiState) {
         binding.dataLoadHandler.handle(state)
         tagsAdapter.submitList(state.data?.tags)
     }

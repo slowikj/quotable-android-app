@@ -6,7 +6,11 @@ interface OnQuoteClickListener {
 
     fun onItemClick(quote: Quote)
 
-    fun onItemLongClick(quote: Quote): Boolean
+    fun onLikeClick(quote: Quote)
+
+    fun onShareClick(quote: Quote)
+
+    fun onCopyClick(quote: Quote)
 
     fun onAuthorClick(authorSlug: String)
 

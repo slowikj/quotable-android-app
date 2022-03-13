@@ -1,0 +1,49 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.QuotableApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/shrine_pink_100</item>
+        <item name="colorPrimaryVariant">@color/shrine_pink_dark</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/brown</item>
+        <item name="colorSecondaryVariant">@color/dark_brown</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <!-- Error -->
+        <item name="colorError">@color/red</item>
+        <!-- Surface. -->
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/dark_brown</item>
+        <!-- Background. -->
+        <item name="backgroundColor">@color/shrine_pink_100</item>
+        <item name="colorOnBackground">@color/dark_brown</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="shapeAppearanceMediumComponent">
+            @style/ShapeAppearance.QuotableApp.MediumComponent
+        </item>
+        <item name="shapeAppearanceLargeComponent">
+            @style/ShapeAppearance.QuotableApp.LargeComponent
+        </item>
+        <item name="shapeAppearanceSmallComponent">
+            @style/ShapeAppearance.QuotableApp.SmallComponent
+        </item>
+    </style>
+
+    <style name="ShapeAppearance.QuotableApp.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">6dp</item>
+    </style>
+
+    <style name="ShapeAppearance.QuotableApp.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.QuotableApp.LargeComponent" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">15dp</item>
+    </style>
+
+</resources>

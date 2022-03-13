@@ -13,7 +13,7 @@ class TagsAdapter(private val onClick: (Tag) -> Unit) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            binding = ItemGridTagBinding.inflate(LayoutInflater.from(parent.context), null, false),
+            binding = ItemGridTagBinding.inflate(LayoutInflater.from(parent.context), parent, false),
             onClick = onClick
         )
     }

@@ -2,49 +2,94 @@
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:bind="http://schemas.android.com/toolss"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
+        <variable
+            name="model"
+            type="com.example.quotableapp.data.model.Quote" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary">
+        app:cardBackgroundColor="?attr/colorPrimaryVariant"
+        app:shapeAppearance="?attr/shapeAppearanceMediumComponent">
 
-        <include
-            android:id="@+id/headerLayout"
-            layout="@layout/dashboard_category_header"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            bind:title="@{@string/dashboard_random_quote_title}" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <include
-            android:id="@+id/quoteLayout"
-            layout="@layout/quote_card_details"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/headerLayout" />
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_refresh"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="@dimen/icon_button_dim"
+                android:layout_height="@dimen/icon_button_dim"
+                android:src="@drawable/ic_refresh_on_primary"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_quote"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/iv_quote"
+                app:layout_constraintTop_toTopOf="@+id/iv_quote" />
 
-        <include
-            android:id="@+id/dataLoadHandler"
-            layout="@layout/load_data_handler_line"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/headerLayout" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_quote"
+                android:layout_width="@dimen/small_quote_img_dim"
+                android:layout_height="@dimen/small_quote_img_dim"
+                android:src="@drawable/ic_quote_surface"
+                app:layout_constraintBottom_toTopOf="@+id/tv_content"
+                app:layout_constraintEnd_toStartOf="@+id/btn_refresh"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/small_space"
+                android:text="@{model.content}"
+                android:textAppearance="?textAppearanceBody1"
+                android:textColor="?attr/colorOnPrimary"
+                app:layout_constraintBottom_toTopOf="@+id/tv_author"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/iv_quote"
+                app:layout_constraintTop_toBottomOf="@+id/iv_quote"
+                tools:text="Excellence is not a skill. It is an attitude." />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{model.author}"
+                android:textAppearance="?textAppearanceSubtitle2"
+                android:textColor="?attr/colorOnPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_content"
+                tools:text="Ralph Marston" />
+
+            <include
+                android:id="@+id/dataLoadHandler"
+                layout="@layout/load_data_handler_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="gone" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/dataGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tv_content,btn_refresh,tv_author" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 </layout>

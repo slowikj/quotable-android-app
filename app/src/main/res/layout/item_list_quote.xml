@@ -14,61 +14,117 @@
             type="com.example.quotableapp.ui.common.OnQuoteClickListener" />
     </data>
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/QuoteCard"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/small_space"
         android:onClick="@{() -> onClickHandler.onItemClick(model)}"
-        android:onLongClick="@{() -> onClickHandler.onItemLongClick(model)}"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginVertical="8dp"
-        android:padding="8dp">
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:shapeAppearance="?attr/shapeAppearanceMediumComponent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_tags"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/item_plain_tag" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/image_quote"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:scaleType="fitStart"
-            android:src="@drawable/ic_quote"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rv_tags" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_tags"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toTopOf="@+id/image_quote"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/item_plain_tag" />
 
-        <TextView
-            android:id="@+id/content"
-            style="@style/QuoteCard.Content"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@{model.content}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/image_quote"
-            app:layout_constraintTop_toBottomOf="@id/image_quote"
-            tools:text="Lorem ipsum lorem ipsum" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/image_quote"
+                android:layout_width="@dimen/small_quote_img_dim"
+                android:layout_height="@dimen/small_quote_img_dim"
+                android:scaleType="fitStart"
+                android:src="@drawable/ic_quote_surface"
+                app:layout_constraintBottom_toTopOf="@+id/content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rv_tags" />
 
-        <TextView
-            android:id="@+id/author"
-            style="@style/QuoteCard.AuthorText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:onClick="@{() -> onClickHandler.onAuthorClick(model.authorSlug)}"
-            android:text="@{model.author}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/content"
-            tools:text="Author" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/small_space"
+                android:layout_marginBottom="@dimen/larger_space"
+                android:text="@{model.content}"
+                android:textColor="?attr/colorOnSurface"
+                android:textAppearance="?attr/textAppearanceBody2"
+                app:layout_constraintBottom_toTopOf="@+id/author"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/image_quote"
+                app:layout_constraintTop_toBottomOf="@+id/image_quote"
+                tools:text="Lorem ipsum lorem ipsum" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{() -> onClickHandler.onAuthorClick(model.authorSlug)}"
+                android:text="@{model.author}"
+                android:textColor="?attr/colorOnSurface"
+                android:textAppearance="?attr/textAppearanceSubtitle2"
+                app:layout_constraintBottom_toTopOf="@+id/iv_like"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/content"
+                tools:text="Author" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/iv_like"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="@dimen/icon_button_dim"
+                android:layout_height="@dimen/icon_button_dim"
+                android:onClick="@{()->onClickHandler.onLikeClick(model)}"
+                android:src="@drawable/ic_favorite_border_on_surface"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/iv_copy"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/author" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/iv_share"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="@dimen/icon_button_dim"
+                android:layout_height="@dimen/icon_button_dim"
+                android:onClick="@{()->onClickHandler.onShareClick(model)}"
+                android:src="@drawable/ic_share_on_surface"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_copy"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/iv_copy"
+                app:layout_constraintTop_toTopOf="@+id/iv_copy" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/iv_copy"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="@dimen/icon_button_dim"
+                android:layout_height="@dimen/icon_button_dim"
+                android:onClick="@{()->onClickHandler.onCopyClick(model)}"
+                android:src="@drawable/ic_copy_on_surface"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_like"
+                app:layout_constraintEnd_toStartOf="@+id/iv_share"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/iv_like"
+                app:layout_constraintTop_toTopOf="@+id/iv_like" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
 </layout>

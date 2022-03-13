@@ -9,11 +9,12 @@ import com.example.quotableapp.R
 object ViewBinding {
 
     @JvmStatic
-    @BindingAdapter("loadImageWithPlaceholder")
-    fun bindLoadImageWithPlaceholder(view: AppCompatImageView, url: String?) {
+    @BindingAdapter("loadImageWithPersonPlaceholder")
+    fun bindLoadImageWithPersonPlaceholder(view: AppCompatImageView, url: String?) {
         Glide.with(view.context)
             .load(url)
             .placeholder(R.drawable.ic_person)
+            .circleCrop()
             .into(view)
     }
 

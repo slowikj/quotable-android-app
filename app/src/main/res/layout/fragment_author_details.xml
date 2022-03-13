@@ -12,17 +12,18 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/AuthorBio"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="?attr/backgroundColor">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvBio"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:text="@{viewModel.author.data.bio}"
-            style="@style/AuthorBio.Text"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:textColor="?attr/colorOnBackground"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0"
@@ -33,9 +34,10 @@
 
         <include
             android:id="@+id/dataLoadHandler"
-            layout="@layout/load_data_handler_line"
+            layout="@layout/load_data_handler_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/small_space"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#1E1E32</color>
-    <color name="colorPrimaryDark">#141428</color>
-    <color name="colorAccent">#FFAE00</color>
-    <color name="white_100">#FFFFFF</color>
-    <color name="white_87">#DEFFFFFF</color>
-    <color name="white_60">#99FFFFFF</color>
-    <color name="white_30">#4DFFFFFF</color>
-    <color name="red_100">#F44336</color>
-    <color name="black_60">#99000000</color>
-    <color name="white_7">#11FFFFFF</color>
-    <color name="white_20">#33FFFFFF</color>
+    <color name="shrine_pink_dark">#CAA99F</color>
+    <color name="shrine_pink_100">#FEDBD0</color>
+    <color name="shrine_pink_50">#FEEAE6</color>
+    <color name="brown">#442C2E</color>
+    <color name="dark_brown">#1f0103</color>
+    <color name="red">#C51162</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>
