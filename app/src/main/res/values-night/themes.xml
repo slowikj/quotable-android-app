@@ -12,7 +12,7 @@
         <!-- Error -->
         <item name="colorError">@color/red</item>
         <!-- Surface. -->
-        <item name="colorSurface">@color/martinique</item>
+        <item name="colorSurface">@color/steel_gray_lighter</item>
         <item name="colorOnSurface">@color/white</item>
         <!-- Background. -->
         <item name="backgroundColor">@color/steel_gray</item>
