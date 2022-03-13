@@ -19,7 +19,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="@dimen/small_space">
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/btn_refresh"

@@ -24,7 +24,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="@dimen/small_space">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_tags"
@@ -58,8 +59,8 @@
                 android:layout_marginEnd="@dimen/small_space"
                 android:layout_marginBottom="@dimen/larger_space"
                 android:text="@{model.content}"
-                android:textColor="?attr/colorOnSurface"
                 android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="?attr/colorOnSurface"
                 app:layout_constraintBottom_toTopOf="@+id/author"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -73,8 +74,8 @@
                 android:layout_height="wrap_content"
                 android:onClick="@{() -> onClickHandler.onAuthorClick(model.authorSlug)}"
                 android:text="@{model.author}"
-                android:textColor="?attr/colorOnSurface"
                 android:textAppearance="?attr/textAppearanceSubtitle2"
+                android:textColor="?attr/colorOnSurface"
                 app:layout_constraintBottom_toTopOf="@+id/iv_like"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -87,6 +88,7 @@
                 style="?attr/borderlessButtonStyle"
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
+                android:layout_marginTop="@dimen/larger_space"
                 android:onClick="@{()->onClickHandler.onLikeClick(model)}"
                 android:src="@drawable/ic_favorite_border_on_surface"
                 app:layout_constraintBottom_toBottomOf="parent"

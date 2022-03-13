@@ -19,7 +19,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:padding="8dp">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_tags"
@@ -77,6 +78,7 @@
                 android:id="@+id/tv_author"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/small_space"
                 android:text="@{quoteUi.authorName}"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:textColor="?attr/colorOnSurface"
@@ -92,6 +94,7 @@
                 style="?attr/borderlessButtonStyle"
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
+                android:layout_marginTop="@dimen/very_large_space"
                 android:src="@drawable/ic_favorite_border_on_surface"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btn_copy"

@@ -8,4 +8,11 @@
     <color name="red">#C51162</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+
+    <color name="steel_gray">#1E1E32</color>
+    <color name="martinique">#211E33</color>
+    <color name="mirage">#141428</color>
+    <color name="yellow_sea">#FFAE00</color>
+    <color name="flush_orange">#FF8400</color>
+
 </resources>
