@@ -49,7 +49,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/rv_tags"
                 app:layout_constraintTop_toBottomOf="@+id/rv_tags" />
 
             <com.google.android.material.textview.MaterialTextView
