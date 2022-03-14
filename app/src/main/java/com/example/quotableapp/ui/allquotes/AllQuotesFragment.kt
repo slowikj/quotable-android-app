@@ -38,7 +38,7 @@ import kotlin.time.ExperimentalTime
 class AllQuotesFragment : QuotesListFragment() {
 
     private val focusColor by lazy {
-        requireContext().getColorFrom(colorAttr = R.attr.colorSecondary)
+        requireContext().getColorFrom(colorAttr = R.attr.colorPrimaryVariant)
     }
     private val notFocusedColor by lazy {
         requireContext().getColorFrom(colorAttr = R.attr.colorPrimary)
