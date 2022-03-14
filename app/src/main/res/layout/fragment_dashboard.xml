@@ -17,7 +17,6 @@
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
             android:fitsSystemWindows="true">
 
             <androidx.appcompat.widget.Toolbar
@@ -25,8 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:title="@string/dashboard_title"
-                app:titleTextColor="?attr/colorOnPrimary" />
+                app:title="@string/dashboard_title" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

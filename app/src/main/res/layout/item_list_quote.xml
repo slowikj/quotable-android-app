@@ -88,7 +88,6 @@
                 style="?attr/borderlessButtonStyle"
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
-                android:layout_marginTop="@dimen/larger_space"
                 android:onClick="@{()->onClickHandler.onLikeClick(model)}"
                 android:src="@drawable/ic_favorite_border_on_surface"
                 app:layout_constraintBottom_toBottomOf="parent"

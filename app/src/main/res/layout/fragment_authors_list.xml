@@ -18,8 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="@string/authors"
-            app:titleTextColor="?colorOnPrimary" />
+            app:title="@string/authors"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <include
