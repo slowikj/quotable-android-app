@@ -21,7 +21,7 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="@dimen/collapsing_toolbar_height"
             android:background="?attr/colorPrimaryVariant"
             android:fitsSystemWindows="true">
 
@@ -33,7 +33,7 @@
                 android:title="@{viewModel.author.data.name}"
                 app:collapsedTitleGravity="start"
                 app:collapsedTitleTextColor="?attr/colorOnPrimary"
-                app:contentScrim="?attr/colorPrimary"
+                app:contentScrim="?attr/colorPrimaryVariant"
                 app:expandedTitleGravity="center_horizontal|bottom"
                 app:expandedTitleTextAppearance="?textAppearanceHeadline5"
                 app:expandedTitleTextColor="?attr/colorOnPrimary"
@@ -102,7 +102,7 @@
                 android:id="@+id/tabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimaryVariant"
+                android:background="@drawable/cut_bg"
                 app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                 app:tabBackground="?attr/colorPrimaryVariant"
                 app:tabIndicatorColor="?attr/colorSecondary"

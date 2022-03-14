@@ -8,4 +8,6 @@
     <dimen name="image_button_small_dim">32dp</dimen>
     <dimen name="small_quote_img_dim">32dp</dimen>
     <dimen name="very_large_space">24dp</dimen>
+
+    <dimen name="collapsing_toolbar_height">300dp</dimen>
 </resources>
