@@ -40,6 +40,8 @@
         <entry key="app/src/main/res/layout/dashboard_category_header.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dashboard_fragment.xml" value="0.4759259259259259" />
         <entry key="app/src/main/res/layout/dashboard_header.xml" value="0.2767210144927536" />
+        <entry key="app/src/main/res/layout/dashboard_item_quote.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/dashboard_item_tag.xml" value="0.182518115942029" />
         <entry key="app/src/main/res/layout/dashboard_random_quote.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dashboard_recycler_view_item.xml" value="0.4925925925925926" />
         <entry key="app/src/main/res/layout/empty_list.xml" value="0.25" />
@@ -56,10 +58,12 @@
         <entry key="app/src/main/res/layout/fragment_tmp.xml" value="0.33469202898550726" />
         <entry key="app/src/main/res/layout/item_author.xml" value="0.4759259259259259" />
         <entry key="app/src/main/res/layout/item_grid_author.xml" value="0.43370165745856354" />
+        <entry key="app/src/main/res/layout/item_grid_author_dashboard.xml" value="0.17325227963525835" />
         <entry key="app/src/main/res/layout/item_grid_quote.xml" value="0.4743202416918429" />
         <entry key="app/src/main/res/layout/item_grid_tag.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/item_list_author.xml" value="0.18" />
         <entry key="app/src/main/res/layout/item_list_quote.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/item_list_tag.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/item_list_tag.xml" value="0.22" />
         <entry key="app/src/main/res/layout/item_loading.xml" value="0.290625" />
         <entry key="app/src/main/res/layout/item_plain_tag.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/item_quote.xml" value="0.1" />

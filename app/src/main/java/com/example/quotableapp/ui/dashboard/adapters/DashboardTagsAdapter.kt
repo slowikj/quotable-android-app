@@ -5,15 +5,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.databinding.ItemGridTagBinding
+import com.example.quotableapp.databinding.DashboardItemTagBinding
 import com.example.quotableapp.ui.common.rvAdapters.TagDifferentiator
 
-class TagsAdapter(private val onClick: (Tag) -> Unit) :
-    ListAdapter<Tag, TagsAdapter.ViewHolder>(TagDifferentiator()) {
+class DashboardTagsAdapter(private val onClick: (Tag) -> Unit) :
+    ListAdapter<Tag, DashboardTagsAdapter.ViewHolder>(TagDifferentiator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            binding = ItemGridTagBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            binding = DashboardItemTagBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            ),
             onClick = onClick
         )
     }
@@ -23,7 +27,7 @@ class TagsAdapter(private val onClick: (Tag) -> Unit) :
     }
 
     class ViewHolder(
-        private val binding: ItemGridTagBinding,
+        private val binding: DashboardItemTagBinding,
         private val onClick: (Tag) -> Unit
     ) :
         RecyclerView.ViewHolder(binding.root) {

@@ -38,7 +38,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/item_plain_tag" />
+                tools:listitem="@layout/quote_item_list_tag" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/image_quote"
