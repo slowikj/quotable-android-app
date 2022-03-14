@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.databinding.FragmentAuthorsListBinding
 import com.example.quotableapp.ui.common.extensions.RecyclerViewComposite
+import com.example.quotableapp.ui.common.extensions.isLandscapeMode
 import com.example.quotableapp.ui.common.extensions.setupWith
 import com.example.quotableapp.ui.common.extensions.showErrorToast
 import com.example.quotableapp.ui.common.rvAdapters.DefaultLoadingAdapter
@@ -28,6 +29,11 @@ import kotlinx.coroutines.launch
 @ExperimentalPagingApi
 @AndroidEntryPoint
 class AuthorsListFragment : Fragment() {
+
+    companion object {
+        private const val ITEMS_SPAN_LANDSCAPE = 4
+        private const val ITEMS_SPAN_PORTRAIT = 2
+    }
 
     private val listViewModel: AuthorsListViewModel by viewModels()
 
@@ -88,8 +94,8 @@ class AuthorsListFragment : Fragment() {
     private fun setUpAuthorListRecyclerView() {
         binding.recyclerviewLayout.rvQuotes.apply {
             layoutManager = GridLayoutManager(
-                binding.recyclerviewLayout.rvQuotes.context,
-                2
+                context,
+                if (requireContext().isLandscapeMode) ITEMS_SPAN_LANDSCAPE else ITEMS_SPAN_PORTRAIT
             )
             adapter = authorsListAdapter.withLoadStateFooter(
                 DefaultLoadingAdapter { authorsListAdapter.retry() }
