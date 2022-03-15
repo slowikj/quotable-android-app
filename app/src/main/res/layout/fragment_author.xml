@@ -60,8 +60,8 @@
 
                     <androidx.appcompat.widget.AppCompatImageView
                         loadImageWithPersonPlaceholder="@{viewModel.author.data.photoUrl}"
-                        android:layout_width="200dp"
-                        android:layout_height="200dp"
+                        android:layout_width="@dimen/fragment_author_img_dim"
+                        android:layout_height="@dimen/fragment_author_img_dim"
                         android:layout_margin="@dimen/larger_space"
                         android:scaleType="centerCrop"
                         app:layout_collapseMode="parallax"

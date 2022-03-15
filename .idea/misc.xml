@@ -59,7 +59,7 @@
         <entry key="app/src/main/res/layout/empty_list.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_all_quotes.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_author.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/fragment_author_details.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/fragment_author_details.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_author_quotes.xml" value="0.32155797101449274" />
         <entry key="app/src/main/res/layout/fragment_authors_list.xml" value="0.30193905817174516" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.1" />

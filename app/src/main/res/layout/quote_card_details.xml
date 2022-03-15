@@ -20,7 +20,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="8dp">
+            android:padding="@dimen/small_space">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_tags"
@@ -66,8 +66,8 @@
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_author"
                 loadImageWithPersonPlaceholder="@{quoteUi.authorPhotoUrl}"
-                android:layout_width="74dp"
-                android:layout_height="74dp"
+                android:layout_width="@dimen/card_quote_author_img_dim"
+                android:layout_height="@dimen/card_quote_author_img_dim"
                 app:layout_constraintBottom_toTopOf="@+id/tv_author"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"

@@ -37,8 +37,8 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvContent"
                 style="?attr/textAppearanceBody2"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="@dimen/dashboard_item_quote_text_dim"
+                android:layout_height="@dimen/dashboard_item_quote_text_dim"
                 android:layout_marginStart="@dimen/small_space"
                 android:layout_marginTop="@dimen/small_space"
                 android:layout_marginEnd="@dimen/small_space"

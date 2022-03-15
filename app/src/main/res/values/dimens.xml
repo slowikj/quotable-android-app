@@ -10,4 +10,13 @@
     <dimen name="very_large_space">24dp</dimen>
 
     <dimen name="collapsing_toolbar_height">300dp</dimen>
+
+    <dimen name="dashboard_item_author_width">200dp</dimen>
+    <dimen name="dashboard_item_author_height">250dp</dimen>
+
+    <dimen name="dashboard_item_quote_text_dim">150dp</dimen>
+
+    <dimen name="fragment_author_img_dim">200dp</dimen>
+
+    <dimen name="card_quote_author_img_dim">74dp</dimen>
 </resources>
