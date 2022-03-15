@@ -34,11 +34,13 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:src="@drawable/ic_person" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/author_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/small_space"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@{model.name}"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:textColor="?attr/colorOnSurface"
@@ -47,7 +49,7 @@
                 app:layout_constraintTop_toBottomOf="@id/appCompatImageView"
                 tools:text="Author name" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tv_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
