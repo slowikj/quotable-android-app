@@ -10,7 +10,7 @@
         <item name="colorSecondaryVariant">@color/dark_brown</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Error -->
-        <item name="colorError">@color/red</item>
+        <item name="colorError">@color/red_violet</item>
         <!-- Surface. -->
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/dark_brown</item>
