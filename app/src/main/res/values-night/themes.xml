@@ -20,5 +20,16 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <!-- Customize your theme here. -->
+        <item name="shapeAppearanceMediumComponent">
+            @style/ShapeAppearance.QuotableApp.MediumComponent
+        </item>
+        <item name="shapeAppearanceLargeComponent">
+            @style/ShapeAppearance.QuotableApp.LargeComponent
+        </item>
+        <item name="shapeAppearanceSmallComponent">
+            @style/ShapeAppearance.QuotableApp.SmallComponent
+        </item>
+        <item name="imageButtonStyle">@style/QuotableApp.ImageButton</item>
     </style>
 </resources>
