@@ -6,7 +6,7 @@
         <item name="colorPrimaryVariant">@color/shrine_pink_dark</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/brown</item>
+        <item name="colorSecondary">@color/tickle_me_pink</item>
         <item name="colorSecondaryVariant">@color/dark_brown</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Error -->
@@ -31,7 +31,5 @@
         </item>
         <item name="imageButtonStyle">@style/QuotableApp.ImageButton</item>
     </style>
-
-
 
 </resources>

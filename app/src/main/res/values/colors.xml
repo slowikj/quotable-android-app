@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="shrine_pink_dark">#CAA99F</color>
+    <color name="shrine_pink_dark">#B18C81</color>
     <color name="shrine_pink_100">#FEDBD0</color>
     <color name="shrine_pink_50">#FEEAE6</color>
-    <color name="brown">#442C2E</color>
+    <color name="tickle_me_pink">#FF7597</color>
     <color name="dark_brown">#1f0103</color>
     <color name="red_violet">#C51162</color>
     <color name="white">#FFFFFF</color>
