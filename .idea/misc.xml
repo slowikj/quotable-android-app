@@ -52,6 +52,7 @@
         <entry key="app/src/main/res/layout/dashboard_category_header.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dashboard_fragment.xml" value="0.4759259259259259" />
         <entry key="app/src/main/res/layout/dashboard_header.xml" value="0.2767210144927536" />
+        <entry key="app/src/main/res/layout/dashboard_item_author.xml" value="0.8326996197718631" />
         <entry key="app/src/main/res/layout/dashboard_item_quote.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dashboard_item_tag.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dashboard_random_quote.xml" value="0.1" />
