@@ -24,7 +24,6 @@
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/btn_refresh"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
                 android:src="@drawable/ic_refresh"

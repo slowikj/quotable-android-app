@@ -29,6 +29,7 @@
         <item name="shapeAppearanceSmallComponent">
             @style/ShapeAppearance.QuotableApp.SmallComponent
         </item>
+        <item name="imageButtonStyle">@style/QuotableApp.ImageButton</item>
     </style>
 
     <style name="ShapeAppearance.QuotableApp.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
@@ -44,6 +45,10 @@
     <style name="ShapeAppearance.QuotableApp.LargeComponent" parent="ShapeAppearance.MaterialComponents.LargeComponent">
         <item name="cornerFamily">cut</item>
         <item name="cornerSize">15dp</item>
+    </style>
+
+    <style name="QuotableApp.ImageButton" parent="Base.Widget.AppCompat.ImageButton">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 
 </resources>

@@ -92,10 +92,9 @@
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/btn_like"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
-                android:layout_marginTop="@dimen/very_large_space"
+                android:layout_marginTop="@dimen/larger_space"
                 android:src="@drawable/ic_favorite_border"
                 android:tint="?attr/colorOnSurface"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -107,7 +106,6 @@
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/btn_copy"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
                 android:src="@drawable/ic_copy"
@@ -120,7 +118,6 @@
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/btn_share"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
                 android:src="@drawable/ic_share"

@@ -86,7 +86,6 @@
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/iv_like"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
                 android:onClick="@{()->onClickHandler.onLikeClick(model)}"
@@ -101,7 +100,6 @@
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/iv_share"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
                 android:onClick="@{()->onClickHandler.onShareClick(model)}"
@@ -115,7 +113,6 @@
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/iv_copy"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
                 android:onClick="@{()->onClickHandler.onCopyClick(model)}"
