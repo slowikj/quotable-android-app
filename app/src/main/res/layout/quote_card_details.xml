@@ -39,7 +39,8 @@
                 android:id="@+id/iv_quote"
                 android:layout_width="@dimen/large_quote_img_dim"
                 android:layout_height="@dimen/large_quote_img_dim"
-                android:src="@drawable/ic_quote_surface"
+                android:src="@drawable/ic_quote"
+                android:tint="?attr/colorOnSurface"
                 app:layout_constraintBottom_toTopOf="@+id/tv_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -72,7 +73,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_content"
-                tools:src="@drawable/ic_gray_person" />
+                tools:src="@drawable/ic_person" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tv_author"
@@ -95,7 +96,8 @@
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
                 android:layout_marginTop="@dimen/very_large_space"
-                android:src="@drawable/ic_favorite_border_on_surface"
+                android:src="@drawable/ic_favorite_border"
+                android:tint="?attr/colorOnSurface"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btn_copy"
                 app:layout_constraintHorizontal_bias="1.0"
@@ -108,7 +110,8 @@
                 style="?attr/borderlessButtonStyle"
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
-                android:src="@drawable/ic_copy_on_surface"
+                android:src="@drawable/ic_copy"
+                android:tint="?attr/colorOnSurface"
                 app:layout_constraintBottom_toBottomOf="@+id/btn_like"
                 app:layout_constraintEnd_toStartOf="@+id/btn_share"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -120,7 +123,8 @@
                 style="?attr/borderlessButtonStyle"
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
-                android:src="@drawable/ic_share_on_surface"
+                android:src="@drawable/ic_share"
+                android:tint="?attr/colorOnSurface"
                 app:layout_constraintBottom_toBottomOf="@+id/btn_copy"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"

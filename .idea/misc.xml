@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3145" />
         <entry key="app/src/main/res/drawable/category_header_background.xml" value="0.2365" />
         <entry key="app/src/main/res/drawable/curve.xml" value="0.2125" />
         <entry key="app/src/main/res/drawable/cut_bg.xml" value="0.1" />
@@ -13,15 +14,25 @@
         <entry key="app/src/main/res/drawable/ic_arrow_see_more.xml" value="0.273" />
         <entry key="app/src/main/res/drawable/ic_arrow_see_more_on_bg.xml" value="0.3575" />
         <entry key="app/src/main/res/drawable/ic_baseline_favorite_border_24.xml" value="0.321" />
+        <entry key="app/src/main/res/drawable/ic_copy.xml" value="0.2565" />
         <entry key="app/src/main/res/drawable/ic_copy_on_surface.xml" value="0.321" />
+        <entry key="app/src/main/res/drawable/ic_favorite_border.xml" value="0.2565" />
         <entry key="app/src/main/res/drawable/ic_favorite_border_on_surface.xml" value="0.3575" />
+        <entry key="app/src/main/res/drawable/ic_favourite_filled.xml" value="0.2565" />
         <entry key="app/src/main/res/drawable/ic_favourite_filled_on_surface.xml" value="0.321" />
+        <entry key="app/src/main/res/drawable/ic_gray_person.xml" value="0.3145" />
+        <entry key="app/src/main/res/drawable/ic_home.xml" value="0.3145" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.3145" />
         <entry key="app/src/main/res/drawable/ic_outline_format_quote_24.xml" value="0.305" />
+        <entry key="app/src/main/res/drawable/ic_person.xml" value="0.3145" />
         <entry key="app/src/main/res/drawable/ic_quote.xml" value="0.371875" />
         <entry key="app/src/main/res/drawable/ic_quote_surface.xml" value="0.3575" />
+        <entry key="app/src/main/res/drawable/ic_refresh.xml" value="0.2565" />
         <entry key="app/src/main/res/drawable/ic_refresh_on_primary.xml" value="0.347" />
         <entry key="app/src/main/res/drawable/ic_search.xml" value="0.2864583333333333" />
+        <entry key="app/src/main/res/drawable/ic_share.xml" value="0.2565" />
         <entry key="app/src/main/res/drawable/ic_share_on_surface.xml" value="0.321" />
+        <entry key="app/src/main/res/drawable/icon_button_color_selector.xml" value="0.158" />
         <entry key="app/src/main/res/drawable/menu_text_color_selector.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/drawable/person.xml" value="0.371875" />
         <entry key="app/src/main/res/drawable/person_checked.xml" value="0.2869791666666667" />
@@ -31,6 +42,7 @@
         <entry key="app/src/main/res/drawable/ripple_background.xml" value="0.3575" />
         <entry key="app/src/main/res/drawable/ripple_bg.xml" value="0.237" />
         <entry key="app/src/main/res/font/roboto.xml" value="0.38645833333333335" />
+        <entry key="app/src/main/res/layout-land/item_list_tag.xml" value="0.2328125" />
         <entry key="app/src/main/res/layout/activity_author.xml" value="0.27853260869565216" />
         <entry key="app/src/main/res/layout/activity_base_host.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/activity_host_author.xml" value="0.14513677811550152" />
@@ -74,7 +86,7 @@
         <entry key="app/src/main/res/layout/main_layout.xml" value="0.24909420289855072" />
         <entry key="app/src/main/res/layout/one_quote_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/layout/quote_actions.xml" value="0.19157608695652173" />
-        <entry key="app/src/main/res/layout/quote_card_details.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/quote_card_details.xml" value="0.1" />
         <entry key="app/src/main/res/layout/quote_fragment.xml" value="0.33" />
         <entry key="app/src/main/res/layout/refreshable_recyclerview.xml" value="0.43125" />
         <entry key="app/src/main/res/layout/row_dashboard_rv.xml" value="0.1" />
