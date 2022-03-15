@@ -106,8 +106,8 @@
                 app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                 app:tabBackground="?attr/colorPrimaryVariant"
                 app:tabIndicatorColor="?attr/colorSecondary"
-                app:tabSelectedTextColor="?attr/colorOnPrimary"
-                app:tabTextColor="?attr/colorOnSecondary" />
+                app:tabSelectedTextColor="?attr/colorSecondary"
+                app:tabTextColor="?attr/colorOnPrimary" />
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPager"
