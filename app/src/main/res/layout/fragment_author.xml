@@ -14,7 +14,8 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/backgroundColor">
+        android:background="?attr/backgroundColor"
+        android:theme="@style/ThemeOverlay.QuotableApp.AuthorToolbar">
 
         <!--        COLLAPSING TOOLBAR-->
 
@@ -22,7 +23,7 @@
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/collapsing_toolbar_height"
-            android:background="?attr/colorPrimaryVariant"
+            android:background="?attr/colorPrimary"
             android:fitsSystemWindows="true">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -33,12 +34,12 @@
                 android:title="@{viewModel.author.data.name}"
                 app:collapsedTitleGravity="start"
                 app:collapsedTitleTextColor="?attr/colorOnPrimary"
-                app:contentScrim="?attr/colorPrimaryVariant"
+                app:contentScrim="?attr/colorPrimary"
                 app:expandedTitleGravity="center_horizontal|bottom"
                 app:expandedTitleTextAppearance="?textAppearanceHeadline5"
                 app:expandedTitleTextColor="?attr/colorOnPrimary"
                 app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
-                app:statusBarScrim="?attr/colorPrimaryVariant"
+                app:statusBarScrim="?attr/colorPrimary"
                 tools:title="Author Name">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -103,8 +104,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/cut_bg"
+                android:theme="@style/ThemeOverlay.QuotableApp.AuthorToolbar"
                 app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-                app:tabBackground="?attr/colorPrimaryVariant"
+                app:tabBackground="?attr/colorPrimary"
                 app:tabIndicatorColor="?attr/colorSecondary"
                 app:tabSelectedTextColor="?attr/colorSecondary"
                 app:tabTextColor="?attr/colorOnPrimary" />

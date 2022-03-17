@@ -36,4 +36,9 @@
         <item name="colorSurface">@color/steel_gray</item>
         <item name="colorOnSurface">@color/white</item>
     </style>
+
+    <style name="ThemeOverlay.QuotableApp.AuthorToolbar" parent="">
+        <item name="colorPrimary">@color/mirage</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
 </resources>
