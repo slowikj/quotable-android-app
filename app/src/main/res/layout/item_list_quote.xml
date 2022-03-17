@@ -47,14 +47,14 @@
                 android:scaleType="fitStart"
                 android:src="@drawable/ic_quote"
                 android:tint="?attr/colorOnSurface"
-                app:layout_constraintBottom_toTopOf="@+id/content"
+                app:layout_constraintBottom_toTopOf="@+id/tv_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/rv_tags"
                 app:layout_constraintTop_toBottomOf="@+id/rv_tags" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/content"
+                android:id="@+id/tv_content"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/small_space"
@@ -62,15 +62,15 @@
                 android:text="@{model.content}"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?attr/colorOnSurface"
-                app:layout_constraintBottom_toTopOf="@+id/author"
+                app:layout_constraintBottom_toTopOf="@+id/tv_author"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/image_quote"
                 app:layout_constraintTop_toBottomOf="@+id/image_quote"
                 tools:text="Lorem ipsum lorem ipsum" />
 
-            <TextView
-                android:id="@+id/author"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_author"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="@{() -> onClickHandler.onAuthorClick(model.authorSlug)}"
@@ -81,7 +81,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/content"
+                app:layout_constraintTop_toBottomOf="@+id/tv_content"
                 tools:text="Author" />
 
             <androidx.appcompat.widget.AppCompatImageButton
@@ -96,7 +96,7 @@
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/author" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_author" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/iv_share"
