@@ -31,4 +31,9 @@
         </item>
         <item name="imageButtonStyle">@style/QuotableApp.ImageButton</item>
     </style>
+
+    <style name="ThemeOverlay.QuotableApp.RandomQuote" parent="">
+        <item name="colorSurface">@color/steel_gray</item>
+        <item name="colorOnSurface">@color/white</item>
+    </style>
 </resources>
