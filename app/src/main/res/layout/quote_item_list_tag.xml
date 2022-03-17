@@ -18,7 +18,7 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/name"
             android:textColor="?attr/colorSecondary"
-            android:textAppearance="?attr/textAppearanceCaption"
+            android:textAppearance="?attr/textAppearanceOverline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{tagName}"
