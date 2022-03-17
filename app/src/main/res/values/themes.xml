@@ -19,6 +19,9 @@
         <item name="colorOnBackground">@color/dark_brown</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
+        <item name="secondaryTextAlpha">0.7</item>
+
         <!-- Customize your theme here. -->
         <item name="shapeAppearanceMediumComponent">
             @style/ShapeAppearance.QuotableApp.MediumComponent

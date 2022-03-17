@@ -12,11 +12,11 @@
     </data>
 
     <com.google.android.material.card.MaterialCardView
-        app:shapeAppearance="?attr/shapeAppearanceSmallComponent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/small_space"
-        app:cardBackgroundColor="?attr/colorSurface">
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:shapeAppearance="?attr/shapeAppearanceSmallComponent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
@@ -55,11 +55,12 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvAuthor"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:alpha="?attr/secondaryTextAlpha"
                 android:ellipsize="end"
                 android:text="@{model.author}"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
                 app:layout_constraintBottom_toTopOf="@+id/tvMainTag"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -69,13 +70,13 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvMainTag"
-                android:textAppearance="?attr/textAppearanceSubtitle2"
                 bindFirstMeaningfulTag="@{model.tags}"
-                android:textColor="?attr/colorSecondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:ellipsize="end"
+                android:textAppearance="?attr/textAppearanceSubtitle2"
+                android:textColor="?attr/colorSecondary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
