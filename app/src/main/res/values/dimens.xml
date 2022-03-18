@@ -4,7 +4,7 @@
     <dimen name="larger_space">16dp</dimen>
 
     <dimen name="large_quote_img_dim">54dp</dimen>
-    <dimen name="icon_button_dim">48dp</dimen>
+    <dimen name="icon_button_dim">40dp</dimen>
     <dimen name="image_button_small_dim">32dp</dimen>
     <dimen name="small_quote_img_dim">32dp</dimen>
     <dimen name="very_large_space">24dp</dimen>
