@@ -13,7 +13,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/small_space">
+        android:paddingTop="8dp"
+        android:paddingEnd="@dimen/small_space">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/name"
