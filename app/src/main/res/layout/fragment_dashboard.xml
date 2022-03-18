@@ -77,8 +77,8 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="parent"
-                        bind:title="@{@string/dashboard_authors_title}"
-                        app:layout_constraintTop_toBottomOf="@id/rowTags" />
+                        app:layout_constraintTop_toBottomOf="@id/rowTags"
+                        bind:title="@{@string/dashboard_authors_title}" />
 
                     <include
                         android:id="@+id/rowQuotes"
