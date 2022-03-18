@@ -76,7 +76,7 @@
         <entry key="app/src/main/res/layout/item_grid_tag.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_list_author.xml" value="0.18" />
         <entry key="app/src/main/res/layout/item_list_quote.xml" value="0.514324693042292" />
-        <entry key="app/src/main/res/layout/item_list_tag.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/item_list_tag.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_loading.xml" value="0.290625" />
         <entry key="app/src/main/res/layout/item_plain_tag.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/item_quote.xml" value="0.1" />

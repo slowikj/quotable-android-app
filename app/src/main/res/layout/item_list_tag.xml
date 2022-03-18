@@ -49,7 +49,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:alpha="?attr/secondaryTextAlpha"
-                    android:text="@{String.valueOf(model.quoteCount) + ` quotes`}"
+                    android:text="@{String.valueOf(model.quoteCount) + ` ` + @plurals/number_of_quotes(model.quoteCount)}"
                     android:textAppearance="?attr/textAppearanceSubtitle2"
                     android:textColor="?attr/colorOnSurface"
                     app:layout_constraintBottom_toBottomOf="parent"
