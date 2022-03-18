@@ -2,20 +2,20 @@
     <!-- Base application theme. -->
     <style name="Theme.QuotableApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/steel_gray</item>
-        <item name="colorPrimaryVariant">@color/mirage</item>
+        <item name="colorPrimary">@color/grey_1</item>
+        <item name="colorPrimaryVariant">@color/black</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/yellow_sea</item>
         <item name="colorSecondaryVariant">@color/flush_orange</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Error -->
-        <item name="colorError">@color/cinnabar</item>
+        <item name="colorError">@color/chestnut_rose</item>
         <!-- Surface. -->
-        <item name="colorSurface">@color/steel_gray_lighter</item>
+        <item name="colorSurface">@color/grey_3</item>
         <item name="colorOnSurface">@color/white</item>
         <!-- Background. -->
-        <item name="backgroundColor">@color/steel_gray</item>
+        <item name="backgroundColor">@color/grey_2</item>
         <item name="colorOnBackground">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
@@ -38,12 +38,12 @@
     </style>
 
     <style name="ThemeOverlay.QuotableApp.RandomQuote" parent="">
-        <item name="colorSurface">@color/steel_gray</item>
+        <item name="colorSurface">@color/grey_2</item>
         <item name="colorOnSurface">@color/white</item>
     </style>
 
     <style name="ThemeOverlay.QuotableApp.AuthorToolbar" parent="">
-        <item name="colorPrimary">@color/mirage</item>
+        <item name="colorPrimary">@color/black</item>
         <item name="colorOnPrimary">@color/white</item>
     </style>
 </resources>

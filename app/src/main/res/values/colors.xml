@@ -11,11 +11,14 @@
     <color name="baby_blue">#f0f9f9</color>
 
     <color name="cinnabar">#ee4537</color>
+    <color name="chestnut_rose">#CF6679</color>
 
-    <color name="steel_gray">#1E1E32</color>
-    <color name="steel_gray_lighter">#211E33</color>
-    <color name="mirage">#141428</color>
     <color name="yellow_sea">#FFAE00</color>
     <color name="flush_orange">#FF8400</color>
+
+    <color name="grey_1">#212121</color>
+    <color name="grey_2">#303030</color>
+    <color name="grey_3">#424242</color>
+
 
 </resources>
