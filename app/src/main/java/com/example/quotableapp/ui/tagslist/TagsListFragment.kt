@@ -11,14 +11,23 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.databinding.FragmentTagsListBinding
+import com.example.quotableapp.ui.common.extensions.handle
+import com.example.quotableapp.ui.common.extensions.isLandscapeMode
 import dagger.hilt.android.AndroidEntryPoint
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class TagsListFragment : Fragment() {
+
+    companion object {
+        private const val ITEMS_SPAN_LANDSCAPE = 4
+        private const val ITEMS_SPAN_PORTRAIT  = 2
+    }
 
     private lateinit var binding: FragmentTagsListBinding
 
@@ -33,6 +42,11 @@ class TagsListFragment : Fragment() {
     ): View {
         binding = FragmentTagsListBinding.inflate(inflater, container, false).apply {
             rvTags.adapter = tagsAdapter
+            rvTags.itemAnimator = SlideInUpAnimator()
+            rvTags.layoutManager = GridLayoutManager(
+                context,
+                if (requireContext().isLandscapeMode) ITEMS_SPAN_LANDSCAPE else ITEMS_SPAN_PORTRAIT
+            )
             dataLoadHandler.btnRetry.setOnClickListener { viewModel.fetchTags() }
         }
         return binding.root
@@ -56,10 +70,8 @@ class TagsListFragment : Fragment() {
         viewModel.tags.collectLatest { state ->
             tagsAdapter.submitList(state.data)
             with(binding) {
-                dataLoadHandler.btnRetry.isVisible = state.error != null
-                dataLoadHandler.tvError.isVisible = state.error != null
+                binding.dataLoadHandler.handle(state)
                 rvTags.isVisible = state.data?.isNotEmpty() ?: false
-                dataLoadHandler.progressBar.isVisible = state.isLoading
             }
         }
     }

@@ -4,16 +4,16 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.databinding.ItemGridAuthorBinding
-import com.example.quotableapp.ui.common.rvAdapters.AuthorDifferentiator
+import com.example.quotableapp.data.model.Quote
+import com.example.quotableapp.databinding.DashboardItemQuoteBinding
+import com.example.quotableapp.ui.common.rvAdapters.QuoteDifferentiator
 
-class AuthorsAdapter(private val onClick: (Author) -> Unit) :
-    ListAdapter<Author, AuthorsAdapter.ViewHolder>(AuthorDifferentiator()) {
+class QuotesDashboardAdapter(private val onClick: (Quote) -> Unit) :
+    ListAdapter<Quote, QuotesDashboardAdapter.ViewHolder>(QuoteDifferentiator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            ItemGridAuthorBinding.inflate(
+            DashboardItemQuoteBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -25,11 +25,11 @@ class AuthorsAdapter(private val onClick: (Author) -> Unit) :
         holder.bind(getItem(position), onClick = onClick)
     }
 
-    class ViewHolder(private val binding: ItemGridAuthorBinding) :
+    class ViewHolder(private val binding: DashboardItemQuoteBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(author: Author, onClick: (Author) -> Unit) {
-            binding.model = author
-            binding.root.setOnClickListener { onClick(author) }
+        fun bind(quote: Quote, onClick: (Quote) -> Unit) {
+            binding.model = quote
+            binding.root.setOnClickListener { onClick(quote) }
         }
     }
 }

@@ -13,7 +13,18 @@
     <string name="dashboard_tags_title">Tags</string>
     <string name="dashboard_random_quote_title">Random Quote</string>
     <string name="all_quotes">All quotes</string>
-    <string name="clipboard_copied_message">Copied to clipboard! </string>
+    <string name="clipboard_copied_message">Copied to clipboard!</string>
     <string name="viewpager_author_tab_bio">Bio</string>
     <string name="viewpager_author_tab_quotes">Quotes</string>
+    <string name="dashboard_title">Explore</string>
+    <string name="tags_title">Tags</string>
+
+    <string name="quote_singular">quote</string>
+    <string name="quote_plural">quotes</string>
+    <string name="no_quotes">No quotes</string>
+
+    <plurals name="number_of_quotes">
+        <item quantity="one">@string/quote_singular</item>
+        <item quantity="other">@string/quote_plural</item>
+    </plurals>
 </resources>

@@ -1,6 +1,7 @@
 package com.example.quotableapp.ui.allquotes
 
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -16,6 +17,7 @@ import com.example.quotableapp.databinding.FragmentAllQuotesBinding
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
 import com.example.quotableapp.ui.common.extensions.changeToolbarColorOnVisibilityChange
 import com.example.quotableapp.ui.common.extensions.getColor
+import com.example.quotableapp.ui.common.extensions.getColorFrom
 import com.example.quotableapp.ui.common.extensions.getQueryTextChangedStateFlow
 import com.example.quotableapp.ui.common.quoteslist.QuotesListFragment
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
@@ -35,8 +37,12 @@ import kotlin.time.ExperimentalTime
 @AndroidEntryPoint
 class AllQuotesFragment : QuotesListFragment() {
 
-    private val focusColor by lazy { getColor(R.color.colorAccent) }
-    private val notFocusedColor by lazy { getColor(R.color.colorPrimaryDark) }
+    private val focusColor by lazy {
+        requireContext().getColorFrom(colorAttr = R.attr.colorPrimaryVariant)
+    }
+    private val notFocusedColor by lazy {
+        requireContext().getColorFrom(colorAttr = R.attr.backgroundColor)
+    }
 
     private lateinit var binding: FragmentAllQuotesBinding
 

@@ -6,69 +6,132 @@
     <data>
 
         <variable
-            name="model"
-            type="com.example.quotableapp.data.model.Quote" />
+            name="quoteUi"
+            type="com.example.quotableapp.ui.onequote.QuoteUi" />
+
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/QuoteCard"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp">
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:shapeAppearance="?attr/shapeAppearanceLargeComponent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_tags"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/item_plain_tag" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/small_space">
 
-        <TextView
-            android:id="@+id/content"
-            style="@style/QuoteCard.Content"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@{model.content}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/quote_imageview"
-            app:layout_constraintTop_toBottomOf="@id/quote_imageview"
-            tools:text="Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_tags"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toTopOf="@+id/iv_quote"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/quote_item_list_tag" />
 
-        <TextView
-            android:id="@+id/author"
-            style="@style/QuoteCard.AuthorText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:text="@{model.author}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/content"
-            app:layout_constraintVertical_bias="1.0"
-            tools:text="Author" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_quote"
+                android:layout_width="@dimen/large_quote_img_dim"
+                android:layout_height="@dimen/large_quote_img_dim"
+                android:src="@drawable/ic_quote"
+                android:tint="?attr/colorOnSurface"
+                app:layout_constraintBottom_toTopOf="@+id/tv_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rv_tags" />
 
-        <ImageView
-            android:id="@+id/quote_imageview"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            android:src="@drawable/ic_quote"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/rv_tags"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/rv_tags"
-            app:layout_constraintTop_toBottomOf="@+id/rv_tags"
-            app:layout_constraintVertical_bias="0.0" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/larger_space"
+                android:layout_marginBottom="@dimen/larger_space"
+                android:text="@{quoteUi.content}"
+                android:textAppearance="?attr/textAppearanceHeadline5"
+                android:textColor="?attr/colorOnSurface"
+                app:layout_constraintBottom_toTopOf="@+id/iv_author"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/iv_quote"
+                app:layout_constraintTop_toBottomOf="@+id/iv_quote"
+                tools:text="Excellence is not a skill. It is an attitude." />
 
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_author"
+                loadImageWithPersonPlaceholder="@{quoteUi.authorPhotoUrl}"
+                android:layout_width="@dimen/card_quote_author_img_dim"
+                android:layout_height="@dimen/card_quote_author_img_dim"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:layout_constraintBottom_toTopOf="@+id/tv_author"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_content"
+                tools:src="@drawable/ic_person" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/small_space"
+                android:alpha="?attr/secondaryTextAlpha"
+                android:background="?attr/selectableItemBackground"
+                android:text="@{quoteUi.authorName}"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="?attr/colorOnSurface"
+                app:layout_constraintBottom_toTopOf="@+id/btn_like"
+                app:layout_constraintEnd_toEndOf="@+id/iv_author"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="@+id/iv_author"
+                app:layout_constraintTop_toBottomOf="@+id/iv_author"
+                tools:text="Author" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_like"
+                android:layout_width="@dimen/icon_button_dim"
+                android:layout_height="@dimen/icon_button_dim"
+                android:layout_marginTop="@dimen/larger_space"
+                android:src="@drawable/ic_favorite_border"
+                android:tint="?attr/colorOnSurface"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_copy"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_author" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_copy"
+                android:layout_width="@dimen/icon_button_dim"
+                android:layout_height="@dimen/icon_button_dim"
+                android:src="@drawable/ic_copy"
+                android:tint="?attr/colorOnSurface"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_like"
+                app:layout_constraintEnd_toStartOf="@+id/btn_share"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/btn_like"
+                app:layout_constraintTop_toTopOf="@+id/btn_like" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_share"
+                android:layout_width="@dimen/icon_button_dim"
+                android:layout_height="@dimen/icon_button_dim"
+                android:src="@drawable/ic_share"
+                android:tint="?attr/colorOnSurface"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_copy"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/btn_copy"
+                app:layout_constraintTop_toTopOf="@+id/btn_copy" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 </layout>

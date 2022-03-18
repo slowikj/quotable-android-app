@@ -3,57 +3,95 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3145" />
+        <entry key="app/src/main/res/drawable/category_header_background.xml" value="0.2365" />
+        <entry key="app/src/main/res/drawable/circle.xml" value="0.2125" />
+        <entry key="app/src/main/res/drawable/curve.xml" value="0.2125" />
+        <entry key="app/src/main/res/drawable/cut_bg.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/home.xml" value="0.371875" />
         <entry key="app/src/main/res/drawable/home_checked.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/drawable/home_selector.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/drawable/home_unchecked.xml" value="0.2869791666666667" />
+        <entry key="app/src/main/res/drawable/ic_arrow_see_more.xml" value="0.273" />
+        <entry key="app/src/main/res/drawable/ic_arrow_see_more_on_bg.xml" value="0.3575" />
+        <entry key="app/src/main/res/drawable/ic_baseline_favorite_border_24.xml" value="0.321" />
+        <entry key="app/src/main/res/drawable/ic_copy.xml" value="0.2565" />
+        <entry key="app/src/main/res/drawable/ic_copy_on_surface.xml" value="0.321" />
+        <entry key="app/src/main/res/drawable/ic_favorite_border.xml" value="0.2565" />
+        <entry key="app/src/main/res/drawable/ic_favorite_border_on_surface.xml" value="0.3575" />
+        <entry key="app/src/main/res/drawable/ic_favourite_filled.xml" value="0.2565" />
+        <entry key="app/src/main/res/drawable/ic_favourite_filled_on_surface.xml" value="0.321" />
+        <entry key="app/src/main/res/drawable/ic_gray_person.xml" value="0.3145" />
+        <entry key="app/src/main/res/drawable/ic_home.xml" value="0.3145" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.3145" />
+        <entry key="app/src/main/res/drawable/ic_outline_format_quote_24.xml" value="0.305" />
+        <entry key="app/src/main/res/drawable/ic_person.xml" value="0.3145" />
         <entry key="app/src/main/res/drawable/ic_quote.xml" value="0.371875" />
+        <entry key="app/src/main/res/drawable/ic_quote_surface.xml" value="0.3575" />
+        <entry key="app/src/main/res/drawable/ic_refresh.xml" value="0.2565" />
+        <entry key="app/src/main/res/drawable/ic_refresh_on_primary.xml" value="0.347" />
         <entry key="app/src/main/res/drawable/ic_search.xml" value="0.2864583333333333" />
+        <entry key="app/src/main/res/drawable/ic_share.xml" value="0.2565" />
+        <entry key="app/src/main/res/drawable/ic_share_on_surface.xml" value="0.321" />
+        <entry key="app/src/main/res/drawable/icon_button_color_selector.xml" value="0.158" />
         <entry key="app/src/main/res/drawable/menu_text_color_selector.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/drawable/person.xml" value="0.371875" />
         <entry key="app/src/main/res/drawable/person_checked.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/drawable/person_selector.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/drawable/person_unchecked.xml" value="0.2869791666666667" />
         <entry key="app/src/main/res/drawable/recycler_item_background.xml" value="0.371875" />
+        <entry key="app/src/main/res/drawable/ripple_background.xml" value="0.3575" />
+        <entry key="app/src/main/res/drawable/ripple_bg.xml" value="0.237" />
+        <entry key="app/src/main/res/font/roboto.xml" value="0.38645833333333335" />
+        <entry key="app/src/main/res/layout-land/item_list_tag.xml" value="0.2328125" />
         <entry key="app/src/main/res/layout/activity_author.xml" value="0.27853260869565216" />
         <entry key="app/src/main/res/layout/activity_base_host.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/activity_host_author.xml" value="0.14513677811550152" />
         <entry key="app/src/main/res/layout/activity_host_one_quote.xml" value="0.25833333333333336" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/authors_list_fragment.xml" value="0.33469202898550726" />
-        <entry key="app/src/main/res/layout/dashboard_category_header.xml" value="0.24322916666666666" />
+        <entry key="app/src/main/res/layout/dashboard_category_header.xml" value="0.22" />
         <entry key="app/src/main/res/layout/dashboard_fragment.xml" value="0.4759259259259259" />
         <entry key="app/src/main/res/layout/dashboard_header.xml" value="0.2767210144927536" />
-        <entry key="app/src/main/res/layout/dashboard_random_quote.xml" value="0.302536231884058" />
+        <entry key="app/src/main/res/layout/dashboard_item_author.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/dashboard_item_quote.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/dashboard_item_tag.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/dashboard_random_quote.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dashboard_recycler_view_item.xml" value="0.4925925925925926" />
-        <entry key="app/src/main/res/layout/empty_list.xml" value="0.2708333333333333" />
-        <entry key="app/src/main/res/layout/fragment_all_quotes.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/fragment_author.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/fragment_author_details.xml" value="0.35280797101449274" />
+        <entry key="app/src/main/res/layout/empty_list.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_all_quotes.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_author.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_author_details.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_author_quotes.xml" value="0.32155797101449274" />
-        <entry key="app/src/main/res/layout/fragment_authors_list.xml" value="0.33469202898550726" />
-        <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.1962962962962963" />
-        <entry key="app/src/main/res/layout/fragment_one_quote.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_authors_list.xml" value="0.30193905817174516" />
+        <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_one_quote.xml" value="0.41967871485943775" />
         <entry key="app/src/main/res/layout/fragment_quotes_list.xml" value="0.3333333333333333" />
-        <entry key="app/src/main/res/layout/fragment_tag_quotes.xml" value="0.2640625" />
+        <entry key="app/src/main/res/layout/fragment_tag_quotes.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_tags_list.xml" value="0.2653985507246377" />
         <entry key="app/src/main/res/layout/fragment_tmp.xml" value="0.33469202898550726" />
         <entry key="app/src/main/res/layout/item_author.xml" value="0.4759259259259259" />
-        <entry key="app/src/main/res/layout/item_grid_author.xml" value="0.5" />
-        <entry key="app/src/main/res/layout/item_grid_quote.xml" value="0.67" />
-        <entry key="app/src/main/res/layout/item_grid_tag.xml" value="0.67" />
-        <entry key="app/src/main/res/layout/item_list_quote.xml" value="0.17725752508361203" />
-        <entry key="app/src/main/res/layout/item_list_tag.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/item_grid_author.xml" value="0.43370165745856354" />
+        <entry key="app/src/main/res/layout/item_grid_author_dashboard.xml" value="0.17325227963525835" />
+        <entry key="app/src/main/res/layout/item_grid_quote.xml" value="0.4743202416918429" />
+        <entry key="app/src/main/res/layout/item_grid_tag.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/item_list_author.xml" value="0.18" />
+        <entry key="app/src/main/res/layout/item_list_quote.xml" value="0.514324693042292" />
+        <entry key="app/src/main/res/layout/item_list_tag.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_loading.xml" value="0.290625" />
+        <entry key="app/src/main/res/layout/item_plain_tag.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/item_quote.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_tag.xml" value="0.5" />
         <entry key="app/src/main/res/layout/load_data_handler.xml" value="0.2653985507246377" />
+        <entry key="app/src/main/res/layout/load_data_handler_layout.xml" value="0.2828125" />
         <entry key="app/src/main/res/layout/load_data_handler_line.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/main_layout.xml" value="0.24909420289855072" />
         <entry key="app/src/main/res/layout/one_quote_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/quote_actions.xml" value="0.19157608695652173" />
         <entry key="app/src/main/res/layout/quote_card_details.xml" value="0.1" />
         <entry key="app/src/main/res/layout/quote_fragment.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/refreshable_recyclerview.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/quote_item_list_tag.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/refreshable_recyclerview.xml" value="0.43125" />
         <entry key="app/src/main/res/layout/row_dashboard_rv.xml" value="0.1" />
         <entry key="app/src/main/res/layout/tmp.xml" value="0.32382246376811596" />
         <entry key="app/src/main/res/layout/tmp_fragment.xml" value="0.33469202898550726" />

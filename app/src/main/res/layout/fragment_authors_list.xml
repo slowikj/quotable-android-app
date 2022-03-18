@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.authorslist.AuthorsListFragment"
-    style="@style/AppTheme.DefaultWindow">
+    android:background="?attr/backgroundColor"
+    tools:context=".ui.authorslist.AuthorsListFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -18,12 +18,15 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="@string/authors"
-            app:layout_collapseMode="pin" />
+            app:title="@string/authors" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <include
         android:id="@+id/recyclerview_layout"
-        layout="@layout/refreshable_recyclerview" />
+        layout="@layout/refreshable_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/small_space"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

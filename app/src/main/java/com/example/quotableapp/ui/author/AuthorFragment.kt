@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.findFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.R
@@ -36,8 +38,8 @@ class AuthorFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAuthorBinding.inflate(inflater, container, false).apply {
-            collapsingToolbar.viewModel = viewModel
-            collapsingToolbar.lifecycleOwner = this@AuthorFragment.viewLifecycleOwner
+            lifecycleOwner = this@AuthorFragment.viewLifecycleOwner
+            viewModel = this@AuthorFragment.viewModel
         }
         return binding.root
     }
@@ -47,7 +49,7 @@ class AuthorFragment : Fragment() {
         handleToolbar()
         handleNavigationFlow()
         setupViewPager()
-        binding.collapsingToolbar.dataLoadHandler.btnRetry.setOnClickListener {
+        binding.dataLoadHandlerToolbar.btnRetry.setOnClickListener {
             viewModel.onAuthorRefresh()
         }
     }
@@ -97,7 +99,7 @@ class AuthorFragment : Fragment() {
                 .author
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .collectLatest {
-                    binding.collapsingToolbar.dataLoadHandler.handle(it)
+                    binding.dataLoadHandlerToolbar.handle(it)
                 }
         }
     }

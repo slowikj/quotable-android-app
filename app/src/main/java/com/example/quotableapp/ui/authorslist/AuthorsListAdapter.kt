@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.databinding.ItemGridAuthorBinding
+import com.example.quotableapp.databinding.ItemListAuthorBinding
 import com.example.quotableapp.ui.common.rvAdapters.AuthorDifferentiator
 
 class AuthorsListAdapter(private val onItemClick: (Author) -> Unit) :
@@ -18,13 +18,13 @@ class AuthorsListAdapter(private val onItemClick: (Author) -> Unit) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return ViewHolder(
-            binding = ItemGridAuthorBinding.inflate(layoutInflater, parent, false),
+            binding = ItemListAuthorBinding.inflate(layoutInflater, parent, false),
             onItemClick = onItemClick
         )
     }
 
     class ViewHolder(
-        private val binding: ItemGridAuthorBinding,
+        private val binding: ItemListAuthorBinding,
         private val onItemClick: (Author) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 

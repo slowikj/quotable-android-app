@@ -20,9 +20,9 @@ import com.example.quotableapp.databinding.DashboardRecyclerViewItemBinding
 import com.example.quotableapp.databinding.FragmentDashboardBinding
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.extensions.handle
-import com.example.quotableapp.ui.dashboard.adapters.AuthorsAdapter
-import com.example.quotableapp.ui.dashboard.adapters.QuotesAdapter
-import com.example.quotableapp.ui.dashboard.adapters.TagsAdapter
+import com.example.quotableapp.ui.dashboard.adapters.AuthorsDashboardAdapter
+import com.example.quotableapp.ui.dashboard.adapters.QuotesDashboardAdapter
+import com.example.quotableapp.ui.dashboard.adapters.DashboardTagsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -35,15 +35,15 @@ class DashboardFragment : Fragment() {
     private val viewModel: DashboardViewModel by viewModels()
 
     private val authorsAdapter by lazy {
-        AuthorsAdapter(onClick = { showAuthor(it.slug) })
+        AuthorsDashboardAdapter(onClick = { showAuthor(it.slug) })
     }
 
-    private val quotesAdapter: QuotesAdapter by lazy {
-        QuotesAdapter(onClick = { showQuote(it.id) })
+    private val quotesAdapter: QuotesDashboardAdapter by lazy {
+        QuotesDashboardAdapter(onClick = { showQuote(it.id) })
     }
 
-    private val tagsAdapter: TagsAdapter by lazy {
-        TagsAdapter(onClick = { showQuotesOfTag(it) })
+    private val tagsAdapter: DashboardTagsAdapter by lazy {
+        DashboardTagsAdapter(onClick = { showQuotesOfTag(it) })
     }
 
     override fun onCreateView(
@@ -93,8 +93,8 @@ class DashboardFragment : Fragment() {
     private fun handle(randomQuoteState: UiState<Quote, DashboardViewModel.UiError>) {
         with(binding.rowRandomQuote) {
             dataLoadHandler.handle(randomQuoteState)
-            quoteLayout.root.isVisible = randomQuoteState.data != null && !randomQuoteState.isLoading
-            quoteLayout.model = randomQuoteState.data
+            this.dataGroup.isVisible = randomQuoteState.data != null && !randomQuoteState.isLoading
+            this.model = randomQuoteState.data
         }
     }
 
@@ -146,8 +146,11 @@ class DashboardFragment : Fragment() {
             dataLoadHandler.btnRetry.setOnClickListener {
                 viewModel.requestRandomQuote()
             }
-            quoteLayout.root.setOnClickListener {
+            root.setOnClickListener {
                 viewModel.randomQuote.value.data?.let { showQuote(it.id) }
+            }
+            btnRefresh.setOnClickListener {
+                viewModel.requestRandomQuote()
             }
         }
     }

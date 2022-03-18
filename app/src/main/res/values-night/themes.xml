@@ -1,0 +1,49 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.QuotableApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/steel_gray</item>
+        <item name="colorPrimaryVariant">@color/mirage</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/yellow_sea</item>
+        <item name="colorSecondaryVariant">@color/flush_orange</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <!-- Error -->
+        <item name="colorError">@color/cinnabar</item>
+        <!-- Surface. -->
+        <item name="colorSurface">@color/steel_gray_lighter</item>
+        <item name="colorOnSurface">@color/white</item>
+        <!-- Background. -->
+        <item name="backgroundColor">@color/steel_gray</item>
+        <item name="colorOnBackground">@color/white</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="colorOnActionBar">@color/white</item>
+        <item name="appBarLayoutStyle">@style/QuotableApp.AppBarLayout</item>
+
+        <item name="secondaryTextAlpha">0.7</item>
+
+        <!-- Customize your theme here. -->
+        <item name="shapeAppearanceMediumComponent">
+            @style/ShapeAppearance.QuotableApp.MediumComponent
+        </item>
+        <item name="shapeAppearanceLargeComponent">
+            @style/ShapeAppearance.QuotableApp.LargeComponent
+        </item>
+        <item name="shapeAppearanceSmallComponent">
+            @style/ShapeAppearance.QuotableApp.SmallComponent
+        </item>
+        <item name="imageButtonStyle">@style/QuotableApp.ImageButton</item>
+    </style>
+
+    <style name="ThemeOverlay.QuotableApp.RandomQuote" parent="">
+        <item name="colorSurface">@color/steel_gray</item>
+        <item name="colorOnSurface">@color/white</item>
+    </style>
+
+    <style name="ThemeOverlay.QuotableApp.AuthorToolbar" parent="">
+        <item name="colorPrimary">@color/mirage</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+</resources>

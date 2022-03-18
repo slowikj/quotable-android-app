@@ -6,7 +6,7 @@ import androidx.core.view.isVisible
 import androidx.paging.LoadState
 import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.quotableapp.databinding.LoadDataHandlerLineBinding
+import com.example.quotableapp.databinding.LoadDataHandlerLayoutBinding
 
 class DefaultLoadingAdapter(private val retry: () -> Unit) :
     LoadStateAdapter<DefaultLoadingAdapter.ViewHolder>() {
@@ -18,13 +18,13 @@ class DefaultLoadingAdapter(private val retry: () -> Unit) :
     override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return ViewHolder(
-            LoadDataHandlerLineBinding.inflate(layoutInflater, parent, false),
+            LoadDataHandlerLayoutBinding.inflate(layoutInflater, parent, false),
             retry
         )
     }
 
     class ViewHolder(
-        private val binding: LoadDataHandlerLineBinding,
+        private val binding: LoadDataHandlerLayoutBinding,
         private val retry: () -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 

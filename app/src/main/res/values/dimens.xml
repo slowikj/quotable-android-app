@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="small_space">8dp</dimen>
+    <dimen name="larger_space">16dp</dimen>
+
+    <dimen name="large_quote_img_dim">54dp</dimen>
+    <dimen name="icon_button_dim">48dp</dimen>
+    <dimen name="image_button_small_dim">32dp</dimen>
+    <dimen name="small_quote_img_dim">32dp</dimen>
+    <dimen name="very_large_space">24dp</dimen>
+
+    <dimen name="collapsing_toolbar_height">300dp</dimen>
+
+    <dimen name="dashboard_item_quote_text_dim">150dp</dimen>
+
+    <dimen name="fragment_author_img_dim">200dp</dimen>
+    <dimen name="card_quote_author_img_dim">74dp</dimen>
+    <dimen name="dashboard_author_img_dim">150dp</dimen>
+</resources>

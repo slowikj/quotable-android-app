@@ -8,7 +8,7 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.ItemListQuoteBinding
 import com.example.quotableapp.ui.common.OnQuoteClickListener
 import com.example.quotableapp.ui.common.rvAdapters.QuoteDifferentiator
-import com.example.quotableapp.ui.common.rvAdapters.TagsAdapter
+import com.example.quotableapp.ui.common.rvAdapters.QuoteTagsAdapter
 
 class QuotesAdapter(
     private val onClickHandler: OnQuoteClickListener
@@ -31,7 +31,7 @@ class QuotesAdapter(
         private val onClickHandler: OnQuoteClickListener
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val tagsAdapter = TagsAdapter { onClickHandler.onTagClick(it) }
+        private val tagsAdapter = QuoteTagsAdapter { onClickHandler.onTagClick(it) }
 
         init {
             binding.rvTags.adapter = tagsAdapter
