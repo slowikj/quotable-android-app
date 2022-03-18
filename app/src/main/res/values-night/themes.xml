@@ -22,7 +22,7 @@
         <item name="colorOnActionBar">@color/white</item>
         <item name="appBarLayoutStyle">@style/QuotableApp.AppBarLayout</item>
 
-        <item name="secondaryTextAlpha">0.7</item>
+        <item name="secondaryContentAlpha">0.7</item>
 
         <!-- Customize your theme here. -->
         <item name="shapeAppearanceMediumComponent">

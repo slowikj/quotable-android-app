@@ -36,7 +36,7 @@
         </item>
         <item name="imageButtonStyle">@style/QuotableApp.ImageButton</item>
 
-        <item name="secondaryTextAlpha">0.7</item>
+        <item name="secondaryContentAlpha">0.7</item>
 
     </style>
 

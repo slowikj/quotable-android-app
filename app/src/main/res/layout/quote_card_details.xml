@@ -81,7 +81,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/small_space"
-                android:alpha="?attr/secondaryTextAlpha"
+                android:alpha="?attr/secondaryContentAlpha"
                 android:background="?attr/selectableItemBackground"
                 android:text="@{quoteUi.authorName}"
                 android:textAppearance="?attr/textAppearanceSubtitle1"

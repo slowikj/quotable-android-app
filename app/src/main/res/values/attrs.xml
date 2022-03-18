@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="secondaryTextAlpha" format="float"/>
-    <attr name="colorOnActionBar" format="color"/>
+    <attr name="secondaryContentAlpha" format="float" />
+    <attr name="tertiaryContentAlpha" format="float" />
+    <attr name="colorOnActionBar" format="color" />
 </resources>

@@ -56,7 +56,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/small_space"
-                android:alpha="?attr/secondaryTextAlpha"
+                android:alpha="?attr/secondaryContentAlpha"
                 android:ellipsize="end"
                 android:gravity="center"
                 android:maxLines="1"

@@ -67,7 +67,7 @@
                 android:id="@+id/tv_author"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="?attr/secondaryTextAlpha"
+                android:alpha="?attr/secondaryContentAlpha"
                 android:text="@{model.author}"
                 android:textAppearance="?textAppearanceSubtitle2"
                 android:textColor="?attr/colorOnSurface"
