@@ -12,7 +12,7 @@
         <!-- Error -->
         <item name="colorError">@color/chestnut_rose</item>
         <!-- Surface. -->
-        <item name="colorSurface">@color/grey_3</item>
+        <item name="colorSurface">@color/grey_2</item>
         <item name="colorOnSurface">@color/white</item>
         <!-- Background. -->
         <item name="backgroundColor">@color/grey_2</item>
@@ -38,7 +38,7 @@
     </style>
 
     <style name="ThemeOverlay.QuotableApp.RandomQuote" parent="">
-        <item name="colorSurface">@color/grey_2</item>
+        <item name="colorSurface">@color/grey_3</item>
         <item name="colorOnSurface">@color/white</item>
     </style>
 
