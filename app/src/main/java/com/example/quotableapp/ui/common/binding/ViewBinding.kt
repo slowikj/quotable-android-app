@@ -13,7 +13,7 @@ object ViewBinding {
     fun bindLoadImageWithPersonPlaceholder(view: AppCompatImageView, url: String?) {
         Glide.with(view.context)
             .load(url)
-            .placeholder(R.drawable.ic_person)
+            .placeholder(R.drawable.circle)
             .circleCrop()
             .into(view)
     }
