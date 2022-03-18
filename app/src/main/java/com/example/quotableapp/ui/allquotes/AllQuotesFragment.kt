@@ -41,7 +41,7 @@ class AllQuotesFragment : QuotesListFragment() {
         requireContext().getColorFrom(colorAttr = R.attr.colorPrimaryVariant)
     }
     private val notFocusedColor by lazy {
-        requireContext().getColorFrom(colorAttr = R.attr.colorPrimary)
+        requireContext().getColorFrom(colorAttr = R.attr.backgroundColor)
     }
 
     private lateinit var binding: FragmentAllQuotesBinding

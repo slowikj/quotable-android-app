@@ -2,27 +2,29 @@
     <!-- Base application theme. -->
     <style name="Theme.QuotableApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/shrine_pink_100</item>
-        <item name="colorPrimaryVariant">@color/shrine_pink_dark</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">@color/pacific_blue</item>
+        <item name="colorPrimaryVariant">@color/deep_celurean</item>
+        <item name="colorOnPrimary">@color/baby_blue</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/tickle_me_pink</item>
-        <item name="colorSecondaryVariant">@color/dark_brown</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondary">@color/yellow_sea</item>
+        <item name="colorSecondaryVariant">@color/flush_orange</item>
+        <item name="colorOnSecondary">@color/baby_blue</item>
         <!-- Error -->
-        <item name="colorError">@color/red_violet</item>
+        <item name="colorError">@color/cinnabar</item>
         <!-- Surface. -->
         <item name="colorSurface">@color/white</item>
-        <item name="colorOnSurface">@color/dark_brown</item>
+        <item name="colorOnSurface">@color/charcoal</item>
         <!-- Background. -->
-        <item name="backgroundColor">@color/shrine_pink_100</item>
-        <item name="colorOnBackground">@color/dark_brown</item>
+        <item name="backgroundColor">@color/baby_blue</item>
+        <item name="colorOnBackground">@color/charcoal</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
 
-        <item name="secondaryTextAlpha">0.7</item>
+        <item name="colorOnActionBar">@color/charcoal</item>
 
         <!-- Customize your theme here. -->
+        <item name="appBarLayoutStyle">@style/QuotableApp.AppBarLayout</item>
+
         <item name="shapeAppearanceMediumComponent">
             @style/ShapeAppearance.QuotableApp.MediumComponent
         </item>
@@ -34,15 +36,17 @@
         </item>
         <item name="imageButtonStyle">@style/QuotableApp.ImageButton</item>
 
+        <item name="secondaryTextAlpha">0.7</item>
+
     </style>
 
     <style name="ThemeOverlay.QuotableApp.RandomQuote" parent="">
-        <item name="colorSurface">@color/shrine_pink_dark</item>
+        <item name="colorSurface">@color/pacific_blue</item>
         <item name="colorOnSurface">@color/white</item>
     </style>
 
     <style name="ThemeOverlay.QuotableApp.AuthorToolbar" parent="">
-        <item name="colorPrimary">@color/shrine_pink_dark</item>
+        <item name="colorPrimary">@color/deep_celurean</item>
         <item name="colorOnPrimary">@color/white</item>
     </style>
 

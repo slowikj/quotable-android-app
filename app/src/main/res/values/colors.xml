@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="shrine_pink_dark">#B18C81</color>
-    <color name="shrine_pink_100">#FEDBD0</color>
-    <color name="shrine_pink_50">#FEEAE6</color>
-    <color name="tickle_me_pink">#FF7597</color>
-    <color name="dark_brown">#1f0103</color>
-    <color name="red_violet">#C51162</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+
+    <color name="charcoal">#1f1e24</color>
+    <color name="prussian_blue">#003249</color>
+    <color name="deep_celurean">#0077B6</color>
+    <color name="pacific_blue">#0096C7</color>
+    <color name="humming_bird">#CAF0F8</color>
+    <color name="baby_blue">#f0f9f9</color>
+
+    <color name="cinnabar">#ee4537</color>
 
     <color name="steel_gray">#1E1E32</color>
     <color name="steel_gray_lighter">#211E33</color>
