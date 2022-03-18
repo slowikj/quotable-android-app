@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.QuotableApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.QuotableApp" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/grey_1</item>
         <item name="colorPrimaryVariant">@color/black</item>
@@ -22,7 +22,8 @@
         <item name="colorOnActionBar">@color/white</item>
         <item name="appBarLayoutStyle">@style/QuotableApp.AppBarLayout</item>
 
-        <item name="secondaryContentAlpha">0.7</item>
+        <item name="secondaryContentAlpha">0.87</item>
+        <item name="tertiaryContentAlpha">0.6</item>
 
         <!-- Customize your theme here. -->
         <item name="shapeAppearanceMediumComponent">

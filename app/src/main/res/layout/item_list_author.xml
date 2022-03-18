@@ -58,6 +58,7 @@
                 android:maxLines="1"
                 android:text="@{model.description}"
                 android:textAppearance="?attr/textAppearanceSubtitle2"
+                android:alpha="?attr/secondaryContentAlpha"
                 android:textColor="?attr/colorOnSurface"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
