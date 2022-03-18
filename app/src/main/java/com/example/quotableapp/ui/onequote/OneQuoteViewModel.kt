@@ -70,18 +70,7 @@ class OneQuoteViewModel @Inject constructor(
     fun requestData() {
         viewModelScope.launch {
             _state.set(isLoading = true)
-            val quoteUi = quoteRepository
-                .fetchQuote(quoteId)
-                .map {
-                    QuoteUi(
-                        quoteId = it.id,
-                        content = it.content,
-                        authorName = it.author,
-                        authorSlug = it.authorSlug,
-                        tags = it.tags
-                    )
-                }.mapError { UiError.IOError }
-
+            val quoteUi = fetchQuote()
             quoteUi.onSuccess {
                 _state.set(data = it, error = null)
                 val authorRes = authorsRepository.fetchAuthor(it.authorSlug)
@@ -119,5 +108,17 @@ class OneQuoteViewModel @Inject constructor(
         }
         return true
     }
+
+    private suspend fun fetchQuote() = quoteRepository
+        .fetchQuote(quoteId)
+        .map {
+            QuoteUi(
+                quoteId = it.id,
+                content = it.content,
+                authorName = it.author,
+                authorSlug = it.authorSlug,
+                tags = it.tags
+            )
+        }.mapError { UiError.IOError }
 
 }
