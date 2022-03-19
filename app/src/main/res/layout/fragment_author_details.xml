@@ -21,7 +21,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/larger_space"
-            android:alpha="?attr/secondaryContentAlpha"
+            android:alpha="?attr/tertiaryContentAlpha"
             android:lineSpacingMultiplier="1.25"
             android:text="@{viewModel.author.data.bio}"
             android:textAppearance="?attr/textAppearanceBody2"
