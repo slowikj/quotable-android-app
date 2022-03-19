@@ -41,6 +41,7 @@ class TagsListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentTagsListBinding.inflate(inflater, container, false).apply {
+            lifecycleOwner = this@TagsListFragment
             rvTags.adapter = tagsAdapter
             rvTags.itemAnimator = SlideInUpAnimator()
             rvTags.layoutManager = GridLayoutManager(

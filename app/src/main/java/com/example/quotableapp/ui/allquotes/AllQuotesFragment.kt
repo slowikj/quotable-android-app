@@ -1,7 +1,6 @@
 package com.example.quotableapp.ui.allquotes
 
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -16,7 +15,6 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentAllQuotesBinding
 import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
 import com.example.quotableapp.ui.common.extensions.changeToolbarColorOnVisibilityChange
-import com.example.quotableapp.ui.common.extensions.getColor
 import com.example.quotableapp.ui.common.extensions.getColorFrom
 import com.example.quotableapp.ui.common.extensions.getQueryTextChangedStateFlow
 import com.example.quotableapp.ui.common.quoteslist.QuotesListFragment
@@ -59,7 +57,9 @@ class AllQuotesFragment : QuotesListFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAllQuotesBinding.inflate(inflater, container, false)
+        binding = FragmentAllQuotesBinding.inflate(inflater, container, false).apply {
+            lifecycleOwner = this@AllQuotesFragment.viewLifecycleOwner
+        }
         prepareToolbar()
         return binding.root
     }
@@ -86,7 +86,7 @@ class AllQuotesFragment : QuotesListFragment() {
 
     private fun prepareToolbar() {
         setHasOptionsMenu(true)
-        val toolbar = binding.toolbar
+        val toolbar = binding.appbarLayout.toolbar
         (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
     }
 
@@ -97,7 +97,7 @@ class AllQuotesFragment : QuotesListFragment() {
             changeToolbarColorOnVisibilityChange(
                 focusColor = focusColor,
                 notFocusedColor = notFocusedColor,
-                toolbar = binding.toolbar
+                toolbar = binding.appbarLayout.toolbar
             )
         }
 
