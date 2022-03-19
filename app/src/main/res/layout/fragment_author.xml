@@ -106,7 +106,6 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/cut_bg"
                 android:theme="@style/ThemeOverlay.QuotableApp.AuthorToolbar"
-                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                 app:tabBackground="?attr/colorPrimary"
                 app:tabIndicatorColor="?attr/colorSecondary"
                 app:tabSelectedTextColor="?attr/colorSecondary"
