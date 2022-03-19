@@ -15,7 +15,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:layout_collapseMode="pin"
+            app:layout_scrollFlags="scroll|enterAlways"
             app:title="@string/all_quotes" />
     </com.google.android.material.appbar.AppBarLayout>
 
