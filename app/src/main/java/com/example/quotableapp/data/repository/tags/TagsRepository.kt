@@ -69,12 +69,12 @@ class DefaultTagRepository @Inject constructor(
         }
     }
 
-    override val allTagsFlow: Flow<List<Tag>>
-        get() = tagsDao.getTags(type = TAG_ORIGIN_TYPE_ALL)
-            .filterNotNull()
-            .distinctUntilChanged()
-            .map { list -> list.map(tagConverters::toModel) }
-            .flowOn(coroutineDispatchers.IO)
+    override val allTagsFlow: Flow<List<Tag>> = tagsDao
+        .getTags(type = TAG_ORIGIN_TYPE_ALL)
+        .filterNotNull()
+        .distinctUntilChanged()
+        .map { list -> list.map(tagConverters::toModel) }
+        .flowOn(coroutineDispatchers.IO)
 
     override suspend fun fetchFirstTags(forceRefresh: Boolean): Resource<Boolean, HttpApiError> {
         return withContext(coroutineDispatchers.Default) {
@@ -102,12 +102,12 @@ class DefaultTagRepository @Inject constructor(
         }
     }
 
-    override val firstTags: Flow<List<Tag>>
-        get() = tagsDao.getTags(TAG_ORIGIN_TYPE_FIRST, limit = TAGS_FIRST_LIMIT)
-            .distinctUntilChanged()
-            .filterNotNull()
-            .map { list -> list.map(tagConverters::toModel) }
-            .flowOn(coroutineDispatchers.IO)
+    override val firstTags: Flow<List<Tag>> = tagsDao
+        .getTags(TAG_ORIGIN_TYPE_FIRST, limit = TAGS_FIRST_LIMIT)
+        .distinctUntilChanged()
+        .filterNotNull()
+        .map { list -> list.map(tagConverters::toModel) }
+        .flowOn(coroutineDispatchers.IO)
 
     private suspend fun fetchTagsDTO(): Resource<TagsResponseDTO, HttpApiError> {
         return withContext(coroutineDispatchers.IO) {

@@ -124,8 +124,7 @@ class DefaultAuthorsRepository @Inject constructor(
         }
     }
 
-    override val firstAuthorsFlow: Flow<List<Author>>
-        get() = authorsDao
+    override val firstAuthorsFlow: Flow<List<Author>> = authorsDao
             .getAuthorsSortedByQuoteCountDesc(
                 originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
                 limit = FIRST_AUTHORS_LIMIT
