@@ -22,14 +22,13 @@ import javax.inject.Inject
 interface OneQuoteRepository {
     suspend fun fetchQuote(id: String): Resource<Quote, HttpApiError>
 
-    suspend fun fetchRandomQuote(forceUpdate: Boolean = false): Resource<Boolean, HttpApiError>
+    suspend fun updateRandomQuote(): Resource<Boolean, HttpApiError>
 
     val randomQuoteFlow: Flow<Quote>
 }
 
 class DefaultOneQuoteRepository @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
-    @CacheTimeout private val cacheTimeoutMillis: Long,
     private val quotesService: QuotesService,
     private val quoteConverters: QuoteConverters,
     private val quotableDatabase: QuotableDatabase,
@@ -44,13 +43,13 @@ class DefaultOneQuoteRepository @Inject constructor(
     private val quotesDao: QuotesDao = quotableDatabase.quotesDao()
 
     override val randomQuoteFlow: Flow<Quote> = quotesDao
-            .getFirstQuotesSortedById(
-                params = randomQuoteOriginParams,
-                limit = 1
-            )
-            .filterNot { it.isNullOrEmpty() }
-            .map { it.first() }
-            .map(quoteConverters::toDomain)
+        .getFirstQuotesSortedById(
+            params = randomQuoteOriginParams,
+            limit = 1
+        )
+        .filterNot { it.isNullOrEmpty() }
+        .map { it.first() }
+        .map(quoteConverters::toDomain)
 
     override suspend fun fetchQuote(id: String): Resource<Quote, HttpApiError> {
         return withContext(coroutineDispatchers.IO) {
@@ -59,15 +58,16 @@ class DefaultOneQuoteRepository @Inject constructor(
         }
     }
 
-    override suspend fun fetchRandomQuote(forceUpdate: Boolean): Resource<Boolean, HttpApiError> {
+    override suspend fun updateRandomQuote(): Resource<Boolean, HttpApiError> {
         return withContext(coroutineDispatchers.IO) {
-            if (shouldCacheBeUpdated(forceUpdate)) {
-                val apiRandomQuote = apiResponseInterpreter { quotesService.fetchRandomQuote() }
-                apiRandomQuote.onSuccess { updateDatabaseWithRandomQuote(it) }
-                    .map { true }
-            } else {
-                Resource.success(false)
-            }
+            val apiRandomQuote = apiResponseInterpreter { quotesService.fetchRandomQuote() }
+            apiRandomQuote.fold(
+                onSuccess = {
+                    runCatching { updateDatabaseWithRandomQuote(it) } // TODO: handle error
+                    Resource.success(true)
+                },
+                onFailure = { Resource.failure(it) }
+            )
         }
     }
 
@@ -86,16 +86,4 @@ class DefaultOneQuoteRepository @Inject constructor(
             }
         }
     }
-
-    private suspend fun shouldCacheBeUpdated(forceUpdate: Boolean): Boolean =
-        withContext(coroutineDispatchers.Default) {
-            val lastUpdatedMillis = quotesDao.getLastUpdatedMillis(
-                params = randomQuoteOriginParams
-            )
-            val currentTimeMillis = System.currentTimeMillis()
-
-            forceUpdate ||
-                    lastUpdatedMillis == null ||
-                    currentTimeMillis - lastUpdatedMillis > cacheTimeoutMillis
-        }
 }

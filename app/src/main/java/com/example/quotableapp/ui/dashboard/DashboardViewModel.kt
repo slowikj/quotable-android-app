@@ -3,20 +3,18 @@ package com.example.quotableapp.ui.dashboard
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.quotableapp.data.common.Resource
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
-import com.example.quotableapp.ui.common.extensions.handleOneShotRequest
-import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
-import com.example.quotableapp.ui.common.extensions.set
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -40,53 +38,113 @@ class DashboardViewModel @Inject constructor(
         object NetworkError : UiError()
     }
 
-    private val _authors = MutableStateFlow(AuthorListState())
-    val authors: StateFlow<AuthorListState> = _authors.asStateFlow()
+    private val _authorsListFlow = authorsRepository
+        .firstAuthorsFlow
+        .stateIn(
+            initialValue = null,
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000)
+        )
+    private val _authorsIsLoadingFlow = MutableStateFlow<Boolean>(false)
+    private val _authorsErrorFlow = MutableStateFlow<UiError?>(null)
+    val authors = combine(
+        _authorsListFlow, _authorsIsLoadingFlow, _authorsErrorFlow
+    ) { list, isLoading, error ->
+        AuthorListState(data = list, isLoading = isLoading, error = error)
+    }.stateIn(
+        initialValue = AuthorListState(),
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000)
+    )
 
-    private val _quotes = MutableStateFlow(QuotesListState())
-    val quotes: StateFlow<QuotesListState> = _quotes.asStateFlow()
+    private val _quotesListFlow = quotesRepository
+        .firstQuotesFlow
+        .stateIn(
+            initialValue = null,
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000)
+        )
+    private val _quotesIsLoadingFlow = MutableStateFlow<Boolean>(false)
+    private val _quotesErrorFlow = MutableStateFlow<UiError?>(null)
+    val quotes = combine(
+        _quotesListFlow, _quotesIsLoadingFlow, _quotesErrorFlow
+    ) { list, isLoading, error ->
+        QuotesListState(list, isLoading, error)
+    }.stateIn(
+        initialValue = QuotesListState(),
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000)
+    )
 
-    private val _tagsListFlow = tagsRepository.allTagsFlow
+    private val _tagsListFlow = tagsRepository
+        .allTagsFlow
+        .stateIn(
+            initialValue = null,
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000)
+        )
     private val _tagsIsLoadingFlow = MutableStateFlow(false)
     private val _tagsErrorFlow = MutableStateFlow<UiError?>(null)
     val tags = combine(
         _tagsListFlow, _tagsIsLoadingFlow, _tagsErrorFlow
     ) { list, isLoading, error ->
         TagsListState(data = list, isLoading = isLoading, error = error)
-    }
+    }.stateIn(
+        initialValue = TagsListState(),
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000)
+    )
 
-    private val _randomQuote = MutableStateFlow(RandomQuoteState())
-    val randomQuote: StateFlow<RandomQuoteState> = _randomQuote.asStateFlow()
+    private val _randomQuoteFlow = quotesRepository
+        .randomQuoteFlow
+        .stateIn(
+            initialValue = null,
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000)
+        )
+    private val _randomQuoteErrorFlow = MutableStateFlow<UiError?>(null)
+    private val _randomQuoteIsLoadingFlow = MutableStateFlow<Boolean>(false)
+    val randomQuote = combine(
+        _randomQuoteFlow, _randomQuoteIsLoadingFlow, _randomQuoteErrorFlow
+    ) { data, isLoading, error ->
+        RandomQuoteState(data, isLoading, error)
+    }.stateIn(
+        initialValue = RandomQuoteState(),
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000)
+    )
 
     init {
-        requestAuthors(forceUpdate = false)
-        requestQuotes(forceUpdate = false)
-        updateTags()
-        requestRandomQuote(forceUpdate = false)
-        startObservingRandomQuoteFlow()
-        startObservingExemplaryQuotesFlow()
-        startObservingAuthorsFlow()
+        refreshAll()
     }
 
     fun refreshAll() {
-        requestAuthors(forceUpdate = true)
-        requestQuotes(forceUpdate = true)
+        updateAuthors()
+        updateQuotes()
         updateTags()
-        requestRandomQuote(forceUpdate = true)
+        updateRandomQuote()
     }
 
-    fun requestAuthors(forceUpdate: Boolean = true) {
-        handleRequestWithoutData(
-            stateFlow = _authors,
-            requestFunc = { authorsRepository.fetchFirstAuthors(forceUpdate) }
-        )
+    fun updateAuthors() {
+        viewModelScope.launch {
+            _authorsIsLoadingFlow.value = true
+            val response = authorsRepository.updateFirstAuthors()
+            response.onFailure {
+                _authorsErrorFlow.value = UiError.NetworkError
+            }
+            _authorsIsLoadingFlow.value = false
+        }
     }
 
-    fun requestQuotes(forceUpdate: Boolean = true) {
-        handleRequestWithoutData(
-            stateFlow = _quotes,
-            requestFunc = { quotesRepository.fetchFirstQuotes(forceUpdate) }
-        )
+    fun updateQuotes() {
+        viewModelScope.launch {
+            _quotesIsLoadingFlow.value = true
+            val response = quotesRepository.fetchFirstQuotes()
+            response.onFailure {
+                _quotesErrorFlow.value = UiError.NetworkError
+            }
+            _quotesIsLoadingFlow.value = false
+        }
     }
 
     fun updateTags() {
@@ -100,51 +158,15 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    fun requestRandomQuote(forceUpdate: Boolean = true) {
-        handleRequestWithoutData(
-            stateFlow = _randomQuote,
-            requestFunc = { quotesRepository.fetchRandomQuote(forceUpdate) }
-        )
-    }
-
-    private fun startObservingRandomQuoteFlow() {
-        quotesRepository.randomQuoteFlow
-            .onEach { _randomQuote.set(data = it) }
-            .launchIn(viewModelScope)
-    }
-
-    private fun startObservingExemplaryQuotesFlow() {
-        quotesRepository.firstQuotesFlow
-            .onEach { _quotes.set(data = it) }
-            .launchIn(viewModelScope)
-    }
-
-    private fun startObservingAuthorsFlow() {
-        authorsRepository.firstAuthorsFlow
-            .onEach { _authors.set(data = it) }
-            .launchIn(viewModelScope)
-    }
-
-    private fun <V> handleRequestWithData(
-        stateFlow: MutableStateFlow<UiState<V, UiError>>,
-        requestFunc: suspend () -> Resource<V, HttpApiError>
-    ) {
-        stateFlow.handleRequestWithResult(
-            coroutineScope = viewModelScope,
-            requestFunc = requestFunc,
-            errorConverter = { UiError.NetworkError }
-        )
-    }
-
-    private fun <V> handleRequestWithoutData(
-        stateFlow: MutableStateFlow<UiState<V, UiError>>,
-        requestFunc: suspend () -> Resource<Boolean, HttpApiError>
-    ) {
-        stateFlow.handleOneShotRequest(
-            coroutineScope = viewModelScope,
-            requestFunc = requestFunc,
-            errorConverter = { UiError.NetworkError }
-        )
+    fun updateRandomQuote() {
+        viewModelScope.launch {
+            _randomQuoteIsLoadingFlow.value = true
+            val response = quotesRepository.updateRandomQuote()
+            response.onFailure {
+                _randomQuoteErrorFlow.value = UiError.NetworkError
+            }
+            _randomQuoteIsLoadingFlow.value = false
+        }
     }
 
 }

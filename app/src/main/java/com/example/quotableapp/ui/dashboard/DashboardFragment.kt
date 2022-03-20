@@ -144,13 +144,13 @@ class DashboardFragment : Fragment() {
     private fun setupRandomQuoteEntry() {
         with(binding.rowRandomQuote) {
             dataLoadHandler.btnRetry.setOnClickListener {
-                viewModel.requestRandomQuote()
+                viewModel.updateRandomQuote()
             }
             root.setOnClickListener {
                 viewModel.randomQuote.value.data?.let { showQuote(it.id) }
             }
             btnRefresh.setOnClickListener {
-                viewModel.requestRandomQuote()
+                viewModel.updateRandomQuote()
             }
         }
     }
@@ -169,7 +169,7 @@ class DashboardFragment : Fragment() {
             binding = binding.rowAuthors,
             listAdapter = authorsAdapter,
             onCategoryClickListener = { showAllAuthors() },
-            onDataRetryRequest = { viewModel.requestAuthors() })
+            onDataRetryRequest = { viewModel.updateAuthors() })
     }
 
     private fun setupQuotesEntry() {
@@ -177,7 +177,7 @@ class DashboardFragment : Fragment() {
             binding = binding.rowQuotes,
             listAdapter = quotesAdapter,
             onCategoryClickListener = { showAllQuotes() },
-            onDataRetryRequest = { viewModel.requestQuotes() })
+            onDataRetryRequest = { viewModel.updateQuotes() })
     }
 
     private fun <M, VH : RecyclerView.ViewHolder> setupCategoryEntry(

@@ -27,7 +27,7 @@ interface AuthorsRepository {
 
     fun fetchAllAuthors(): Flow<PagingData<Author>>
 
-    suspend fun fetchFirstAuthors(forceUpdate: Boolean): Resource<Boolean, HttpApiError>
+    suspend fun updateFirstAuthors(): Resource<Boolean, HttpApiError>
 
     val firstAuthorsFlow: Flow<List<Author>>
 }
@@ -36,7 +36,6 @@ interface AuthorsRepository {
 class DefaultAuthorsRepository @Inject constructor(
     private val authorsService: AuthorsService,
     private val authorsDao: AuthorsDao,
-    @CacheTimeout private val cacheTimeoutMillis: Long,
     private val quotableDatabase: QuotableDatabase,
     private val authorsRemoteMediatorFactory: AuthorsRemoteMediatorFactory,
     private val coroutineDispatchers: CoroutineDispatchers,
@@ -84,32 +83,36 @@ class DefaultAuthorsRepository @Inject constructor(
             }
     }
 
-    override suspend fun fetchFirstAuthors(forceUpdate: Boolean): Resource<Boolean, HttpApiError> {
+    override suspend fun updateFirstAuthors(): Resource<Boolean, HttpApiError> {
         return withContext(coroutineDispatchers.IO) {
-            val isUpdateNeeded = shouldBeUpdated(forceUpdate)
-            if (isUpdateNeeded) {
-                val apiResponse = apiResponseInterpreter {
-                    authorsService.fetchAuthors(
-                        page = 1,
-                        limit = FIRST_AUTHORS_LIMIT,
-                        sortBy = AuthorsService.SortByType.QuoteCount,
-                        orderType = AuthorsService.OrderType.Desc
-                    )
-                }
-                apiResponse.fold(
-                    onSuccess = {
-                        addFirstQuotesToDatabase(it)
-                        Resource.success(true)
-                    },
-                    onFailure = {
-                        Resource.failure(it)
-                    }
+            val apiResponse = apiResponseInterpreter {
+                authorsService.fetchAuthors(
+                    page = 1,
+                    limit = FIRST_AUTHORS_LIMIT,
+                    sortBy = AuthorsService.SortByType.QuoteCount,
+                    orderType = AuthorsService.OrderType.Desc
                 )
-            } else {
-                Resource.success(false)
             }
+            apiResponse.fold(
+                onSuccess = {
+                    addFirstQuotesToDatabase(it)
+                    Resource.success(true)
+                },
+                onFailure = {
+                    Resource.failure(it)
+                }
+            )
         }
     }
+
+    override val firstAuthorsFlow: Flow<List<Author>> = authorsDao
+        .getAuthorsSortedByQuoteCountDesc(
+            originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
+            limit = FIRST_AUTHORS_LIMIT
+        )
+        .distinctUntilChanged()
+        .filterNotNull()
+        .map { list -> list.map(authorConverters::toDomain) }
 
     private suspend fun addFirstQuotesToDatabase(responseDTO: AuthorsResponseDTO) {
         quotableDatabase.withTransaction {
@@ -124,23 +127,4 @@ class DefaultAuthorsRepository @Inject constructor(
         }
     }
 
-    override val firstAuthorsFlow: Flow<List<Author>> = authorsDao
-            .getAuthorsSortedByQuoteCountDesc(
-                originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
-                limit = FIRST_AUTHORS_LIMIT
-            )
-            .distinctUntilChanged()
-            .filterNotNull()
-            .map { list -> list.map(authorConverters::toDomain) }
-
-    private suspend fun shouldBeUpdated(forceUpdate: Boolean): Boolean =
-        withContext(coroutineDispatchers.Default) {
-            val lastUpdatedMillis = authorsDao.getLastUpdated(FIRST_AUTHORS_ORIGIN_PARAMS)
-            val currentTimeMillis = System.currentTimeMillis()
-
-            val res = forceUpdate ||
-                    lastUpdatedMillis == null ||
-                    currentTimeMillis - lastUpdatedMillis > cacheTimeoutMillis
-            res
-        }
 }

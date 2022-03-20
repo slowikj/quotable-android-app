@@ -31,14 +31,13 @@ import javax.inject.Inject
 interface AllQuotesRepository {
     fun fetchAllQuotes(searchPhrase: String?): Flow<PagingData<Quote>>
 
-    suspend fun fetchFirstQuotes(forceUpdate: Boolean): Resource<Boolean, HttpApiError>
+    suspend fun fetchFirstQuotes(): Resource<Boolean, HttpApiError>
 
     val firstQuotesFlow: Flow<List<Quote>>
 }
 
 @ExperimentalPagingApi
 class DefaultAllQuotesRepository @Inject constructor(
-    @CacheTimeout private val cacheTimeoutMillis: Long,
     private val quotesRemoteMediatorFactory: QuotesRemoteMediatorFactory,
     private val quotableDatabase: QuotableDatabase,
     private val pagingConfig: PagingConfig,
@@ -70,36 +69,26 @@ class DefaultAllQuotesRepository @Inject constructor(
     }
 
     override val firstQuotesFlow: Flow<List<Quote>> = quotesDao.getFirstQuotesSortedById(
-            params = firstQuotesParams,
-            limit = FIRST_QUOTES_LIMIT
-        ).filterNotNull()
-            .map { quotes -> quotes.map(quotesConverters::toDomain) }
+        params = firstQuotesParams,
+        limit = FIRST_QUOTES_LIMIT
+    ).filterNotNull()
+        .map { quotes -> quotes.map(quotesConverters::toDomain) }
 
-    override suspend fun fetchFirstQuotes(forceUpdate: Boolean): Resource<Boolean, HttpApiError> {
+    override suspend fun fetchFirstQuotes(): Resource<Boolean, HttpApiError> {
         return withContext(coroutineDispatchers.IO) {
-            if (shouldCacheBeUpdated(forceUpdate)) {
-                val apiResponse = apiResponseInterpreter {
-                    quotesService.fetchQuotes(
-                        page = 1,
-                        limit = FIRST_QUOTES_LIMIT
-                    )
-                }
-                apiResponse.onSuccess { dto ->
-                    quotableDatabase.withTransaction {
-                        quotesDao.insertRemotePageKey(
-                            originParams = firstQuotesParams,
-                            key = 1
-                        )
-                        quotesDao.addQuotes(
-                            originParams = firstQuotesParams,
-                            quotes = dto.results.map(quotesConverters::toDb)
-                        )
-                    }
-                }.map { true }
-            } else {
-                Resource.success(false)
+            val apiResponse = apiResponseInterpreter {
+                quotesService.fetchQuotes(
+                    page = 1,
+                    limit = FIRST_QUOTES_LIMIT
+                )
             }
-
+            apiResponse.fold(
+                onSuccess = { dto ->
+                    updateDatabaseWithFirstQuotes(dto)
+                    Resource.success(true)
+                },
+                onFailure = { Resource.failure(it) }
+            )
         }
     }
 
@@ -124,13 +113,16 @@ class DefaultAllQuotesRepository @Inject constructor(
         )
     }
 
-    private suspend fun shouldCacheBeUpdated(forceUpdate: Boolean) =
-        withContext(coroutineDispatchers.Default) {
-            val lastUpdatedMillis = quotesDao.getLastUpdatedMillis(firstQuotesParams)
-            val currentTimeMillis = System.currentTimeMillis()
-            val res = forceUpdate ||
-                    lastUpdatedMillis == null ||
-                    currentTimeMillis - lastUpdatedMillis > cacheTimeoutMillis
-            res
+    private suspend fun updateDatabaseWithFirstQuotes(dto: QuotesResponseDTO) {
+        quotableDatabase.withTransaction {
+            quotesDao.insertRemotePageKey(
+                originParams = firstQuotesParams,
+                key = 1
+            )
+            quotesDao.addQuotes(
+                originParams = firstQuotesParams,
+                quotes = dto.results.map(quotesConverters::toDb)
+            )
         }
+    }
 }
