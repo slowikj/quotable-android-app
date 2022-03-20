@@ -17,6 +17,7 @@ import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
 import com.example.quotableapp.ui.common.extensions.set
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 typealias AuthorListState = UiState<List<Author>, DashboardViewModel.UiError>
@@ -45,8 +46,14 @@ class DashboardViewModel @Inject constructor(
     private val _quotes = MutableStateFlow(QuotesListState())
     val quotes: StateFlow<QuotesListState> = _quotes.asStateFlow()
 
-    private val _tags = MutableStateFlow(TagsListState())
-    val tags: StateFlow<TagsListState> = _tags.asStateFlow()
+    private val _tagsListFlow = tagsRepository.allTagsFlow
+    private val _tagsIsLoadingFlow = MutableStateFlow(false)
+    private val _tagsErrorFlow = MutableStateFlow<UiError?>(null)
+    val tags = combine(
+        _tagsListFlow, _tagsIsLoadingFlow, _tagsErrorFlow
+    ) { list, isLoading, error ->
+        TagsListState(data = list, isLoading = isLoading, error = error)
+    }
 
     private val _randomQuote = MutableStateFlow(RandomQuoteState())
     val randomQuote: StateFlow<RandomQuoteState> = _randomQuote.asStateFlow()
@@ -54,18 +61,17 @@ class DashboardViewModel @Inject constructor(
     init {
         requestAuthors(forceUpdate = false)
         requestQuotes(forceUpdate = false)
-        requestTags(forceUpdate = false)
+        updateTags()
         requestRandomQuote(forceUpdate = false)
         startObservingRandomQuoteFlow()
         startObservingExemplaryQuotesFlow()
-        startObservingTagsFlow()
         startObservingAuthorsFlow()
     }
 
     fun refreshAll() {
         requestAuthors(forceUpdate = true)
         requestQuotes(forceUpdate = true)
-        requestTags(forceUpdate = true)
+        updateTags()
         requestRandomQuote(forceUpdate = true)
     }
 
@@ -83,11 +89,15 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
-    fun requestTags(forceUpdate: Boolean = true) {
-        handleRequestWithoutData(
-            stateFlow = _tags,
-            requestFunc = { tagsRepository.fetchFirstTags(forceUpdate) }
-        )
+    fun updateTags() {
+        viewModelScope.launch {
+            _tagsIsLoadingFlow.value = true
+            val response = tagsRepository.updateAllTags()
+            response.onFailure {
+                _tagsErrorFlow.value = UiError.NetworkError
+            }
+            _tagsIsLoadingFlow.value = false
+        }
     }
 
     fun requestRandomQuote(forceUpdate: Boolean = true) {
@@ -106,12 +116,6 @@ class DashboardViewModel @Inject constructor(
     private fun startObservingExemplaryQuotesFlow() {
         quotesRepository.firstQuotesFlow
             .onEach { _quotes.set(data = it) }
-            .launchIn(viewModelScope)
-    }
-
-    private fun startObservingTagsFlow() {
-        tagsRepository.firstTags
-            .onEach { _tags.set(data = it) }
             .launchIn(viewModelScope)
     }
 

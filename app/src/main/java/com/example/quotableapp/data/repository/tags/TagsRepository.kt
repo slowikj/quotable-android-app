@@ -10,18 +10,17 @@ import com.example.quotableapp.data.network.TagsService
 import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
 import com.example.quotableapp.data.network.model.TagsResponseDTO
-import com.example.quotableapp.data.repository.CacheTimeout
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 interface TagsRepository {
 
-    suspend fun fetchAllTags(forceRefresh: Boolean): Resource<Boolean, HttpApiError>
+    suspend fun updateAllTags(): Resource<Boolean, HttpApiError>
 
     val allTagsFlow: Flow<List<Tag>>
 
-    suspend fun fetchFirstTags(forceRefresh: Boolean): Resource<Boolean, HttpApiError>
+    suspend fun updateFirstTags(): Resource<Boolean, HttpApiError>
 
     val firstTags: Flow<List<Tag>>
 }
@@ -29,7 +28,6 @@ interface TagsRepository {
 class DefaultTagRepository @Inject constructor(
     private val tagsService: TagsService,
     private val tagsDao: TagsDao,
-    @CacheTimeout private val cacheTimeoutMillis: Long,
     private val responseInterpreter: QuotableApiResponseInterpreter,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val tagConverters: TagConverters
@@ -43,29 +41,21 @@ class DefaultTagRepository @Inject constructor(
         private const val TAGS_FIRST_LIMIT = 10
     }
 
-    override suspend fun fetchAllTags(forceRefresh: Boolean): Resource<Boolean, HttpApiError> {
+    override suspend fun updateAllTags(): Resource<Boolean, HttpApiError> {
         return withContext(coroutineDispatchers.Default) {
-            val isUpdateNeeded = shouldCacheBeUpdated(
-                forceRefresh = forceRefresh,
-                originType = TAG_ORIGIN_TYPE_ALL
+            val apiResponse = fetchTagsDTO()
+            apiResponse.fold(
+                onSuccess = {
+                    tagsDao.add(
+                        originType = TAG_ORIGIN_TYPE_ALL,
+                        tags = it.map(tagConverters::toDb)
+                    )
+                    Resource.success(true)
+                },
+                onFailure = {
+                    Resource.failure(it)
+                }
             )
-            if (isUpdateNeeded) {
-                val apiResponse = fetchTagsDTO()
-                apiResponse.fold(
-                    onSuccess = {
-                        tagsDao.add(
-                            originType = TAG_ORIGIN_TYPE_ALL,
-                            tags = it.map(tagConverters::toDb)
-                        )
-                        Resource.success(true)
-                    },
-                    onFailure = {
-                        Resource.failure(it)
-                    }
-                )
-            } else {
-                Resource.success(false)
-            }
         }
     }
 
@@ -76,29 +66,21 @@ class DefaultTagRepository @Inject constructor(
         .map { list -> list.map(tagConverters::toModel) }
         .flowOn(coroutineDispatchers.IO)
 
-    override suspend fun fetchFirstTags(forceRefresh: Boolean): Resource<Boolean, HttpApiError> {
+    override suspend fun updateFirstTags(): Resource<Boolean, HttpApiError> {
         return withContext(coroutineDispatchers.Default) {
-            val isUpdateNeeded = shouldCacheBeUpdated(
-                forceRefresh = forceRefresh,
-                originType = TAG_ORIGIN_TYPE_FIRST
+            val apiResponse = fetchTagsDTO().map { it.take(TAGS_FIRST_LIMIT) }
+            apiResponse.fold(
+                onSuccess = {
+                    tagsDao.add(
+                        tags = it.map(tagConverters::toDb),
+                        originType = TAG_ORIGIN_TYPE_FIRST
+                    )
+                    Resource.success(true)
+                },
+                onFailure = {
+                    Resource.failure(it)
+                }
             )
-            if (isUpdateNeeded) {
-                val apiResponse = fetchTagsDTO().map { it.take(TAGS_FIRST_LIMIT) }
-                apiResponse.fold(
-                    onSuccess = {
-                        tagsDao.add(
-                            tags = it.map(tagConverters::toDb),
-                            originType = TAG_ORIGIN_TYPE_FIRST
-                        )
-                        Resource.success(true)
-                    },
-                    onFailure = {
-                        Resource.failure(it)
-                    }
-                )
-            } else {
-                Resource.success(false)
-            }
         }
     }
 
@@ -114,18 +96,4 @@ class DefaultTagRepository @Inject constructor(
             responseInterpreter { tagsService.fetchTags() }
         }
     }
-
-    private suspend fun shouldCacheBeUpdated(
-        forceRefresh: Boolean,
-        originType: TagOriginType
-    ): Boolean =
-        withContext(coroutineDispatchers.Default) {
-            val currentTimeMillis = System.currentTimeMillis()
-            val lastUpdatedMillis = tagsDao.getLastUpdatedMillis(originType)
-
-            val res = forceRefresh ||
-                    lastUpdatedMillis == null ||
-                    currentTimeMillis - lastUpdatedMillis > cacheTimeoutMillis
-            res
-        }
 }

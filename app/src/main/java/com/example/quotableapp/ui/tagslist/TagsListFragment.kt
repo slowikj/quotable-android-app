@@ -48,7 +48,7 @@ class TagsListFragment : Fragment() {
                 context,
                 if (requireContext().isLandscapeMode) ITEMS_SPAN_LANDSCAPE else ITEMS_SPAN_PORTRAIT
             )
-            dataLoadHandler.btnRetry.setOnClickListener { viewModel.fetchTags() }
+            dataLoadHandler.btnRetry.setOnClickListener { viewModel.updateTags() }
         }
         return binding.root
     }

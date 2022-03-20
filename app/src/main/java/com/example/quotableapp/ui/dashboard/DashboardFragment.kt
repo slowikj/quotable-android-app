@@ -160,7 +160,7 @@ class DashboardFragment : Fragment() {
             binding = binding.rowTags,
             listAdapter = tagsAdapter,
             onCategoryClickListener = { showAllTags() },
-            onDataRetryRequest = { viewModel.requestTags() }
+            onDataRetryRequest = { viewModel.updateTags() }
         )
     }
 

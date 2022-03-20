@@ -6,10 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
-import com.example.quotableapp.ui.common.extensions.handleOneShotRequest
-import com.example.quotableapp.ui.common.extensions.set
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 typealias TagsListState = UiState<List<Tag>, TagsListViewModel.UiError>
@@ -24,25 +24,26 @@ class TagsListViewModel @Inject constructor(
         object NetworkError : UiError()
     }
 
-    private val _tags = MutableStateFlow(TagsListState())
-    val tags: StateFlow<TagsListState> = _tags.asStateFlow()
+    private val _tagsErrorFlow = MutableStateFlow<UiError?>(null)
+    private val _tagsIsLoadingFlow = MutableStateFlow<Boolean>(false)
+    private val _tagsListFlow = tagsRepository.allTagsFlow
+
+    val tags = combine(_tagsListFlow, _tagsIsLoadingFlow, _tagsErrorFlow) { list, isLoading, error ->
+        TagsListState(data = list, isLoading = isLoading, error = error)
+    }
 
     init {
-        fetchTags(forceRefresh = false)
-        startObservingTagsFlow()
+        updateTags()
     }
 
-    fun fetchTags(forceRefresh: Boolean = true) {
-        _tags.handleOneShotRequest(
-            coroutineScope = viewModelScope,
-            requestFunc = { tagsRepository.fetchAllTags(forceRefresh) },
-            errorConverter = { UiError.NetworkError }
-        )
-    }
-
-    private fun startObservingTagsFlow() {
-        tagsRepository.allTagsFlow
-            .onEach { _tags.set(data = it) }
-            .launchIn(viewModelScope)
+    fun updateTags() {
+        viewModelScope.launch {
+            _tagsIsLoadingFlow.value = true
+            val response = tagsRepository.updateAllTags()
+            response.onFailure {
+                _tagsErrorFlow.value = UiError.NetworkError
+            }
+            _tagsIsLoadingFlow.value = false
+        }
     }
 }
