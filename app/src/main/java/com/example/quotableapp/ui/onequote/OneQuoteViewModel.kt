@@ -5,16 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
-import com.example.quotableapp.data.repository.quotes.QuotesRepository
+import com.example.quotableapp.data.repository.quotes.onequote.OneQuoteRepository
 import com.example.quotableapp.ui.common.UiState
-import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
-import com.example.quotableapp.ui.common.extensions.set
-import com.example.quotableapp.ui.common.formatters.formatToClipboard
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 typealias QuoteUiState = UiState<QuoteUi, OneQuoteViewModel.UiError>
 
 data class QuoteUi(
@@ -24,14 +23,23 @@ data class QuoteUi(
     val authorSlug: String,
     val tags: List<String>,
     val authorPhotoUrl: String? = null
-)
+) {
+    constructor(quote: Quote, authorPhotoUrl: String?) : this(
+        quoteId = quote.id,
+        content = quote.content,
+        authorName = quote.author,
+        authorSlug = quote.authorSlug,
+        tags = quote.tags, authorPhotoUrl = authorPhotoUrl
+    )
+}
 
-fun QuoteUi.formatToClipboard() = "$content; $authorName"
+fun QuoteUi.formatToClipboard(): String = "$content; $authorName"
 
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class OneQuoteViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val quoteRepository: QuotesRepository,
+    private val oneQuoteRepository: OneQuoteRepository,
     private val authorsRepository: AuthorsRepository
 ) : ViewModel() {
 
@@ -57,37 +65,60 @@ class OneQuoteViewModel @Inject constructor(
 
     private val quoteId: String = savedStateHandle[QUOTE_ID]!!
 
-    private val _state: MutableStateFlow<QuoteUiState> = MutableStateFlow(QuoteUiState())
-    val state: StateFlow<QuoteUiState> = _state.asStateFlow()
+    private val _quoteFlow = oneQuoteRepository
+        .getQuoteFlow(quoteId)
+        .onEach { quote -> authorsRepository.updateAuthor(quote.authorSlug) }
+        .stateIn(
+            initialValue = null,
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000)
+        )
+    private val _quoteIsLoadingFlow = MutableStateFlow<Boolean>(false)
+    private val _quoteErrorFlow = MutableStateFlow<UiError?>(null)
+
+    private val _authorPhotoUrlFlow: StateFlow<String?> = _quoteFlow
+        .filterNotNull()
+        .flatMapLatest { quote -> authorsRepository.getAuthorFlow(quote.authorSlug) }
+        .map { author -> author.photoUrl }
+        .stateIn(
+            initialValue = null,
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000)
+        )
+
+    val quoteUiStateFlow: StateFlow<QuoteUiState> = combine(
+        _quoteFlow, _quoteIsLoadingFlow, _quoteErrorFlow, _authorPhotoUrlFlow
+    ) { quote, quoteIsLoading, quoteError, authorPhotoUrl ->
+        QuoteUiState(
+            isLoading = quoteIsLoading, error = quoteError,
+            data = quote?.let { QuoteUi(quote = it, authorPhotoUrl = authorPhotoUrl) }
+        )
+    }.stateIn(
+        initialValue = QuoteUiState(),
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000)
+    )
 
     private val _action: MutableSharedFlow<Action> = MutableSharedFlow()
     val action = _action.asSharedFlow()
 
     init {
-        requestData()
+        updateQuoteUi()
     }
 
-    fun requestData() {
+    fun updateQuoteUi() {
         viewModelScope.launch {
-            _state.set(isLoading = true)
-            val quoteUi = fetchQuote()
-            quoteUi.onSuccess {
-                _state.set(data = it, error = null)
-                val authorRes = authorsRepository.fetchAuthor(it.authorSlug)
-                authorRes.onSuccess { author ->
-                    _state.set(
-                        isLoading = false,
-                        data = _state.value.data!!.copy(authorPhotoUrl = author.photoUrl)
-                    )
-                }
-            }.onFailure {
-                _state.set(error = it, isLoading = false)
+            _quoteIsLoadingFlow.value = true
+            val quoteResponse = oneQuoteRepository.updateQuote(quoteId)
+            quoteResponse.onFailure {
+                _quoteErrorFlow.value = UiError.IOError
             }
+            _quoteIsLoadingFlow.value = false
         }
     }
 
     fun onAuthorClick() {
-        _state.value.data?.authorSlug?.let { authorSlug ->
+        quoteUiStateFlow.value.data?.authorSlug?.let { authorSlug ->
             viewModelScope.launch {
                 _action.emit(Action.Navigation.ToAuthorQuotes(authorSlug))
             }
@@ -100,25 +131,12 @@ class OneQuoteViewModel @Inject constructor(
         }
     }
 
-    fun onCopyClick(): Boolean {
+    fun onCopyClick() {
         viewModelScope.launch {
-            _state.value.data?.let {
+            quoteUiStateFlow.value.data?.let {
                 _action.emit(Action.CopyToClipboard(it.formatToClipboard()))
             }
         }
-        return true
     }
-
-    private suspend fun fetchQuote() = quoteRepository
-        .fetchQuote(quoteId)
-        .map {
-            QuoteUi(
-                quoteId = it.id,
-                content = it.content,
-                authorName = it.author,
-                authorSlug = it.authorSlug,
-                tags = it.tags
-            )
-        }.mapError { UiError.IOError }
 
 }

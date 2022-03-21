@@ -123,6 +123,7 @@ class DashboardViewModel @Inject constructor(
         updateQuotes()
         updateTags()
         updateRandomQuote()
+        // TODO: handle no error case (error state flow should be set to null)
     }
 
     fun updateAuthors() {

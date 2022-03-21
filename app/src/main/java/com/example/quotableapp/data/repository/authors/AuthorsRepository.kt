@@ -13,7 +13,6 @@ import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
-import com.example.quotableapp.data.repository.CacheTimeout
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -23,7 +22,9 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 interface AuthorsRepository {
-    suspend fun fetchAuthor(slug: String): Resource<Author, HttpApiError>
+    suspend fun updateAuthor(slug: String): Resource<Boolean, HttpApiError>
+
+    fun getAuthorFlow(slug: String): Flow<Author>
 
     fun fetchAllAuthors(): Flow<PagingData<Author>>
 
@@ -54,15 +55,27 @@ class DefaultAuthorsRepository @Inject constructor(
             AuthorOriginParams(type = AuthorOriginParams.Type.ALL)
     }
 
-    override suspend fun fetchAuthor(slug: String): Resource<Author, HttpApiError> {
+    override suspend fun updateAuthor(slug: String): Resource<Boolean, HttpApiError> {
         return withContext(coroutineDispatchers.IO) {
-            apiResponseInterpreter { authorsService.fetchAuthor(slug) }
+            val response = apiResponseInterpreter { authorsService.fetchAuthor(slug) }
                 .mapCatching(
                     transformation = { it.results.first() },
                     errorInterpreter = { HttpApiError.OtherError(it) })
-                .map { authorConverters.toDomain(it) }
+            response.fold(
+                onSuccess = { authorDTO ->
+                    authorsDao.addAuthors(listOf(authorConverters.toDb(authorDTO)))
+                    Resource.success(true)
+                },
+                onFailure = { Resource.failure(it) }
+            )
         }
     }
+
+    override fun getAuthorFlow(slug: String): Flow<Author> = authorsDao
+        .getAuthorFlow(slug)
+        .distinctUntilChanged()
+        .filterNotNull()
+        .map(authorConverters::toDomain)
 
     override fun fetchAllAuthors(): Flow<PagingData<Author>> {
         val remoteMediator = authorsRemoteMediatorFactory.create(

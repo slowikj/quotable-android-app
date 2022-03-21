@@ -8,6 +8,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AuthorsDao {
 
+    @Query(
+        "SELECT * from authors WHERE slug = :slug"
+    )
+    fun getAuthorFlow(slug: String): Flow<AuthorEntity>
+
     @Transaction
     @Query(
         "SELECT authors.* FROM (" +

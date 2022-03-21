@@ -50,7 +50,7 @@ class AuthorFragment : Fragment() {
         handleNavigationFlow()
         setupViewPager()
         binding.dataLoadHandlerToolbar.btnRetry.setOnClickListener {
-            viewModel.onAuthorRefresh()
+            viewModel.updateAuthor()
         }
     }
 

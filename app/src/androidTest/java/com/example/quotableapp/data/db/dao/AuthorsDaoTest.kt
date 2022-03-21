@@ -309,4 +309,28 @@ class AuthorsDaoTest {
             )
 
         }
+
+    // ONE AUTHOR -----------------------------------
+    @Test
+    fun when_addedOneAuthor_then_ReturnFlowWithThisAuthor() = runBlocking {
+        // ARRANGE
+        val authorEntity = AuthorEntity(
+            slug = "123",
+            link = "",
+            bio = "",
+            description = "",
+            name = "asd",
+            quoteCount = 0,
+            dateAdded = "",
+            dateModified = ""
+        )
+
+        // ACT
+        authorsDao.addAuthors(listOf(authorEntity))
+
+        // ASSERT
+        authorsDao.getAuthorFlow(authorEntity.slug).test {
+            assertThat(awaitItem()).isEqualTo(authorEntity)
+        }
+    }
 }

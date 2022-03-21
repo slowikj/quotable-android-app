@@ -21,8 +21,8 @@ import com.example.quotableapp.databinding.FragmentDashboardBinding
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.extensions.handle
 import com.example.quotableapp.ui.dashboard.adapters.AuthorsDashboardAdapter
-import com.example.quotableapp.ui.dashboard.adapters.QuotesDashboardAdapter
 import com.example.quotableapp.ui.dashboard.adapters.DashboardTagsAdapter
+import com.example.quotableapp.ui.dashboard.adapters.QuotesDashboardAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
