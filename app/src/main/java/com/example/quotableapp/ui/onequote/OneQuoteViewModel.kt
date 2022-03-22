@@ -109,10 +109,8 @@ class OneQuoteViewModel @Inject constructor(
     fun updateQuoteUi() {
         viewModelScope.launch {
             _quoteIsLoadingFlow.value = true
-            val quoteResponse = oneQuoteRepository.updateQuote(quoteId)
-            quoteResponse.onFailure {
-                _quoteErrorFlow.value = UiError.IOError
-            }
+            val response = oneQuoteRepository.updateQuote(quoteId)
+            _quoteErrorFlow.value = response.exceptionOrNull()?.let { UiError.IOError }
             _quoteIsLoadingFlow.value = false
         }
     }

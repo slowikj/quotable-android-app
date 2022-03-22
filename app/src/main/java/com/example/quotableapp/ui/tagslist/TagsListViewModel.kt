@@ -49,9 +49,7 @@ class TagsListViewModel @Inject constructor(
         viewModelScope.launch {
             _tagsIsLoadingFlow.value = true
             val response = tagsRepository.updateAllTags()
-            response.onFailure {
-                _tagsErrorFlow.value = UiError.NetworkError
-            }
+            _tagsErrorFlow.value = response.exceptionOrNull()?.let { UiError.NetworkError }
             _tagsIsLoadingFlow.value = false
         }
     }

@@ -86,9 +86,7 @@ class AuthorViewModel @Inject constructor(
         viewModelScope.launch {
             _authorIsLoadingFlow.value = true
             val response = authorsRepository.updateAuthor(authorSlug)
-            response.onFailure {
-                _authorErrorFlow.value = UiError.IOError
-            }
+            _authorErrorFlow.value = response.exceptionOrNull()?.let { UiError.IOError }
             _authorIsLoadingFlow.value = false
         }
     }

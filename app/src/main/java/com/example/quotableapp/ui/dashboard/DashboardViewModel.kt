@@ -123,16 +123,13 @@ class DashboardViewModel @Inject constructor(
         updateQuotes()
         updateTags()
         updateRandomQuote()
-        // TODO: handle no error case (error state flow should be set to null)
     }
 
     fun updateAuthors() {
         viewModelScope.launch {
             _authorsIsLoadingFlow.value = true
             val response = authorsRepository.updateFirstAuthors()
-            response.onFailure {
-                _authorsErrorFlow.value = UiError.NetworkError
-            }
+            _authorsErrorFlow.value = response.exceptionOrNull()?.let { UiError.NetworkError }
             _authorsIsLoadingFlow.value = false
         }
     }
@@ -141,9 +138,7 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             _quotesIsLoadingFlow.value = true
             val response = quotesRepository.fetchFirstQuotes()
-            response.onFailure {
-                _quotesErrorFlow.value = UiError.NetworkError
-            }
+            _quotesErrorFlow.value = response.exceptionOrNull()?.let { UiError.NetworkError }
             _quotesIsLoadingFlow.value = false
         }
     }
@@ -152,9 +147,7 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             _tagsIsLoadingFlow.value = true
             val response = tagsRepository.updateAllTags()
-            response.onFailure {
-                _tagsErrorFlow.value = UiError.NetworkError
-            }
+            _tagsErrorFlow.value = response.exceptionOrNull()?.let { UiError.NetworkError }
             _tagsIsLoadingFlow.value = false
         }
     }
@@ -163,9 +156,7 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             _randomQuoteIsLoadingFlow.value = true
             val response = quotesRepository.updateRandomQuote()
-            response.onFailure {
-                _randomQuoteErrorFlow.value = UiError.NetworkError
-            }
+            _randomQuoteErrorFlow.value = response.exceptionOrNull()?.let { UiError.NetworkError }
             _randomQuoteIsLoadingFlow.value = false
         }
     }
