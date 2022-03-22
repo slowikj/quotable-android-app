@@ -68,7 +68,9 @@ class OneQuoteViewModel @Inject constructor(
 
     private val _quoteFlow = oneQuoteRepository
         .getQuoteFlow(quoteId)
-        .onEach { quote -> authorsRepository.updateAuthor(quote.authorSlug) }
+        .onEach { quote ->
+            viewModelScope.launch { authorsRepository.updateAuthor(quote.authorSlug) }
+        }
         .stateIn(
             initialValue = null,
             scope = viewModelScope,
