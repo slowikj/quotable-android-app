@@ -9,7 +9,7 @@ import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.quotes.onequote.DefaultOneQuoteRepository
 import com.example.quotableapp.data.repository.quotes.onequote.OneQuoteRepository
 import com.example.quotableapp.data.repository.quotes.quoteslist.*
-import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesListDTOResponseToEntitiesConverter
+import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesListDTOResponseToEntitiesConverter
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

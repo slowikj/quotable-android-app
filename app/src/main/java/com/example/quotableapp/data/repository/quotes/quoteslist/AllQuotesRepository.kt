@@ -7,20 +7,17 @@ import androidx.paging.PagingData
 import androidx.room.withTransaction
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.common.mapInnerElements
-import com.example.quotableapp.data.common.Resource
 import com.example.quotableapp.data.converters.quote.QuoteConverters
 import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.dao.QuotesDao
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.QuotesService
-import com.example.quotableapp.data.network.common.HttpApiError
-import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
+import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
-import com.example.quotableapp.data.repository.CacheTimeout
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
-import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesRemoteMediator
-import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesRemoteMediatorFactory
+import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediator
+import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
@@ -31,7 +28,7 @@ import javax.inject.Inject
 interface AllQuotesRepository {
     fun fetchAllQuotes(searchPhrase: String?): Flow<PagingData<Quote>>
 
-    suspend fun fetchFirstQuotes(): Resource<Boolean, HttpApiError>
+    suspend fun fetchFirstQuotes(): Result<Unit>
 
     val firstQuotesFlow: Flow<List<Quote>>
 }
@@ -42,10 +39,18 @@ class DefaultAllQuotesRepository @Inject constructor(
     private val quotableDatabase: QuotableDatabase,
     private val pagingConfig: PagingConfig,
     private val quotesConverters: QuoteConverters,
-    private val apiResponseInterpreter: QuotableApiResponseInterpreter,
+    private val apiResponseInterpreter: ApiResponseInterpreter,
     private val quotesService: QuotesService,
     private val coroutineDispatchers: CoroutineDispatchers
 ) : AllQuotesRepository {
+
+    companion object {
+        private val firstQuotesParams: QuoteOriginParams = QuoteOriginParams(
+            type = QuoteOriginParams.Type.EXAMPLE_FROM_DASHBOARD
+        )
+
+        private const val FIRST_QUOTES_LIMIT = 10
+    }
 
     private val quotesDao: QuotesDao = quotableDatabase.quotesDao()
 
@@ -60,36 +65,21 @@ class DefaultAllQuotesRepository @Inject constructor(
             .flowOn(coroutineDispatchers.IO)
     }
 
-    companion object {
-        private val firstQuotesParams: QuoteOriginParams = QuoteOriginParams(
-            type = QuoteOriginParams.Type.EXAMPLE_FROM_DASHBOARD
-        )
-
-        private const val FIRST_QUOTES_LIMIT = 10
-    }
-
-    override val firstQuotesFlow: Flow<List<Quote>> = quotesDao.getFirstQuotesSortedById(
-        params = firstQuotesParams,
-        limit = FIRST_QUOTES_LIMIT
-    ).filterNotNull()
+    override val firstQuotesFlow: Flow<List<Quote>> = quotesDao
+        .getFirstQuotesSortedById(
+            params = firstQuotesParams,
+            limit = FIRST_QUOTES_LIMIT
+        ).filterNotNull()
         .map { quotes -> quotes.map(quotesConverters::toDomain) }
+        .flowOn(coroutineDispatchers.IO)
 
-    override suspend fun fetchFirstQuotes(): Resource<Boolean, HttpApiError> {
-        return withContext(coroutineDispatchers.IO) {
-            val apiResponse = apiResponseInterpreter {
-                quotesService.fetchQuotes(
-                    page = 1,
-                    limit = FIRST_QUOTES_LIMIT
-                )
-            }
-            apiResponse.fold(
-                onSuccess = { dto ->
-                    updateDatabaseWithFirstQuotes(dto)
-                    Resource.success(true)
-                },
-                onFailure = { Resource.failure(it) }
+    override suspend fun fetchFirstQuotes(): Result<Unit> = withContext(coroutineDispatchers.IO) {
+        apiResponseInterpreter {
+            quotesService.fetchQuotes(
+                page = 1,
+                limit = FIRST_QUOTES_LIMIT
             )
-        }
+        }.mapCatching { quotesDTO -> updateDatabaseWithFirstQuotes(quotesDTO) }
     }
 
     private fun createAllQuotesRemoteMediator(searchPhrase: String?): QuotesRemoteMediator {
@@ -113,16 +103,18 @@ class DefaultAllQuotesRepository @Inject constructor(
         )
     }
 
-    private suspend fun updateDatabaseWithFirstQuotes(dto: QuotesResponseDTO) {
-        quotableDatabase.withTransaction {
-            quotesDao.insertRemotePageKey(
-                originParams = firstQuotesParams,
-                key = 1
-            )
-            quotesDao.addQuotes(
-                originParams = firstQuotesParams,
-                quotes = dto.results.map(quotesConverters::toDb)
-            )
+    private suspend fun updateDatabaseWithFirstQuotes(dto: QuotesResponseDTO): Unit =
+        withContext(coroutineDispatchers.IO) {
+            quotableDatabase.withTransaction {
+                quotesDao.insertRemotePageKey(
+                    originParams = firstQuotesParams,
+                    key = 1
+                )
+                quotesDao.addQuotes(
+                    originParams = firstQuotesParams,
+                    quotes = dto.results.map(quotesConverters::toDb)
+                )
+            }
         }
-    }
 }
+

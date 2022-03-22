@@ -3,32 +3,27 @@ package com.example.quotableapp.data.repository.authors
 import androidx.paging.*
 import androidx.room.withTransaction
 import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.data.common.Resource
 import com.example.quotableapp.data.converters.author.AuthorConverters
 import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.dao.AuthorsDao
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.AuthorsService
-import com.example.quotableapp.data.network.common.HttpApiError
-import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
+import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 interface AuthorsRepository {
-    suspend fun updateAuthor(slug: String): Resource<Boolean, HttpApiError>
+    suspend fun updateAuthor(slug: String): Result<Unit>
 
     fun getAuthorFlow(slug: String): Flow<Author>
 
     fun fetchAllAuthors(): Flow<PagingData<Author>>
 
-    suspend fun updateFirstAuthors(): Resource<Boolean, HttpApiError>
+    suspend fun updateFirstAuthors(): Result<Unit>
 
     val firstAuthorsFlow: Flow<List<Author>>
 }
@@ -42,7 +37,7 @@ class DefaultAuthorsRepository @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val authorConverters: AuthorConverters,
     private val pagingConfig: PagingConfig,
-    private val apiResponseInterpreter: QuotableApiResponseInterpreter
+    private val apiResponseInterpreter: ApiResponseInterpreter
 ) : AuthorsRepository {
 
     companion object {
@@ -55,19 +50,13 @@ class DefaultAuthorsRepository @Inject constructor(
             AuthorOriginParams(type = AuthorOriginParams.Type.ALL)
     }
 
-    override suspend fun updateAuthor(slug: String): Resource<Boolean, HttpApiError> {
+    override suspend fun updateAuthor(slug: String): Result<Unit> {
         return withContext(coroutineDispatchers.IO) {
-            val response = apiResponseInterpreter { authorsService.fetchAuthor(slug) }
-                .mapCatching(
-                    transformation = { it.results.first() },
-                    errorInterpreter = { HttpApiError.OtherError(it) })
-            response.fold(
-                onSuccess = { authorDTO ->
+            apiResponseInterpreter { authorsService.fetchAuthor(slug) }
+                .mapCatching { it.results.first() }
+                .mapCatching { authorDTO ->
                     authorsDao.addAuthors(listOf(authorConverters.toDb(authorDTO)))
-                    Resource.success(true)
-                },
-                onFailure = { Resource.failure(it) }
-            )
+                }
         }
     }
 
@@ -76,6 +65,7 @@ class DefaultAuthorsRepository @Inject constructor(
         .distinctUntilChanged()
         .filterNotNull()
         .map(authorConverters::toDomain)
+        .flowOn(coroutineDispatchers.IO)
 
     override fun fetchAllAuthors(): Flow<PagingData<Author>> {
         val remoteMediator = authorsRemoteMediatorFactory.create(
@@ -96,25 +86,16 @@ class DefaultAuthorsRepository @Inject constructor(
             }
     }
 
-    override suspend fun updateFirstAuthors(): Resource<Boolean, HttpApiError> {
+    override suspend fun updateFirstAuthors(): Result<Unit> {
         return withContext(coroutineDispatchers.IO) {
-            val apiResponse = apiResponseInterpreter {
+            apiResponseInterpreter {
                 authorsService.fetchAuthors(
                     page = 1,
                     limit = FIRST_AUTHORS_LIMIT,
                     sortBy = AuthorsService.SortByType.QuoteCount,
                     orderType = AuthorsService.OrderType.Desc
                 )
-            }
-            apiResponse.fold(
-                onSuccess = {
-                    addFirstQuotesToDatabase(it)
-                    Resource.success(true)
-                },
-                onFailure = {
-                    Resource.failure(it)
-                }
-            )
+            }.mapCatching { authorsResponseDTO -> addFirstQuotesToDatabase(authorsResponseDTO) }
         }
     }
 
@@ -126,18 +107,19 @@ class DefaultAuthorsRepository @Inject constructor(
         .distinctUntilChanged()
         .filterNotNull()
         .map { list -> list.map(authorConverters::toDomain) }
+        .flowOn(coroutineDispatchers.IO)
 
-    private suspend fun addFirstQuotesToDatabase(responseDTO: AuthorsResponseDTO) {
-        quotableDatabase.withTransaction {
-            authorsDao.addRemoteKey(
-                originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
-                pageKey = 0
-            )
-            authorsDao.add(
-                entries = responseDTO.results.map(authorConverters::toDb),
-                originParams = FIRST_AUTHORS_ORIGIN_PARAMS
-            )
+    private suspend fun addFirstQuotesToDatabase(responseDTO: AuthorsResponseDTO): Unit =
+        withContext(coroutineDispatchers.IO) {
+            quotableDatabase.withTransaction {
+                authorsDao.addRemoteKey(
+                    originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
+                    pageKey = 0
+                )
+                authorsDao.add(
+                    entries = responseDTO.results.map(authorConverters::toDb),
+                    originParams = FIRST_AUTHORS_ORIGIN_PARAMS
+                )
+            }
         }
-    }
-
 }

@@ -4,8 +4,8 @@ import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.QuotesService
 import com.example.quotableapp.data.network.TagsService
+import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.common.DefaultQuotableApiResponseInterpreter
-import com.example.quotableapp.data.network.common.QuotableApiResponseInterpreter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -61,7 +61,7 @@ object NetworkModule {
             .build()
 
     @Provides
-    fun provideHttpResultInterpreter(coroutineDispatchers: CoroutineDispatchers): QuotableApiResponseInterpreter =
+    fun provideHttpResultInterpreter(coroutineDispatchers: CoroutineDispatchers): ApiResponseInterpreter =
         DefaultQuotableApiResponseInterpreter(coroutineDispatchers)
 }
 
