@@ -16,13 +16,13 @@ class UiStateManager<V, E>(
     private val sourceDataFlow: Flow<V>,
     private val initIsLoading: Boolean = false,
     private val initError: E? = null,
-    private val initData: V? = null,
+    private val initData: V? = null
+) {
     private val initState: UiState<V, E> = UiState(
         data = initData,
         isLoading = initIsLoading,
         error = initError
     )
-) {
 
     val dataFlow: StateFlow<V?> = sourceDataFlow
         .stateIn(
