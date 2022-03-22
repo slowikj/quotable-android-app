@@ -1,5 +1,6 @@
 package com.example.quotableapp.data.network.di
 
+import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.QuotesService
 import com.example.quotableapp.data.network.TagsService
@@ -60,7 +61,7 @@ object NetworkModule {
             .build()
 
     @Provides
-    fun provideHttpResultInterpreter(): QuotableApiResponseInterpreter =
-        DefaultQuotableApiResponseInterpreter()
+    fun provideHttpResultInterpreter(coroutineDispatchers: CoroutineDispatchers): QuotableApiResponseInterpreter =
+        DefaultQuotableApiResponseInterpreter(coroutineDispatchers)
 }
 

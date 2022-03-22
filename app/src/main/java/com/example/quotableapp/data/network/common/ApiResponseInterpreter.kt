@@ -1,10 +1,13 @@
 package com.example.quotableapp.data.network.common
 
+import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.common.Resource
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException
 import java.util.concurrent.CancellationException
+import javax.inject.Inject
 
 interface ApiResponseInterpreter<ErrorType : Throwable> {
 
@@ -13,19 +16,22 @@ interface ApiResponseInterpreter<ErrorType : Throwable> {
 
 interface QuotableApiResponseInterpreter : ApiResponseInterpreter<HttpApiError>
 
-class DefaultQuotableApiResponseInterpreter : QuotableApiResponseInterpreter {
+class DefaultQuotableApiResponseInterpreter @Inject constructor(private val coroutineDispatchers: CoroutineDispatchers) :
+    QuotableApiResponseInterpreter {
 
     override suspend fun <DTO> invoke(apiCall: suspend () -> Response<DTO>): Resource<DTO, HttpApiError> =
-        try {
-            getInterpretedApiResult(apiCall())
-        } catch (e: IOException) {
-            Resource.Failure(HttpApiError.ConnectionError)
-        } catch (e: HttpException) {
-            interpretErrorCode(e.code())
-        } catch (e: CancellationException) {
-            Resource.Failure(HttpApiError.CancelledRequest)
-        } catch (e: Throwable) {
-            Resource.Failure(HttpApiError.OtherError(e))
+        withContext(coroutineDispatchers.Default) {
+            try {
+                getInterpretedApiResult(apiCall())
+            } catch (e: IOException) {
+                Resource.Failure(HttpApiError.ConnectionError)
+            } catch (e: HttpException) {
+                interpretErrorCode(e.code())
+            } catch (e: CancellationException) {
+                Resource.Failure(HttpApiError.CancelledRequest)
+            } catch (e: Throwable) {
+                Resource.Failure(HttpApiError.OtherError(e))
+            }
         }
 
     private fun <DTO> getInterpretedApiResult(response: Response<DTO>): Resource<DTO, HttpApiError> =
