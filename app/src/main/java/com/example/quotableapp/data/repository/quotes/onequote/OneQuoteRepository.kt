@@ -21,7 +21,7 @@ interface OneQuoteRepository {
 
     suspend fun updateRandomQuote(): Result<Unit>
 
-    val randomQuoteFlow: Flow<Quote>
+    val randomQuote: Flow<Quote>
 }
 
 class DefaultOneQuoteRepository @Inject constructor(
@@ -39,7 +39,7 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     private val quotesDao: QuotesDao = quotableDatabase.quotesDao()
 
-    override val randomQuoteFlow: Flow<Quote> = quotesDao
+    override val randomQuote: Flow<Quote> = quotesDao
         .getFirstQuotesSortedById(
             params = randomQuoteOriginParams,
             limit = 1

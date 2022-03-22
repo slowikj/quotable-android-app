@@ -23,18 +23,18 @@ class TagsListViewModel @Inject constructor(
         object NetworkError : UiError()
     }
 
-    private val tagsListUiStateManager = UiStateManager<List<Tag>, UiError>(
+    private val tagsUiStateManager = UiStateManager<List<Tag>, UiError>(
         coroutineScope = viewModelScope,
         sourceDataFlow = tagsRepository.allTagsFlow
     )
-    val tagsListFlow: StateFlow<TagsListState> = tagsListUiStateManager.stateFlow
+    val tagsUiState: StateFlow<TagsListState> = tagsUiStateManager.stateFlow
 
     init {
         updateTags()
     }
 
     fun updateTags() {
-        tagsListUiStateManager.updateData(
+        tagsUiStateManager.updateData(
             requestFunc = { tagsRepository.updateAllTags() },
             errorTransformer = { UiError.NetworkError }
         )

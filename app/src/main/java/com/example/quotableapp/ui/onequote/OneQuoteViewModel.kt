@@ -86,7 +86,7 @@ class OneQuoteViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000)
         )
 
-    val quoteUiStateFlow: StateFlow<QuoteUiState> = combine(
+    val quoteState: StateFlow<QuoteUiState> = combine(
         _quoteFlow, _quoteIsLoadingFlow, _quoteErrorFlow, _authorPhotoUrlFlow
     ) { quote, quoteIsLoading, quoteError, authorPhotoUrl ->
         QuoteUiState(
@@ -116,7 +116,7 @@ class OneQuoteViewModel @Inject constructor(
     }
 
     fun onAuthorClick() {
-        quoteUiStateFlow.value.data?.authorSlug?.let { authorSlug ->
+        quoteState.value.data?.authorSlug?.let { authorSlug ->
             viewModelScope.launch {
                 _action.emit(Action.Navigation.ToAuthorQuotes(authorSlug))
             }
@@ -131,7 +131,7 @@ class OneQuoteViewModel @Inject constructor(
 
     fun onCopyClick() {
         viewModelScope.launch {
-            quoteUiStateFlow.value.data?.let {
+            quoteState.value.data?.let {
                 _action.emit(Action.CopyToClipboard(it.formatToClipboard()))
             }
         }

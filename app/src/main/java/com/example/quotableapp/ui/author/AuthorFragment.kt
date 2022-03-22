@@ -96,7 +96,7 @@ class AuthorFragment : Fragment() {
     private fun handleToolbar() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel
-                .authorFlow
+                .authorState
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .collectLatest {
                     binding.dataLoadHandlerToolbar.handle(it)

@@ -68,7 +68,7 @@ class TagsListFragment : Fragment() {
     }
 
     private suspend fun handleTagsList() {
-        viewModel.tagsListFlow.collectLatest { state ->
+        viewModel.tagsUiState.collectLatest { state ->
             tagsAdapter.submitList(state.data)
             with(binding) {
                 binding.dataLoadHandler.handle(state)

@@ -18,9 +18,9 @@ interface TagsRepository {
 
     val allTagsFlow: Flow<List<Tag>>
 
-    suspend fun updateFirstTags(): Result<Unit>
+    suspend fun updateExemplaryTags(): Result<Unit>
 
-    val firstTags: Flow<List<Tag>>
+    val exemplaryTags: Flow<List<Tag>>
 }
 
 class DefaultTagRepository @Inject constructor(
@@ -58,7 +58,7 @@ class DefaultTagRepository @Inject constructor(
         .map { list -> list.map(tagConverters::toModel) }
         .flowOn(coroutineDispatchers.IO)
 
-    override suspend fun updateFirstTags(): Result<Unit> {
+    override suspend fun updateExemplaryTags(): Result<Unit> {
         return withContext(coroutineDispatchers.Default) {
             fetchTagsDTO()
                 .map { it.take(TAGS_FIRST_LIMIT) }
@@ -71,7 +71,7 @@ class DefaultTagRepository @Inject constructor(
         }
     }
 
-    override val firstTags: Flow<List<Tag>> = tagsDao
+    override val exemplaryTags: Flow<List<Tag>> = tagsDao
         .getTags(TAG_ORIGIN_TYPE_FIRST, limit = TAGS_FIRST_LIMIT)
         .distinctUntilChanged()
         .filterNotNull()

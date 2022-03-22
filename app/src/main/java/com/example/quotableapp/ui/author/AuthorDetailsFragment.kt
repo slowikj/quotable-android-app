@@ -43,7 +43,7 @@ class AuthorDetailsFragment : Fragment() {
         }
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.authorFlow.collectLatest {
+                viewModel.authorState.collectLatest {
                     binding.dataLoadHandler.handle(it)
                 }
             }

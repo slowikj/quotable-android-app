@@ -64,7 +64,7 @@ class AuthorViewModel @Inject constructor(
         coroutineScope = viewModelScope,
         sourceDataFlow = authorsRepository.getAuthorFlow(authorSlug)
     )
-    val authorFlow: StateFlow<AuthorUiState> = authorUiStateManager.stateFlow
+    val authorState: StateFlow<AuthorUiState> = authorUiStateManager.stateFlow
 
     init {
         updateAuthor()

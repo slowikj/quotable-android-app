@@ -64,7 +64,7 @@ class OneQuoteFragment : Fragment() {
     private fun setObservingViewModel() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { viewModel.quoteUiStateFlow.collectLatest { handle(it) } }
+                launch { viewModel.quoteState.collectLatest { handle(it) } }
                 launch { viewModel.action.collect { handle(it) } }
             }
         }

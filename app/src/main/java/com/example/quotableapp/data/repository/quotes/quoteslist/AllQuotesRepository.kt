@@ -28,9 +28,9 @@ import javax.inject.Inject
 interface AllQuotesRepository {
     fun fetchAllQuotes(searchPhrase: String?): Flow<PagingData<Quote>>
 
-    suspend fun updateFirstQuotes(): Result<Unit>
+    suspend fun updateExemplaryQuotes(): Result<Unit>
 
-    val firstQuotesFlow: Flow<List<Quote>>
+    val exemplaryQuotes: Flow<List<Quote>>
 }
 
 @ExperimentalPagingApi
@@ -65,7 +65,7 @@ class DefaultAllQuotesRepository @Inject constructor(
             .flowOn(coroutineDispatchers.IO)
     }
 
-    override val firstQuotesFlow: Flow<List<Quote>> = quotesDao
+    override val exemplaryQuotes: Flow<List<Quote>> = quotesDao
         .getFirstQuotesSortedById(
             params = firstQuotesParams,
             limit = FIRST_QUOTES_LIMIT
@@ -73,7 +73,7 @@ class DefaultAllQuotesRepository @Inject constructor(
         .map { quotes -> quotes.map(quotesConverters::toDomain) }
         .flowOn(coroutineDispatchers.IO)
 
-    override suspend fun updateFirstQuotes(): Result<Unit> = withContext(coroutineDispatchers.IO) {
+    override suspend fun updateExemplaryQuotes(): Result<Unit> = withContext(coroutineDispatchers.IO) {
         apiResponseInterpreter {
             quotesService.fetchQuotes(
                 page = 1,

@@ -35,31 +35,29 @@ class DashboardViewModel @Inject constructor(
         object NetworkError : UiError()
     }
 
-    private val authorsListUiStateManager = UiStateManager<List<Author>, UiError>(
+    private val exemplaryAuthorsUiStateManager = UiStateManager<List<Author>, UiError>(
         coroutineScope = viewModelScope,
         sourceDataFlow = authorsRepository.firstAuthorsFlow
     )
-    val authorsFlow: StateFlow<AuthorListState> = authorsListUiStateManager.stateFlow
+    val exemplaryAuthorsState: StateFlow<AuthorListState> = exemplaryAuthorsUiStateManager.stateFlow
 
-    private val quotesListUiStateManager = UiStateManager<List<Quote>, UiError>(
+    private val exemplaryQuotesUiStateManager = UiStateManager<List<Quote>, UiError>(
         coroutineScope = viewModelScope,
-        sourceDataFlow = quotesRepository.firstQuotesFlow
+        sourceDataFlow = quotesRepository.exemplaryQuotes
     )
-    val quotesFlow: StateFlow<QuotesListState> = quotesListUiStateManager.stateFlow
+    val exemplaryQuotesState: StateFlow<QuotesListState> = exemplaryQuotesUiStateManager.stateFlow
 
-
-    private val tagsListUiStateManager = UiStateManager<List<Tag>, UiError>(
+    private val exemplaryTagsUiStateManager = UiStateManager<List<Tag>, UiError>(
         coroutineScope = viewModelScope,
         sourceDataFlow = tagsRepository.allTagsFlow
     )
-    val tagsFlow: StateFlow<TagsListState> = tagsListUiStateManager.stateFlow
-
+    val exemplaryTagsState: StateFlow<TagsListState> = exemplaryTagsUiStateManager.stateFlow
 
     private val randomQuoteUiStateManager = UiStateManager<Quote, UiError>(
         coroutineScope = viewModelScope,
-        sourceDataFlow = quotesRepository.randomQuoteFlow
+        sourceDataFlow = quotesRepository.randomQuote
     )
-    val randomQuoteFlow: StateFlow<RandomQuoteState> = randomQuoteUiStateManager.stateFlow
+    val randomQuote: StateFlow<RandomQuoteState> = randomQuoteUiStateManager.stateFlow
 
     init {
         refreshAll()
@@ -73,22 +71,22 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun updateAuthors() {
-        authorsListUiStateManager.updateData(
+        exemplaryAuthorsUiStateManager.updateData(
             requestFunc = { authorsRepository.updateFirstAuthors() },
             errorTransformer = { UiError.NetworkError }
         )
     }
 
     fun updateQuotes() {
-        quotesListUiStateManager.updateData(
-            requestFunc = { quotesRepository.updateFirstQuotes() },
+        exemplaryQuotesUiStateManager.updateData(
+            requestFunc = { quotesRepository.updateExemplaryQuotes() },
             errorTransformer = { UiError.NetworkError }
         )
     }
 
     fun updateTags() {
-        tagsListUiStateManager.updateData(
-            requestFunc = { tagsRepository.updateFirstTags() },
+        exemplaryTagsUiStateManager.updateData(
+            requestFunc = { tagsRepository.updateExemplaryTags() },
             errorTransformer = { UiError.NetworkError }
         )
     }
