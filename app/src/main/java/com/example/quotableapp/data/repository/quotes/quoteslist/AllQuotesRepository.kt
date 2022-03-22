@@ -28,7 +28,7 @@ import javax.inject.Inject
 interface AllQuotesRepository {
     fun fetchAllQuotes(searchPhrase: String?): Flow<PagingData<Quote>>
 
-    suspend fun fetchFirstQuotes(): Result<Unit>
+    suspend fun updateFirstQuotes(): Result<Unit>
 
     val firstQuotesFlow: Flow<List<Quote>>
 }
@@ -73,7 +73,7 @@ class DefaultAllQuotesRepository @Inject constructor(
         .map { quotes -> quotes.map(quotesConverters::toDomain) }
         .flowOn(coroutineDispatchers.IO)
 
-    override suspend fun fetchFirstQuotes(): Result<Unit> = withContext(coroutineDispatchers.IO) {
+    override suspend fun updateFirstQuotes(): Result<Unit> = withContext(coroutineDispatchers.IO) {
         apiResponseInterpreter {
             quotesService.fetchQuotes(
                 page = 1,

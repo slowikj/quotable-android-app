@@ -24,8 +24,8 @@ class AuthorsListViewModel
 ) : ViewModel() {
 
     val authors: Flow<PagingData<Author>> =
-        authorsRepository.fetchAllAuthors()
-            .flowOn(dispatchers.IO)
+        authorsRepository
+            .fetchAllAuthors()
             .cachedIn(viewModelScope)
 
 }

@@ -6,12 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
+import com.example.quotableapp.ui.common.UiStateManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 typealias TagsListState = UiState<List<Tag>, TagsListViewModel.UiError>
@@ -26,31 +23,20 @@ class TagsListViewModel @Inject constructor(
         object NetworkError : UiError()
     }
 
-    private val _tagsErrorFlow = MutableStateFlow<UiError?>(null)
-    private val _tagsIsLoadingFlow = MutableStateFlow<Boolean>(false)
-    private val _tagsListFlow = tagsRepository
-        .allTagsFlow
-        .stateIn(
-            initialValue = null,
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000)
-        )
-    val tags = combine(
-        _tagsListFlow, _tagsIsLoadingFlow, _tagsErrorFlow
-    ) { list, isLoading, error ->
-        TagsListState(data = list, isLoading = isLoading, error = error)
-    }
+    private val tagsListUiStateManager = UiStateManager<List<Tag>, UiError>(
+        coroutineScope = viewModelScope,
+        sourceDataFlow = tagsRepository.allTagsFlow
+    )
+    val tagsListFlow: StateFlow<TagsListState> = tagsListUiStateManager.stateFlow
 
     init {
         updateTags()
     }
 
     fun updateTags() {
-        viewModelScope.launch {
-            _tagsIsLoadingFlow.value = true
-            val response = tagsRepository.updateAllTags()
-            _tagsErrorFlow.value = response.exceptionOrNull()?.let { UiError.NetworkError }
-            _tagsIsLoadingFlow.value = false
-        }
+        tagsListUiStateManager.updateData(
+            requestFunc = { tagsRepository.updateAllTags() },
+            errorTransformer = { UiError.NetworkError }
+        )
     }
 }

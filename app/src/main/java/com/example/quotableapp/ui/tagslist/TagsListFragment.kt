@@ -26,7 +26,7 @@ class TagsListFragment : Fragment() {
 
     companion object {
         private const val ITEMS_SPAN_LANDSCAPE = 4
-        private const val ITEMS_SPAN_PORTRAIT  = 2
+        private const val ITEMS_SPAN_PORTRAIT = 2
     }
 
     private lateinit var binding: FragmentTagsListBinding
@@ -68,7 +68,7 @@ class TagsListFragment : Fragment() {
     }
 
     private suspend fun handleTagsList() {
-        viewModel.tags.collectLatest { state ->
+        viewModel.tagsListFlow.collectLatest { state ->
             tagsAdapter.submitList(state.data)
             with(binding) {
                 binding.dataLoadHandler.handle(state)

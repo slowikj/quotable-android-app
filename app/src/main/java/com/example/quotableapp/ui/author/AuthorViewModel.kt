@@ -12,6 +12,7 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.ui.common.UiState
+import com.example.quotableapp.ui.common.UiStateManager
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -19,7 +20,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
-typealias AuthorDetailsUiState = UiState<Author, AuthorViewModel.UiError>
+typealias AuthorUiState = UiState<Author, AuthorViewModel.UiError>
 
 @ExperimentalPagingApi
 @HiltViewModel
@@ -59,36 +60,21 @@ class AuthorViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(5000)
             )
 
-    private val _authorFlow: StateFlow<Author?> = authorsRepository
-        .getAuthorFlow(authorSlug)
-        .stateIn(
-            initialValue = null,
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000)
-        )
-    private val _authorIsLoadingFlow = MutableStateFlow<Boolean>(false)
-    private val _authorErrorFlow = MutableStateFlow<UiError?>(null)
-    val author: StateFlow<AuthorDetailsUiState> = combine(
-        _authorFlow, _authorIsLoadingFlow, _authorErrorFlow
-    ) { author, isLoading, error ->
-        AuthorDetailsUiState(data = author, isLoading = isLoading, error = error)
-    }.stateIn(
-        initialValue = AuthorDetailsUiState(),
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000)
+    private val authorUiStateManager = UiStateManager<Author, UiError>(
+        coroutineScope = viewModelScope,
+        sourceDataFlow = authorsRepository.getAuthorFlow(authorSlug)
     )
+    val authorFlow: StateFlow<AuthorUiState> = authorUiStateManager.stateFlow
 
     init {
         updateAuthor()
     }
 
     fun updateAuthor() {
-        viewModelScope.launch {
-            _authorIsLoadingFlow.value = true
-            val response = authorsRepository.updateAuthor(authorSlug)
-            _authorErrorFlow.value = response.exceptionOrNull()?.let { UiError.IOError }
-            _authorIsLoadingFlow.value = false
-        }
+        authorUiStateManager.updateData(
+            requestFunc = { authorsRepository.updateAuthor(authorSlug) },
+            errorTransformer = { UiError.IOError }
+        )
     }
 
     fun onTagClick(tag: String) {

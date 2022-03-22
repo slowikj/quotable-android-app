@@ -62,10 +62,10 @@ class DashboardFragment : Fragment() {
         setupCategories()
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { viewModel.quotes.collectLatest { handle(it) } }
-                launch { viewModel.authors.collectLatest { handle(it) } }
-                launch { viewModel.tags.collectLatest { handle(it) } }
-                launch { viewModel.randomQuote.collectLatest { handle(it) } }
+                launch { viewModel.quotesFlow.collectLatest { handle(it) } }
+                launch { viewModel.authorsFlow.collectLatest { handle(it) } }
+                launch { viewModel.tagsFlow.collectLatest { handle(it) } }
+                launch { viewModel.randomQuoteFlow.collectLatest { handle(it) } }
             }
         }
         binding.swipeToRefresh.setOnRefreshListener {
@@ -147,7 +147,7 @@ class DashboardFragment : Fragment() {
                 viewModel.updateRandomQuote()
             }
             root.setOnClickListener {
-                viewModel.randomQuote.value.data?.let { showQuote(it.id) }
+                viewModel.randomQuoteFlow.value.data?.let { showQuote(it.id) }
             }
             btnRefresh.setOnClickListener {
                 viewModel.updateRandomQuote()
