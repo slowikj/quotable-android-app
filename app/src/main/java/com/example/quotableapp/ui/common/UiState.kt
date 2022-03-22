@@ -1,5 +1,6 @@
 package com.example.quotableapp.ui.common
 
+import com.example.quotableapp.ui.common.extensions.defaultSharingStarted
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ class UiStateManager<V, E>(
         .stateIn(
             initialValue = initData,
             scope = coroutineScope,
-            started = SharingStarted.WhileSubscribed(5000)
+            started = defaultSharingStarted
         )
 
     val isLoadingFlow = MutableStateFlow<Boolean>(initIsLoading)
@@ -41,7 +42,7 @@ class UiStateManager<V, E>(
         }.stateIn(
             initialValue = initState,
             scope = coroutineScope,
-            started = SharingStarted.WhileSubscribed(5000)
+            started = defaultSharingStarted
         )
 
     fun updateData(

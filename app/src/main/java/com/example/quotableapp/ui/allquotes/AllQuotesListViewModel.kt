@@ -7,6 +7,7 @@ import androidx.paging.cachedIn
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
+import com.example.quotableapp.ui.common.extensions.defaultSharingStarted
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,7 +46,7 @@ class AllQuotesListViewModel @Inject constructor(
             .stateIn(
                 initialValue = null,
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000)
+                started = defaultSharingStarted
             )
 
     fun onSearchQueryChanged(query: String) {

@@ -13,6 +13,7 @@ import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.UiStateManager
+import com.example.quotableapp.ui.common.extensions.defaultSharingStarted
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -57,7 +58,7 @@ class AuthorViewModel @Inject constructor(
             .stateIn(
                 initialValue = null,
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000)
+                started = defaultSharingStarted
             )
 
     private val authorUiStateManager = UiStateManager<Author, UiError>(

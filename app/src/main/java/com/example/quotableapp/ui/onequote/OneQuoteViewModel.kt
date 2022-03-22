@@ -7,6 +7,7 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.onequote.OneQuoteRepository
 import com.example.quotableapp.ui.common.UiState
+import com.example.quotableapp.ui.common.extensions.defaultSharingStarted
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -71,7 +72,7 @@ class OneQuoteViewModel @Inject constructor(
         .stateIn(
             initialValue = null,
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000)
+            started = defaultSharingStarted
         )
     private val _quoteIsLoadingFlow = MutableStateFlow<Boolean>(false)
     private val _quoteErrorFlow = MutableStateFlow<UiError?>(null)
@@ -83,7 +84,7 @@ class OneQuoteViewModel @Inject constructor(
         .stateIn(
             initialValue = null,
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000)
+            started = defaultSharingStarted
         )
 
     val quoteState: StateFlow<QuoteUiState> = combine(
@@ -96,7 +97,7 @@ class OneQuoteViewModel @Inject constructor(
     }.stateIn(
         initialValue = QuoteUiState(),
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000)
+        started = defaultSharingStarted
     )
 
     private val _action: MutableSharedFlow<Action> = MutableSharedFlow()
