@@ -20,7 +20,7 @@ class TagsListViewModel @Inject constructor(
 ) : ViewModel() {
 
     sealed class UiError : Throwable() {
-        object NetworkError : UiError()
+        object IOError : UiError()
     }
 
     private val tagsUiStateManager = UiStateManager<List<Tag>, UiError>(
@@ -36,7 +36,7 @@ class TagsListViewModel @Inject constructor(
     fun updateTags() {
         tagsUiStateManager.updateData(
             requestFunc = { tagsRepository.updateAllTags() },
-            errorTransformer = { UiError.NetworkError }
+            errorTransformer = { UiError.IOError }
         )
     }
 }

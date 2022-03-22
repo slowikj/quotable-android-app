@@ -32,7 +32,7 @@ class DashboardViewModel @Inject constructor(
 ) : ViewModel() {
 
     sealed class UiError : Throwable() {
-        object NetworkError : UiError()
+        object IOError : UiError()
     }
 
     private val exemplaryAuthorsUiStateManager = UiStateManager<List<Author>, UiError>(
@@ -73,28 +73,28 @@ class DashboardViewModel @Inject constructor(
     fun updateAuthors() {
         exemplaryAuthorsUiStateManager.updateData(
             requestFunc = { authorsRepository.updateFirstAuthors() },
-            errorTransformer = { UiError.NetworkError }
+            errorTransformer = { UiError.IOError }
         )
     }
 
     fun updateQuotes() {
         exemplaryQuotesUiStateManager.updateData(
             requestFunc = { quotesRepository.updateExemplaryQuotes() },
-            errorTransformer = { UiError.NetworkError }
+            errorTransformer = { UiError.IOError }
         )
     }
 
     fun updateTags() {
         exemplaryTagsUiStateManager.updateData(
             requestFunc = { tagsRepository.updateExemplaryTags() },
-            errorTransformer = { UiError.NetworkError }
+            errorTransformer = { UiError.IOError }
         )
     }
 
     fun updateRandomQuote() {
         randomQuoteUiStateManager.updateData(
             requestFunc = { quotesRepository.updateRandomQuote() },
-            errorTransformer = { UiError.NetworkError }
+            errorTransformer = { UiError.IOError }
         )
     }
 
