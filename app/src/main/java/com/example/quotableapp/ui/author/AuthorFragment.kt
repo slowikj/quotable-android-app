@@ -50,7 +50,7 @@ class AuthorFragment : Fragment() {
         handleNavigationFlow()
         setupViewPager()
         binding.dataLoadHandlerToolbar.btnRetry.setOnClickListener {
-            viewModel.onAuthorRefresh()
+            viewModel.updateAuthor()
         }
     }
 
@@ -96,7 +96,7 @@ class AuthorFragment : Fragment() {
     private fun handleToolbar() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel
-                .author
+                .authorState
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .collectLatest {
                     binding.dataLoadHandlerToolbar.handle(it)

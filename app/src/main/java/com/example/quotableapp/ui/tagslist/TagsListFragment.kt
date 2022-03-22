@@ -26,7 +26,7 @@ class TagsListFragment : Fragment() {
 
     companion object {
         private const val ITEMS_SPAN_LANDSCAPE = 4
-        private const val ITEMS_SPAN_PORTRAIT  = 2
+        private const val ITEMS_SPAN_PORTRAIT = 2
     }
 
     private lateinit var binding: FragmentTagsListBinding
@@ -48,7 +48,7 @@ class TagsListFragment : Fragment() {
                 context,
                 if (requireContext().isLandscapeMode) ITEMS_SPAN_LANDSCAPE else ITEMS_SPAN_PORTRAIT
             )
-            dataLoadHandler.btnRetry.setOnClickListener { viewModel.fetchTags() }
+            dataLoadHandler.btnRetry.setOnClickListener { viewModel.updateTags() }
         }
         return binding.root
     }
@@ -68,7 +68,7 @@ class TagsListFragment : Fragment() {
     }
 
     private suspend fun handleTagsList() {
-        viewModel.tags.collectLatest { state ->
+        viewModel.tagsUiState.collectLatest { state ->
             tagsAdapter.submitList(state.data)
             with(binding) {
                 binding.dataLoadHandler.handle(state)

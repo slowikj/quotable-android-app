@@ -12,8 +12,8 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.QuotesService
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
-import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesRemoteMediator
-import com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator.QuotesRemoteMediatorFactory
+import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediator
+import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject

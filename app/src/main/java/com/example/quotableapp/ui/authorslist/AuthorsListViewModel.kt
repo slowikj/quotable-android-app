@@ -11,7 +11,6 @@ import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,8 +23,8 @@ class AuthorsListViewModel
 ) : ViewModel() {
 
     val authors: Flow<PagingData<Author>> =
-        authorsRepository.fetchAllAuthors()
-            .flowOn(dispatchers.IO)
+        authorsRepository
+            .fetchAllAuthors()
             .cachedIn(viewModelScope)
 
 }

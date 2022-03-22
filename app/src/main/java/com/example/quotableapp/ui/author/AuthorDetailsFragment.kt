@@ -39,11 +39,11 @@ class AuthorDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.dataLoadHandler.btnRetry.setOnClickListener {
-            viewModel.onAuthorRefresh()
+            viewModel.updateAuthor()
         }
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.author.collectLatest {
+                viewModel.authorState.collectLatest {
                     binding.dataLoadHandler.handle(it)
                 }
             }

@@ -10,15 +10,13 @@ import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.PagedDTO
 
 @ExperimentalPagingApi
-abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO, ApiErrorType : Throwable>(
+abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO>(
     val persistenceManager: PersistenceManager<ValueEntity, Int>,
     private val cacheTimeoutMilliseconds: Long,
     private val remoteService: IntPagedRemoteService<ValueDTO>,
-    private val apiResultInterpreter: ApiResponseInterpreter<ApiErrorType>,
+    private val apiResultInterpreter: ApiResponseInterpreter,
     private val dtoToEntityConverter: Converter<ValueDTO, List<ValueEntity>>
 ) : RemoteMediator<Int, ValueEntity>() {
-
-    abstract fun getOtherError(innerException: Throwable): ApiErrorType
 
     override suspend fun initialize(): InitializeAction {
         val lastUpdated = persistenceManager.getLastUpdated() ?: 0
@@ -36,7 +34,7 @@ abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO, 
         return try {
             getMediatorResult(loadType, state)
         } catch (e: Throwable) {
-            MediatorResult.Error(getOtherError(e))
+            MediatorResult.Error(e)
         }
     }
 

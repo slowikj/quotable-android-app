@@ -21,8 +21,8 @@ import com.example.quotableapp.databinding.FragmentDashboardBinding
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.extensions.handle
 import com.example.quotableapp.ui.dashboard.adapters.AuthorsDashboardAdapter
-import com.example.quotableapp.ui.dashboard.adapters.QuotesDashboardAdapter
 import com.example.quotableapp.ui.dashboard.adapters.DashboardTagsAdapter
+import com.example.quotableapp.ui.dashboard.adapters.QuotesDashboardAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -62,9 +62,9 @@ class DashboardFragment : Fragment() {
         setupCategories()
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { viewModel.quotes.collectLatest { handle(it) } }
-                launch { viewModel.authors.collectLatest { handle(it) } }
-                launch { viewModel.tags.collectLatest { handle(it) } }
+                launch { viewModel.exemplaryQuotesState.collectLatest { handle(it) } }
+                launch { viewModel.exemplaryAuthorsState.collectLatest { handle(it) } }
+                launch { viewModel.exemplaryTagsState.collectLatest { handle(it) } }
                 launch { viewModel.randomQuote.collectLatest { handle(it) } }
             }
         }
@@ -144,13 +144,13 @@ class DashboardFragment : Fragment() {
     private fun setupRandomQuoteEntry() {
         with(binding.rowRandomQuote) {
             dataLoadHandler.btnRetry.setOnClickListener {
-                viewModel.requestRandomQuote()
+                viewModel.updateRandomQuote()
             }
             root.setOnClickListener {
                 viewModel.randomQuote.value.data?.let { showQuote(it.id) }
             }
             btnRefresh.setOnClickListener {
-                viewModel.requestRandomQuote()
+                viewModel.updateRandomQuote()
             }
         }
     }
@@ -160,7 +160,7 @@ class DashboardFragment : Fragment() {
             binding = binding.rowTags,
             listAdapter = tagsAdapter,
             onCategoryClickListener = { showAllTags() },
-            onDataRetryRequest = { viewModel.requestTags() }
+            onDataRetryRequest = { viewModel.updateTags() }
         )
     }
 
@@ -169,7 +169,7 @@ class DashboardFragment : Fragment() {
             binding = binding.rowAuthors,
             listAdapter = authorsAdapter,
             onCategoryClickListener = { showAllAuthors() },
-            onDataRetryRequest = { viewModel.requestAuthors() })
+            onDataRetryRequest = { viewModel.updateAuthors() })
     }
 
     private fun setupQuotesEntry() {
@@ -177,7 +177,7 @@ class DashboardFragment : Fragment() {
             binding = binding.rowQuotes,
             listAdapter = quotesAdapter,
             onCategoryClickListener = { showAllQuotes() },
-            onDataRetryRequest = { viewModel.requestQuotes() })
+            onDataRetryRequest = { viewModel.updateQuotes() })
     }
 
     private fun <M, VH : RecyclerView.ViewHolder> setupCategoryEntry(

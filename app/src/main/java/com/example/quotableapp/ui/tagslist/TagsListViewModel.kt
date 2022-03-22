@@ -6,10 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
-import com.example.quotableapp.ui.common.extensions.handleOneShotRequest
-import com.example.quotableapp.ui.common.extensions.set
+import com.example.quotableapp.ui.common.UiStateManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 typealias TagsListState = UiState<List<Tag>, TagsListViewModel.UiError>
@@ -24,25 +23,20 @@ class TagsListViewModel @Inject constructor(
         object NetworkError : UiError()
     }
 
-    private val _tags = MutableStateFlow(TagsListState())
-    val tags: StateFlow<TagsListState> = _tags.asStateFlow()
+    private val tagsUiStateManager = UiStateManager<List<Tag>, UiError>(
+        coroutineScope = viewModelScope,
+        sourceDataFlow = tagsRepository.allTagsFlow
+    )
+    val tagsUiState: StateFlow<TagsListState> = tagsUiStateManager.stateFlow
 
     init {
-        fetchTags(forceRefresh = false)
-        startObservingTagsFlow()
+        updateTags()
     }
 
-    fun fetchTags(forceRefresh: Boolean = true) {
-        _tags.handleOneShotRequest(
-            coroutineScope = viewModelScope,
-            requestFunc = { tagsRepository.fetchAllTags(forceRefresh) },
-            errorConverter = { UiError.NetworkError }
+    fun updateTags() {
+        tagsUiStateManager.updateData(
+            requestFunc = { tagsRepository.updateAllTags() },
+            errorTransformer = { UiError.NetworkError }
         )
-    }
-
-    private fun startObservingTagsFlow() {
-        tagsRepository.allTagsFlow
-            .onEach { _tags.set(data = it) }
-            .launchIn(viewModelScope)
     }
 }

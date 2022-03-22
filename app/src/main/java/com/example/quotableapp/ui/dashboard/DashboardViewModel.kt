@@ -3,20 +3,16 @@ package com.example.quotableapp.ui.dashboard
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.quotableapp.data.common.Resource
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.data.network.common.HttpApiError
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
-import com.example.quotableapp.ui.common.extensions.handleOneShotRequest
-import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
-import com.example.quotableapp.ui.common.extensions.set
+import com.example.quotableapp.ui.common.UiStateManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 typealias AuthorListState = UiState<List<Author>, DashboardViewModel.UiError>
@@ -39,107 +35,66 @@ class DashboardViewModel @Inject constructor(
         object NetworkError : UiError()
     }
 
-    private val _authors = MutableStateFlow(AuthorListState())
-    val authors: StateFlow<AuthorListState> = _authors.asStateFlow()
+    private val exemplaryAuthorsUiStateManager = UiStateManager<List<Author>, UiError>(
+        coroutineScope = viewModelScope,
+        sourceDataFlow = authorsRepository.firstAuthorsFlow
+    )
+    val exemplaryAuthorsState: StateFlow<AuthorListState> = exemplaryAuthorsUiStateManager.stateFlow
 
-    private val _quotes = MutableStateFlow(QuotesListState())
-    val quotes: StateFlow<QuotesListState> = _quotes.asStateFlow()
+    private val exemplaryQuotesUiStateManager = UiStateManager<List<Quote>, UiError>(
+        coroutineScope = viewModelScope,
+        sourceDataFlow = quotesRepository.exemplaryQuotes
+    )
+    val exemplaryQuotesState: StateFlow<QuotesListState> = exemplaryQuotesUiStateManager.stateFlow
 
-    private val _tags = MutableStateFlow(TagsListState())
-    val tags: StateFlow<TagsListState> = _tags.asStateFlow()
+    private val exemplaryTagsUiStateManager = UiStateManager<List<Tag>, UiError>(
+        coroutineScope = viewModelScope,
+        sourceDataFlow = tagsRepository.allTagsFlow
+    )
+    val exemplaryTagsState: StateFlow<TagsListState> = exemplaryTagsUiStateManager.stateFlow
 
-    private val _randomQuote = MutableStateFlow(RandomQuoteState())
-    val randomQuote: StateFlow<RandomQuoteState> = _randomQuote.asStateFlow()
+    private val randomQuoteUiStateManager = UiStateManager<Quote, UiError>(
+        coroutineScope = viewModelScope,
+        sourceDataFlow = quotesRepository.randomQuote
+    )
+    val randomQuote: StateFlow<RandomQuoteState> = randomQuoteUiStateManager.stateFlow
 
     init {
-        requestAuthors(forceUpdate = false)
-        requestQuotes(forceUpdate = false)
-        requestTags(forceUpdate = false)
-        requestRandomQuote(forceUpdate = false)
-        startObservingRandomQuoteFlow()
-        startObservingExemplaryQuotesFlow()
-        startObservingTagsFlow()
-        startObservingAuthorsFlow()
+        refreshAll()
     }
 
     fun refreshAll() {
-        requestAuthors(forceUpdate = true)
-        requestQuotes(forceUpdate = true)
-        requestTags(forceUpdate = true)
-        requestRandomQuote(forceUpdate = true)
+        updateAuthors()
+        updateQuotes()
+        updateTags()
+        updateRandomQuote()
     }
 
-    fun requestAuthors(forceUpdate: Boolean = true) {
-        handleRequestWithoutData(
-            stateFlow = _authors,
-            requestFunc = { authorsRepository.fetchFirstAuthors(forceUpdate) }
+    fun updateAuthors() {
+        exemplaryAuthorsUiStateManager.updateData(
+            requestFunc = { authorsRepository.updateFirstAuthors() },
+            errorTransformer = { UiError.NetworkError }
         )
     }
 
-    fun requestQuotes(forceUpdate: Boolean = true) {
-        handleRequestWithoutData(
-            stateFlow = _quotes,
-            requestFunc = { quotesRepository.fetchFirstQuotes(forceUpdate) }
+    fun updateQuotes() {
+        exemplaryQuotesUiStateManager.updateData(
+            requestFunc = { quotesRepository.updateExemplaryQuotes() },
+            errorTransformer = { UiError.NetworkError }
         )
     }
 
-    fun requestTags(forceUpdate: Boolean = true) {
-        handleRequestWithoutData(
-            stateFlow = _tags,
-            requestFunc = { tagsRepository.fetchFirstTags(forceUpdate) }
+    fun updateTags() {
+        exemplaryTagsUiStateManager.updateData(
+            requestFunc = { tagsRepository.updateExemplaryTags() },
+            errorTransformer = { UiError.NetworkError }
         )
     }
 
-    fun requestRandomQuote(forceUpdate: Boolean = true) {
-        handleRequestWithoutData(
-            stateFlow = _randomQuote,
-            requestFunc = { quotesRepository.fetchRandomQuote(forceUpdate) }
-        )
-    }
-
-    private fun startObservingRandomQuoteFlow() {
-        quotesRepository.randomQuoteFlow
-            .onEach { _randomQuote.set(data = it) }
-            .launchIn(viewModelScope)
-    }
-
-    private fun startObservingExemplaryQuotesFlow() {
-        quotesRepository.firstQuotesFlow
-            .onEach { _quotes.set(data = it) }
-            .launchIn(viewModelScope)
-    }
-
-    private fun startObservingTagsFlow() {
-        tagsRepository.firstTags
-            .onEach { _tags.set(data = it) }
-            .launchIn(viewModelScope)
-    }
-
-    private fun startObservingAuthorsFlow() {
-        authorsRepository.firstAuthorsFlow
-            .onEach { _authors.set(data = it) }
-            .launchIn(viewModelScope)
-    }
-
-    private fun <V> handleRequestWithData(
-        stateFlow: MutableStateFlow<UiState<V, UiError>>,
-        requestFunc: suspend () -> Resource<V, HttpApiError>
-    ) {
-        stateFlow.handleRequestWithResult(
-            coroutineScope = viewModelScope,
-            requestFunc = requestFunc,
-            errorConverter = { UiError.NetworkError }
-        )
-    }
-
-    private fun <V> handleRequestWithoutData(
-        stateFlow: MutableStateFlow<UiState<V, UiError>>,
-        requestFunc: suspend () -> Resource<Boolean, HttpApiError>
-    ) {
-        stateFlow.handleOneShotRequest(
-            coroutineScope = viewModelScope,
-            requestFunc = requestFunc,
-            errorConverter = { UiError.NetworkError }
+    fun updateRandomQuote() {
+        randomQuoteUiStateManager.updateData(
+            requestFunc = { quotesRepository.updateRandomQuote() },
+            errorTransformer = { UiError.NetworkError }
         )
     }
 

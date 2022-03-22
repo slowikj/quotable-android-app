@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator
+package com.example.quotableapp.data.repository.quotes.quoteslist.paging
 
 import com.example.quotableapp.data.converters.Converter
 import com.example.quotableapp.data.converters.quote.QuoteConverters

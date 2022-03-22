@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.repository.quotes.quoteslist.paging.remoteMediator
+package com.example.quotableapp.data.repository.quotes.quoteslist.paging
 
 import androidx.paging.PagingSource
 import androidx.room.withTransaction

@@ -12,7 +12,7 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.ui.common.UiState
-import com.example.quotableapp.ui.common.extensions.handleRequestWithResult
+import com.example.quotableapp.ui.common.UiStateManager
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
-typealias AuthorDetailsUiState = UiState<Author, AuthorViewModel.UiError>
+typealias AuthorUiState = UiState<Author, AuthorViewModel.UiError>
 
 @ExperimentalPagingApi
 @HiltViewModel
@@ -60,18 +60,20 @@ class AuthorViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(5000)
             )
 
-    private val _author = MutableStateFlow(AuthorDetailsUiState())
-    val author: StateFlow<AuthorDetailsUiState> = _author.asStateFlow()
+    private val authorUiStateManager = UiStateManager<Author, UiError>(
+        coroutineScope = viewModelScope,
+        sourceDataFlow = authorsRepository.getAuthorFlow(authorSlug)
+    )
+    val authorState: StateFlow<AuthorUiState> = authorUiStateManager.stateFlow
 
     init {
-        onAuthorRefresh()
+        updateAuthor()
     }
 
-    fun onAuthorRefresh() {
-        _author.handleRequestWithResult(
-            coroutineScope = viewModelScope,
-            requestFunc = { authorsRepository.fetchAuthor(authorSlug) },
-            errorConverter = { UiError.IOError }
+    fun updateAuthor() {
+        authorUiStateManager.updateData(
+            requestFunc = { authorsRepository.updateAuthor(authorSlug) },
+            errorTransformer = { UiError.IOError }
         )
     }
 

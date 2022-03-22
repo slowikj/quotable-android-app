@@ -28,7 +28,7 @@
                 android:layout_margin="@dimen/larger_space"
                 android:alpha="?attr/tertiaryContentAlpha"
                 android:lineSpacingMultiplier="1.25"
-                android:text="@{viewModel.author.data.bio}"
+                android:text="@{viewModel.authorState.data.bio}"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?attr/colorOnBackground"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -8,6 +8,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface QuotesDao {
 
+    // ONE QUOTE ---------------------------------------------------
+    @Query(
+        "SELECT * FROM quotes WHERE id = :id"
+    )
+    fun getQuoteFlow(id: String): Flow<QuoteEntity>
+
     // QUOTES ---------------------------------------------------
 
     @Transaction

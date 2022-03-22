@@ -17,10 +17,12 @@ import com.example.quotableapp.ui.common.extensions.showErrorToast
 import com.example.quotableapp.ui.common.extensions.showToast
 import com.example.quotableapp.ui.common.rvAdapters.QuoteTagsAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class OneQuoteFragment : Fragment() {
 
@@ -56,13 +58,13 @@ class OneQuoteFragment : Fragment() {
             btnShare.setOnClickListener { showToast("TODO: Implemented soon!") } //TODO
             rvTags.adapter = tagsAdapter
         }
-        binding.dataLoadHandler.btnRetry.setOnClickListener { viewModel.requestData() }
+        binding.dataLoadHandler.btnRetry.setOnClickListener { viewModel.updateQuoteUi() }
     }
 
     private fun setObservingViewModel() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { viewModel.state.collectLatest { handle(it) } }
+                launch { viewModel.quoteState.collectLatest { handle(it) } }
                 launch { viewModel.action.collect { handle(it) } }
             }
         }

@@ -4,7 +4,6 @@ import androidx.paging.PagingSource
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.example.quotableapp.data.DataTestUtil
-import com.example.quotableapp.data.MainCoroutineRule
 import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginEntity
@@ -14,7 +13,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.time.ExperimentalTime
@@ -283,7 +281,6 @@ class QuotesDaoTest {
         // ACT
         quotesDao.addQuotes(originParams = originParams, quotes = quoteEntities)
 
-
         // ASSERT
         val pagingSource = quotesDao.getQuotesPagingSourceSortedByAuthor(originParams)
         val loadResult = pagingSource.load(
@@ -302,5 +299,27 @@ class QuotesDaoTest {
                 itemsAfter = 1
             )
         )
+    }
+
+    // ONE QUOTE --------------------------------
+
+    @Test
+    fun when_AddedOneQuote_then_ReturnItsFlow() = runBlocking {
+        // ARRANGE
+        val quote = QuoteEntity(
+            id = "1",
+            content = "abc",
+            author = "abc",
+            authorSlug = "abc",
+            tags = listOf("wisdom")
+        )
+
+        // ACT
+        quotesDao.addQuotes(listOf(quote))
+
+        // ASSERT
+        quotesDao.getQuoteFlow(quote.id).test {
+            assertThat(awaitItem()).isEqualTo(quote)
+        }
     }
 }

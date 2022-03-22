@@ -31,7 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
-                android:title="@{viewModel.author.data.name}"
+                android:title="@{viewModel.authorState.data.name}"
                 app:collapsedTitleGravity="start"
                 app:collapsedTitleTextColor="?attr/colorOnPrimary"
                 app:contentScrim="?attr/colorPrimary"
@@ -52,7 +52,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/small_space"
                         android:alpha="?attr/secondaryContentAlpha"
-                        android:text="@{viewModel.author.data.description}"
+                        android:text="@{viewModel.authorState.data.description}"
                         android:textAppearance="?textAppearanceSubtitle1"
                         android:textColor="?attr/colorOnPrimary"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -61,7 +61,7 @@
                         tools:text="short description" />
 
                     <androidx.appcompat.widget.AppCompatImageView
-                        loadImageWithPersonPlaceholder="@{viewModel.author.data.photoUrl}"
+                        loadImageWithPersonPlaceholder="@{viewModel.authorState.data.photoUrl}"
                         android:layout_width="@dimen/fragment_author_img_dim"
                         android:layout_height="@dimen/fragment_author_img_dim"
                         android:layout_margin="@dimen/larger_space"
