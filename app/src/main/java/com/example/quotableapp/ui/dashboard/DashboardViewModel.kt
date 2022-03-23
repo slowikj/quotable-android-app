@@ -49,7 +49,7 @@ class DashboardViewModel @Inject constructor(
 
     private val exemplaryTagsUiStateManager = UiStateManager<List<Tag>, UiError>(
         coroutineScope = viewModelScope,
-        sourceDataFlow = tagsRepository.allTagsFlow
+        sourceDataFlow = tagsRepository.exemplaryTags
     )
     val exemplaryTagsState: StateFlow<TagsListState> = exemplaryTagsUiStateManager.stateFlow
 
