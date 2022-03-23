@@ -8,6 +8,7 @@ import com.example.quotableapp.data.db.entities.tag.TagEntity
 import com.example.quotableapp.data.db.entities.tag.TagOriginEntity
 import com.example.quotableapp.data.db.entities.tag.TagOriginType
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -154,5 +155,25 @@ class TagsDaoTest {
         // ASSERT
         assertThat(tagsDao.getLastUpdatedMillis(originType))
             .isEqualTo(lastUpdatedList.maxOrNull())
+    }
+
+    @Test
+    fun when_AddedSameTagsWithOriginTwoTimes_then_ReturnTheLatestLastUpdated() = runBlocking {
+        // ARRANGE
+        val originType = TagOriginType.DASHBOARD_EXEMPLARY
+        val tags = listOf(
+            TagEntity(id = "1", name = "a", quoteCount = 1),
+            TagEntity(id = "2", name = "b", quoteCount = 2),
+            TagEntity(id = "3", name = "c", quoteCount = 3),
+        )
+
+        // ACT
+        tagsDao.add(tags = tags, originType = originType)
+        val firstLastUpdated = tagsDao.getLastUpdatedMillis(originType)
+        delay(200)
+        tagsDao.add(tags = tags, originType = originType)
+
+        // ASSERT
+        assertThat(tagsDao.getLastUpdatedMillis(originType)).isGreaterThan(firstLastUpdated)
     }
 }
