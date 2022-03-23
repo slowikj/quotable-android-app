@@ -14,11 +14,7 @@ data class TagOriginEntity(
 
 }
 
-enum class TagOriginType(private val str: String) {
-    ALL("all"),
-    DASHBOARD_EXEMPLARY("dashboard_exemplary");
-
-    override fun toString(): String {
-        return super.toString()
-    }
+enum class TagOriginType {
+    ALL,
+    DASHBOARD_EXEMPLARY;
 }
