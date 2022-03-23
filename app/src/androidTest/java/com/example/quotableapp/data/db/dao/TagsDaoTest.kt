@@ -90,7 +90,7 @@ class TagsDaoTest {
     }
 
     @Test
-    fun when_AddedTagsForOrigin_then_GetReturnThoseTagsOrderedByName() = runBlocking {
+    fun when_AddedTagsWithOrigin_then_GetReturnThoseTagsOrderedByName() = runBlocking {
         // ARRANGE
         val tags = listOf(
             TagEntity(id = "123", name = "x", quoteCount = 123),
@@ -107,6 +107,7 @@ class TagsDaoTest {
             assertThat(awaitItem()).isEqualTo(tags.sortedBy { it.name })
             cancelAndConsumeRemainingEvents()
         }
+        assertThat(tagsDao.getTagOriginId(originType)).isNotNull()
     }
 
     @Test
@@ -138,4 +139,20 @@ class TagsDaoTest {
                 cancelAndConsumeRemainingEvents()
             }
         }
+
+    @Test
+    fun when_AddedSeveralOrigins_then_StoreOnlyTheLatestOne() = runBlocking {
+        // ARRANGE
+        val originType = TagOriginType.DASHBOARD_EXEMPLARY
+        val lastUpdatedList: List<Long> = listOf(1, 2, 3)
+
+        // ACT
+        lastUpdatedList.forEach { lastUpdated ->
+            tagsDao.add(TagOriginEntity(type = originType, lastUpdatedMillis = lastUpdated))
+        }
+
+        // ASSERT
+        assertThat(tagsDao.getLastUpdatedMillis(originType))
+            .isEqualTo(lastUpdatedList.maxOrNull())
+    }
 }
