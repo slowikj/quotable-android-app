@@ -34,9 +34,9 @@ class DefaultTagRepository @Inject constructor(
     companion object {
         private val TAG_ORIGIN_TYPE_ALL = TagOriginType.ALL
 
-        private val TAG_ORIGIN_TYPE_FIRST = TagOriginType.DASHBOARD_EXEMPLARY
+        private val TAG_ORIGIN_TYPE_EXEMPLARY = TagOriginType.DASHBOARD_EXEMPLARY
 
-        private const val TAGS_FIRST_LIMIT = 10
+        private const val TAGS_EXEMPLARY_LIMIT = 10
     }
 
     override suspend fun updateAllTags(): Result<Unit> {
@@ -61,18 +61,18 @@ class DefaultTagRepository @Inject constructor(
     override suspend fun updateExemplaryTags(): Result<Unit> {
         return withContext(coroutineDispatchers.Default) {
             fetchTagsDTO()
-                .map { it.take(TAGS_FIRST_LIMIT) }
+                .map { it.take(TAGS_EXEMPLARY_LIMIT) }
                 .mapCatching { tagsDTO ->
                     tagsDao.add(
                         tags = tagsDTO.map(tagConverters::toDb),
-                        originType = TAG_ORIGIN_TYPE_FIRST
+                        originType = TAG_ORIGIN_TYPE_EXEMPLARY
                     )
                 }
         }
     }
 
     override val exemplaryTags: Flow<List<Tag>> = tagsDao
-        .getTags(TAG_ORIGIN_TYPE_FIRST, limit = TAGS_FIRST_LIMIT)
+        .getTags(TAG_ORIGIN_TYPE_EXEMPLARY, limit = TAGS_EXEMPLARY_LIMIT)
         .distinctUntilChanged()
         .filterNotNull()
         .map { list -> list.map(tagConverters::toModel) }
