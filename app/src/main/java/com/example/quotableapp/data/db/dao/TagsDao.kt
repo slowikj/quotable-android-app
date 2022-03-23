@@ -27,7 +27,7 @@ interface TagsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(tags: List<TagEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(originEntity: TagOriginEntity)
 
     @Query(
