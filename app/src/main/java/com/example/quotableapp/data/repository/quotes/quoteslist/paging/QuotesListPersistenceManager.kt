@@ -16,6 +16,7 @@ interface QuotesListPersistenceManagerFactory {
     fun create(quoteOriginParams: QuoteOriginParams): QuotesListPersistenceManager
 }
 
+// TODO: adjust to new API
 class QuotesListPersistenceManager @AssistedInject constructor(
     private val database: QuotableDatabase,
     @Assisted private val quoteOriginParams: QuoteOriginParams
@@ -24,10 +25,6 @@ class QuotesListPersistenceManager @AssistedInject constructor(
     private val quotesDao: QuotesDao
         get() = database.quotesDao()
 
-    override suspend fun deleteAll() {
-        quotesDao.deleteQuoteEntriesFrom(quoteOriginParams)
-        quotesDao.deletePageRemoteKey(quoteOriginParams)
-    }
 
     override suspend fun getLastUpdated(): Long? = quotesDao.getLastUpdatedMillis(quoteOriginParams)
 
@@ -38,10 +35,11 @@ class QuotesListPersistenceManager @AssistedInject constructor(
         quotesDao.addQuotes(originParams = quoteOriginParams, quotes = entries)
     }
 
-    override suspend fun <R> withTransaction(block: suspend () -> R): R =
-        database.withTransaction(block)
-
     override fun getPagingSource(): PagingSource<Int, QuoteEntity> =
         quotesDao.getQuotesPagingSourceSortedByAuthor(quoteOriginParams)
+
+    override suspend fun refresh(entities: List<QuoteEntity>, pageKey: Int) {
+        TODO("Not yet implemented")
+    }
 
 }

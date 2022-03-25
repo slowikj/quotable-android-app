@@ -1,5 +1,6 @@
 package com.example.quotableapp.data.db.dao
 
+import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.example.quotableapp.data.DataTestUtil
@@ -171,6 +172,7 @@ class TagsDaoTest {
         tagsDao.add(tags = tags, originType = originType)
         val firstLastUpdated = tagsDao.getLastUpdatedMillis(originType)
         delay(200)
+        Log.d("tagsDao", "second")
         tagsDao.add(tags = tags, originType = originType)
 
         // ASSERT

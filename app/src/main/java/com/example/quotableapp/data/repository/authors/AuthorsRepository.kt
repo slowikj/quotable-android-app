@@ -1,18 +1,19 @@
 package com.example.quotableapp.data.repository.authors
 
 import androidx.paging.*
-import androidx.room.withTransaction
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.converters.author.AuthorConverters
-import com.example.quotableapp.data.db.QuotableDatabase
-import com.example.quotableapp.data.db.dao.AuthorsDao
+import com.example.quotableapp.data.db.datasources.AuthorsDataSource
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -31,8 +32,7 @@ interface AuthorsRepository {
 @ExperimentalPagingApi
 class DefaultAuthorsRepository @Inject constructor(
     private val authorsService: AuthorsService,
-    private val authorsDao: AuthorsDao,
-    private val quotableDatabase: QuotableDatabase,
+    private val authorsDataSource: AuthorsDataSource,
     private val authorsRemoteMediatorFactory: AuthorsRemoteMediatorFactory,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val authorConverters: AuthorConverters,
@@ -55,14 +55,13 @@ class DefaultAuthorsRepository @Inject constructor(
             apiResponseInterpreter { authorsService.fetchAuthor(slug) }
                 .mapCatching { it.results.first() }
                 .mapCatching { authorDTO ->
-                    authorsDao.addAuthors(listOf(authorConverters.toDb(authorDTO)))
+                    authorsDataSource.insert(entities = listOf(authorConverters.toDb(authorDTO)))
                 }
         }
     }
 
-    override fun getAuthorFlow(slug: String): Flow<Author> = authorsDao
+    override fun getAuthorFlow(slug: String): Flow<Author> = authorsDataSource
         .getAuthorFlow(slug)
-        .distinctUntilChanged()
         .filterNotNull()
         .map(authorConverters::toDomain)
         .flowOn(coroutineDispatchers.IO)
@@ -95,31 +94,24 @@ class DefaultAuthorsRepository @Inject constructor(
                     sortBy = AuthorsService.SortByType.QuoteCount,
                     orderType = AuthorsService.OrderType.Desc
                 )
-            }.mapCatching { authorsResponseDTO -> addFirstQuotesToDatabase(authorsResponseDTO) }
+            }.mapCatching { authorsResponseDTO -> refreshFirstQuotesToDatabase(authorsResponseDTO) }
         }
     }
 
-    override val firstAuthorsFlow: Flow<List<Author>> = authorsDao
+    override val firstAuthorsFlow: Flow<List<Author>> = authorsDataSource
         .getAuthorsSortedByQuoteCountDesc(
             originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
             limit = FIRST_AUTHORS_LIMIT
         )
-        .distinctUntilChanged()
         .filterNotNull()
         .map { list -> list.map(authorConverters::toDomain) }
         .flowOn(coroutineDispatchers.IO)
 
-    private suspend fun addFirstQuotesToDatabase(responseDTO: AuthorsResponseDTO): Unit =
+    private suspend fun refreshFirstQuotesToDatabase(responseDTO: AuthorsResponseDTO): Unit =
         withContext(coroutineDispatchers.IO) {
-            quotableDatabase.withTransaction {
-                authorsDao.addRemoteKey(
-                    originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
-                    pageKey = 0
-                )
-                authorsDao.add(
-                    entries = responseDTO.results.map(authorConverters::toDb),
-                    originParams = FIRST_AUTHORS_ORIGIN_PARAMS
-                )
-            }
+            authorsDataSource.refresh(
+                entities = responseDTO.results.map(authorConverters::toDb),
+                originParams = FIRST_AUTHORS_ORIGIN_PARAMS
+            )
         }
 }

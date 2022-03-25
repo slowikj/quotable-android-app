@@ -15,7 +15,7 @@ abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO>(
     private val cacheTimeoutMilliseconds: Long,
     private val remoteService: IntPagedRemoteService<ValueDTO>,
     private val apiResultInterpreter: ApiResponseInterpreter,
-    private val dtoToEntityConverter: Converter<ValueDTO, List<ValueEntity>>
+    private val dtoToEntitiesConverter: Converter<ValueDTO, List<ValueEntity>>
 ) : RemoteMediator<Int, ValueEntity>() {
 
     override suspend fun initialize(): InitializeAction {
@@ -56,7 +56,7 @@ abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO>(
         return apiResultInterpreter { remoteService(newLoadKey, pageSize) }
             .fold(
                 onSuccess = { dto ->
-                    updateLocalDatabase(loadType, newLoadKey, dto)
+                    updateLocalDatabase(loadType, newLoadKey, dtoToEntitiesConverter(dto))
                     MediatorResult.Success(endOfPaginationReached = dto.endOfPaginationReached)
                 },
                 onFailure = {
@@ -70,12 +70,15 @@ abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO>(
         state: PagingState<Int, ValueEntity>
     ) = if (loadType == LoadType.REFRESH) state.config.initialLoadSize else state.config.pageSize
 
-    private suspend fun updateLocalDatabase(loadType: LoadType, newLoadKey: Int, dto: ValueDTO) {
-        persistenceManager.withTransaction {
-            if (loadType == LoadType.REFRESH) {
-                persistenceManager.deleteAll()
-            }
-            persistenceManager.append(dtoToEntityConverter(dto), newLoadKey)
+    private suspend fun updateLocalDatabase(
+        loadType: LoadType,
+        newLoadKey: Int,
+        entities: List<ValueEntity>
+    ) {
+        if (loadType == LoadType.REFRESH) {
+            persistenceManager.refresh(entities = entities, pageKey = newLoadKey)
+        } else {
+            persistenceManager.append(entities = entities, pageKey = newLoadKey)
         }
     }
 }

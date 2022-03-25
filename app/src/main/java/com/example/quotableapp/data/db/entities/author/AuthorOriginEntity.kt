@@ -11,7 +11,8 @@ import androidx.room.PrimaryKey
 )
 data class AuthorOriginEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @Embedded val originParams: AuthorOriginParams
+    @Embedded val originParams: AuthorOriginParams,
+    val lastUpdatedMillis: Long
 )
 
 data class AuthorOriginParams(

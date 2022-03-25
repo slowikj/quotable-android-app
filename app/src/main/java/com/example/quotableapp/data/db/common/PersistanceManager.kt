@@ -4,15 +4,13 @@ import androidx.paging.PagingSource
 
 interface PersistenceManager<Entity : Any, PageKey : Any> {
 
-    suspend fun deleteAll()
-
     suspend fun getLastUpdated(): Long?
 
     suspend fun getLatestPageKey(): PageKey?
 
-    suspend fun append(entries: List<Entity>, pageKey: PageKey)
+    suspend fun append(entities: List<Entity>, pageKey: PageKey)
 
-    suspend fun <R> withTransaction(block: suspend () -> R): R
+    suspend fun refresh(entities: List<Entity>, pageKey: PageKey)
 
     fun getPagingSource(): PagingSource<PageKey, Entity>
 }
