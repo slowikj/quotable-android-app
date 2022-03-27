@@ -62,7 +62,7 @@ class AuthorsDaoTest {
     }
 
     @Test
-    fun when_RemoteKeyWasRemoved_then_PageKeyReturnsNull() = runBlocking {
+    fun when_RemoteKeyWasRemoved_then_GetterReturnsNull() = runBlocking {
         // ARRANGE
         val key = 123
         val lastUpdatedMillis: Long = 1234
@@ -91,6 +91,37 @@ class AuthorsDaoTest {
                 searchPhrase = originParams.searchPhrase
             )
         ).isNull()
+    }
+
+    @Test
+    fun when_RemoteKeyWasUpdated_then_returnNewValue() = runBlocking {
+        // ARRANGE
+        val originEntity = AuthorOriginEntity(
+            id = 1,
+            originParams = AuthorOriginParams(
+                type = AuthorOriginParams.Type.ALL,
+                searchPhrase = ""
+            ),
+            lastUpdatedMillis = 123
+        )
+        val initRemoteKeyEntity = AuthorRemoteKeyEntity(
+            originId = originEntity.id, pageKey = 0
+        )
+        val newPageKey = 3
+
+        authorsDao.insert(originEntity)
+        authorsDao.insert(initRemoteKeyEntity)
+
+        // ACT
+        authorsDao.insert(initRemoteKeyEntity.copy(pageKey = newPageKey))
+
+        // ASSERT
+        assertThat(
+            authorsDao.getPageKey(
+                originType = originEntity.originParams.type,
+                searchPhrase = originEntity.originParams.searchPhrase
+            )
+        ).isEqualTo(newPageKey)
     }
 
     // ORIGIN --------------------------------
@@ -242,6 +273,7 @@ class AuthorsDaoTest {
 
 
     // ONE AUTHOR -----------------------------------
+
     @Test
     fun when_addedOneAuthor_then_ReturnFlowWithThisAuthor() = runBlocking {
         // ARRANGE
