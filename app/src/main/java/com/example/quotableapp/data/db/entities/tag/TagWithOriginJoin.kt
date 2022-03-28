@@ -5,7 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 
 @Entity(
-    tableName = "tags_with_origins",
+    tableName = "tags_with_origin_join",
     primaryKeys = ["tagId", "originId"],
     indices = [Index(value = ["tagId"]), Index(value = ["originId"])],
     foreignKeys = [
@@ -23,5 +23,5 @@ import androidx.room.Index
 )
 data class TagWithOriginJoin(
     val tagId: String,
-    val originId: Int
+    val originId: Long
 )

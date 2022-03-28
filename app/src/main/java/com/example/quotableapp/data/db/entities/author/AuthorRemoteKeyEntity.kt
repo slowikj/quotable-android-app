@@ -10,14 +10,11 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = AuthorOriginEntity::class,
             parentColumns = ["id"],
-            childColumns = ["originId"],
-            onDelete = ForeignKey.NO_ACTION,
-            onUpdate = ForeignKey.NO_ACTION
+            childColumns = ["originId"]
         )
     ]
 )
 data class AuthorRemoteKeyEntity(
     @PrimaryKey val originId: Long,
     val pageKey: Int,
-    val lastUpdated: Long
 )

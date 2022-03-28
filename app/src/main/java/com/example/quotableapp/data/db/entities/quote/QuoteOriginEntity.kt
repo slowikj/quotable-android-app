@@ -11,7 +11,8 @@ import androidx.room.PrimaryKey
 )
 data class QuoteOriginEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @Embedded val params: QuoteOriginParams
+    @Embedded val params: QuoteOriginParams,
+    val lastUpdatedMillis: Long
 )
 
 data class QuoteOriginParams(
@@ -19,16 +20,12 @@ data class QuoteOriginParams(
     val value: String = "",
     val searchPhrase: String = ""
 ) {
-    enum class Type(private val value: String) {
-        ALL("all"),
-        OF_TAG("tag"),
-        OF_AUTHOR("of_author"),
-        EXAMPLE_FROM_DASHBOARD("example_from_dashboard"),
-        RANDOM("random");
-
-        override fun toString(): String {
-            return value
-        }
+    enum class Type {
+        ALL,
+        OF_TAG,
+        OF_AUTHOR,
+        EXAMPLE_FROM_DASHBOARD,
+        RANDOM;
     }
 }
 

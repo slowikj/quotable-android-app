@@ -3,57 +3,71 @@ package com.example.quotableapp.data.db.dao
 import androidx.room.*
 import com.example.quotableapp.data.db.entities.tag.TagEntity
 import com.example.quotableapp.data.db.entities.tag.TagOriginEntity
-import com.example.quotableapp.data.db.entities.tag.TagOriginType
+import com.example.quotableapp.data.db.entities.tag.TagOriginParams
 import com.example.quotableapp.data.db.entities.tag.TagWithOriginJoin
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface TagsDao {
+interface TagsDao : BaseDao<TagEntity, TagOriginEntity, TagOriginParams> {
+
+    // tags
 
     @Transaction
     @Query(
         "SELECT * FROM tags " +
-                "WHERE id IN (SELECT tagId FROM tags_with_origins " +
-                "   INNER JOIN tag_origins on id = tags_with_origins.originId" +
+                "WHERE id IN (SELECT tagId FROM tags_with_origin_join " +
+                "   INNER JOIN tag_origins on id = tags_with_origin_join.originId" +
                 "   WHERE type = :type)" +
                 "ORDER BY name " +
                 "LIMIT :limit"
     )
-    fun getTags(
-        type: TagOriginType,
+    fun getTagsSortedByName(
+        type: TagOriginParams.Type,
         limit: Int = Int.MAX_VALUE
     ): Flow<List<TagEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(tags: List<TagEntity>)
+    fun getTagsSortedByName(
+        originParams: TagOriginParams,
+        limit: Int = Int.MAX_VALUE
+    ): Flow<List<TagEntity>> = getTagsSortedByName(
+        type = originParams.type,
+        limit = limit
+    )
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun add(originEntity: TagOriginEntity)
+    // origin
 
     @Query(
         "SELECT id FROM tag_origins " +
                 "WHERE type = :type"
     )
-    suspend fun getTagOriginId(type: TagOriginType): Int?
+    suspend fun getOriginId(type: TagOriginParams.Type): Long?
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addTagsWithOrigins(entries: List<TagWithOriginJoin>)
-
-    @Transaction
-    suspend fun add(tags: List<TagEntity>, originType: TagOriginType) {
-        add(TagOriginEntity(type = originType, lastUpdatedMillis = System.currentTimeMillis()))
-        val originId = getTagOriginId(originType)!!
-        add(tags)
-        addTagsWithOrigins(
-            tags.map { TagWithOriginJoin(tagId = it.id, originId = originId) }
-        )
-    }
+    suspend fun getOriginId(originParams: TagOriginParams): Long? =
+        getOriginId(type = originParams.type)
 
     @Transaction
     @Query(
         "SELECT lastUpdatedMillis FROM tag_origins " +
                 "WHERE type = :type"
     )
-    suspend fun getLastUpdatedMillis(type: TagOriginType): Long?
+    suspend fun getLastUpdatedMillis(type: TagOriginParams.Type): Long?
+
+    suspend fun getLastUpdatedMillis(originParams: TagOriginParams): Long? =
+        getLastUpdatedMillis(type = originParams.type)
+
+    // join
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(tagWithOriginJoin: TagWithOriginJoin)
+
+    @Query(
+        "DELETE FROM tags_with_origin_join " +
+                "WHERE originId IN (" +
+                "SELECT id from tag_origins WHERE type = :originType)"
+    )
+    suspend fun deleteAllFromJoin(originType: TagOriginParams.Type)
+
+    suspend fun deleteAllFromJoin(originParams: TagOriginParams) =
+        deleteAllFromJoin(originType = originParams.type)
 
 }

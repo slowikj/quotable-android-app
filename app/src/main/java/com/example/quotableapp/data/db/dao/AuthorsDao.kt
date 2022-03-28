@@ -6,48 +6,44 @@ import com.example.quotableapp.data.db.entities.author.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface AuthorsDao {
+interface AuthorsDao : BaseDao<AuthorEntity, AuthorOriginEntity, AuthorOriginParams> {
 
     @Query(
         "SELECT * from authors WHERE slug = :slug"
     )
-    fun getAuthorFlow(slug: String): Flow<AuthorEntity>
+    fun getAuthorFlow(slug: String): Flow<AuthorEntity?>
 
     @Transaction
     @Query(
-        "SELECT authors.* FROM (" +
-                "SELECT authorSlug FROM author_with_origin_join " +
-                "INNER JOIN author_origins on originId = author_origins.id " +
+        "SELECT * from authors where slug in (" +
+                "SELECT authorSlug from author_with_origin_join " +
+                "INNER JOIN author_origins on author_origins.id = originId " +
                 "WHERE author_origins.type = :type AND author_origins.searchPhrase = :searchPhrase) " +
-                "INNER JOIN authors on authors.slug = authorSlug " +
-                "ORDER BY authors.name"
+                "ORDER BY name"
     )
-    fun getAuthorsPagingSource(
+    fun getAuthorsPagingSourceSortedByName(
         type: AuthorOriginParams.Type,
         searchPhrase: String = ""
     ): PagingSource<Int, AuthorEntity>
 
-    fun getAuthorsPagingSource(
-        params: AuthorOriginParams
-    ): PagingSource<Int, AuthorEntity> {
-        return getAuthorsPagingSource(
-            type = params.type,
-            searchPhrase = params.searchPhrase
-        )
-    }
+    fun getAuthorsPagingSourceSortedByName(
+        originParams: AuthorOriginParams
+    ): PagingSource<Int, AuthorEntity> = getAuthorsPagingSourceSortedByName(
+        type = originParams.type,
+        searchPhrase = originParams.searchPhrase
+    )
 
     @Transaction
     @Query(
-        "SELECT authors.* FROM (" +
-                "   SELECT authorSlug FROM author_with_origin_join " +
-                "   INNER JOIN author_origins on author_origins.id = originId " +
-                "   WHERE author_origins.type = :type AND author_origins.searchPhrase = :searchPhrase) " +
-                "INNER JOIN authors on authors.slug = authorSlug " +
-                "ORDER BY authors.quoteCount DESC " +
+        "SELECT * from authors where slug in (" +
+                "SELECT authorSlug from author_with_origin_join " +
+                "INNER JOIN author_origins on author_origins.id = originId " +
+                "WHERE author_origins.type = :originType AND author_origins.searchPhrase = :searchPhrase) " +
+                "ORDER BY quoteCount DESC " +
                 "LIMIT :limit"
     )
     fun getAuthorsSortedByQuoteCountDesc(
-        type: AuthorOriginParams.Type,
+        originType: AuthorOriginParams.Type,
         searchPhrase: String = "",
         limit: Int = Int.MAX_VALUE
     ): Flow<List<AuthorEntity>>
@@ -55,37 +51,13 @@ interface AuthorsDao {
     fun getAuthorsSortedByQuoteCountDesc(
         originParams: AuthorOriginParams,
         limit: Int = Int.MAX_VALUE
-    ): Flow<List<AuthorEntity>> {
-        return getAuthorsSortedByQuoteCountDesc(
-            type = originParams.type,
-            searchPhrase = originParams.searchPhrase,
-            limit = limit
-        )
-    }
+    ): Flow<List<AuthorEntity>> = getAuthorsSortedByQuoteCountDesc(
+        originType = originParams.type,
+        searchPhrase = originParams.searchPhrase,
+        limit = limit
+    )
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addAuthors(entries: List<AuthorEntity>)
-
-    @Transaction
-    suspend fun add(entries: List<AuthorEntity>, originParams: AuthorOriginParams) {
-        addOrigin(originParams = originParams)
-        val originId = getOriginId(
-            type = originParams.type,
-            searchPhrase = originParams.searchPhrase
-        )!!
-        addAuthors(entries)
-        entries.forEach { author ->
-            add(AuthorWithOriginJoin(originId = originId, authorSlug = author.slug))
-        }
-    }
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addOrigin(originEntity: AuthorOriginEntity)
-
-    @Transaction
-    suspend fun addOrigin(originParams: AuthorOriginParams) {
-        addOrigin(AuthorOriginEntity(originParams = originParams))
-    }
+    // origin
 
     @Query(
         "SELECT id from author_origins " +
@@ -96,17 +68,65 @@ interface AuthorsDao {
         searchPhrase: String = ""
     ): Long?
 
-    suspend fun getOriginId(
-        params: AuthorOriginParams
-    ): Long? {
-        return getOriginId(
-            type = params.type,
-            searchPhrase = params.searchPhrase
+    suspend fun getOriginId(originParams: AuthorOriginParams): Long? =
+        getOriginId(
+            type = originParams.type,
+            searchPhrase = originParams.searchPhrase,
         )
-    }
+
+    @Query(
+        "SELECT lastUpdatedMillis from author_origins " +
+                " WHERE type = :type AND searchPhrase = :searchPhrase"
+    )
+    suspend fun getLastUpdatedMillis(
+        type: AuthorOriginParams.Type,
+        searchPhrase: String = ""
+    ): Long?
+
+    suspend fun getLastUpdatedMillis(
+        originParams: AuthorOriginParams
+    ): Long? = getLastUpdatedMillis(
+        type = originParams.type,
+        searchPhrase = originParams.searchPhrase
+    )
+
+    // Remote key
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(authorWithOriginJoin: AuthorWithOriginJoin)
+    suspend fun insert(remoteKeyEntity: AuthorRemoteKeyEntity)
+
+    @Transaction
+    @Query(
+        "SELECT pageKey from author_remote_keys " +
+                "WHERE originId = (SELECT id FROM author_origins WHERE type = :originType AND searchPhrase = :searchPhrase)"
+    )
+    suspend fun getPageKey(
+        originType: AuthorOriginParams.Type,
+        searchPhrase: String = ""
+    ): Int?
+
+    suspend fun getPageKey(originParams: AuthorOriginParams): Int? = getPageKey(
+        originType = originParams.type,
+        searchPhrase = originParams.searchPhrase,
+    )
+
+    @Query(
+        "DELETE FROM author_remote_keys " +
+                "WHERE originId = (SELECT id from author_origins WHERE type = :originType AND searchPhrase = :searchPhrase)"
+    )
+    suspend fun deletePageKey(
+        originType: AuthorOriginParams.Type,
+        searchPhrase: String = ""
+    )
+
+    suspend fun deletePageKey(originParams: AuthorOriginParams) {
+        deletePageKey(originType = originParams.type, searchPhrase = originParams.searchPhrase)
+    }
+
+    // Join
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(authorWithOriginJoin: AuthorWithOriginJoin)
 
     @Transaction
     @Query(
@@ -114,90 +134,12 @@ interface AuthorsDao {
                 "WHERE originId IN " +
                 "(SELECT id FROM author_origins WHERE author_origins.type = :type AND author_origins.searchPhrase = :searchPhrase)"
     )
-    suspend fun deleteAll(
+    suspend fun deleteAllFromJoin(
         type: AuthorOriginParams.Type,
         searchPhrase: String = ""
     )
 
-    suspend fun deleteAll(
-        params: AuthorOriginParams
-    ) {
-        return deleteAll(
-            type = params.type,
-            searchPhrase = params.searchPhrase
-        )
-    }
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(remoteKeyEntity: AuthorRemoteKeyEntity)
-
-    @Transaction
-    suspend fun addRemoteKey(originParams: AuthorOriginParams, pageKey: Int) {
-        addOrigin(originParams = originParams)
-        val originId =
-            getOriginId(type = originParams.type, searchPhrase = originParams.searchPhrase)!!
-        val remoteKeyEntity = AuthorRemoteKeyEntity(
-            originId = originId,
-            pageKey = pageKey,
-            lastUpdated = System.currentTimeMillis()
-        )
-        add(remoteKeyEntity)
-    }
-
-    @Transaction
-    @Query(
-        "SELECT lastUpdated from author_remote_keys " +
-                "WHERE originId = (SELECT id FROM author_origins WHERE type = :type AND searchPhrase = :searchPhrase)"
-    )
-    suspend fun getLastUpdated(
-        type: AuthorOriginParams.Type,
-        searchPhrase: String = ""
-    ): Long?
-
-    suspend fun getLastUpdated(
-        params: AuthorOriginParams
-    ): Long? {
-        return getLastUpdated(
-            type = params.type,
-            searchPhrase = params.searchPhrase
-        )
-    }
-
-    @Transaction
-    @Query(
-        "SELECT pageKey from author_remote_keys " +
-                "WHERE originId = (SELECT id FROM author_origins WHERE type = :type AND searchPhrase = :searchPhrase)"
-    )
-    suspend fun getPageKey(
-        type: AuthorOriginParams.Type,
-        searchPhrase: String = ""
-    ): Int?
-
-    suspend fun getPageKey(
-        params: AuthorOriginParams
-    ): Int? {
-        return getPageKey(
-            type = params.type,
-            searchPhrase = params.searchPhrase
-        )
-    }
-
-    @Query(
-        "DELETE FROM author_remote_keys " +
-                "WHERE originId = (SELECT id from author_origins WHERE type = :type AND searchPhrase = :searchPhrase)"
-    )
-    suspend fun deletePageKey(
-        type: AuthorOriginParams.Type,
-        searchPhrase: String = ""
-    )
-
-    suspend fun deletePageKey(
-        params: AuthorOriginParams
-    ) {
-        return deletePageKey(
-            type = params.type,
-            searchPhrase = params.searchPhrase
-        )
-    }
+    suspend fun deleteAllFromJoin(originParams: AuthorOriginParams) =
+        deleteAllFromJoin(type = originParams.type, searchPhrase = originParams.searchPhrase)
 
 }

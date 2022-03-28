@@ -11,11 +11,9 @@ import androidx.room.PrimaryKey
             entity = QuoteOriginEntity::class,
             parentColumns = ["id"],
             childColumns = ["originId"],
-            onDelete = ForeignKey.NO_ACTION
         )]
 )
 data class QuoteRemoteKeyEntity(
     @PrimaryKey val originId: Long,
     val pageKey: Int,
-    val lastUpdated: Long
 )

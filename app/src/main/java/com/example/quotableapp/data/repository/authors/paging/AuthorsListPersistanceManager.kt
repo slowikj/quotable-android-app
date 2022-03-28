@@ -1,9 +1,8 @@
 package com.example.quotableapp.data.repository.authors.paging
 
 import androidx.paging.PagingSource
-import androidx.room.withTransaction
-import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.common.PersistenceManager
+import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import dagger.assisted.Assisted
@@ -16,34 +15,32 @@ interface AuthorsListPersistenceManagerFactory {
 }
 
 class AuthorsListPersistenceManager @AssistedInject constructor(
-    private val database: QuotableDatabase,
+    private val datasource: AuthorsLocalDataSource,
     @Assisted private val originParams: AuthorOriginParams
 ) : PersistenceManager<AuthorEntity, Int> {
 
-    private val authorsDao = database.authorsDao()
+    override suspend fun getLastUpdated(): Long? = datasource.getLastUpdatedMillis(originParams)
 
-    override suspend fun deleteAll() {
-        authorsDao.deleteAll(originParams)
-        authorsDao.deletePageKey(originParams)
-    }
+    override suspend fun getLatestPageKey(): Int? = datasource.getPageKey(originParams)
 
-    override suspend fun getLastUpdated(): Long? = authorsDao.getLastUpdated(originParams)
-
-    override suspend fun getLatestPageKey(): Int? =
-        authorsDao.getPageKey(originParams)
-
-    override suspend fun append(entries: List<AuthorEntity>, pageKey: Int) {
-        authorsDao.addRemoteKey(originParams = originParams, pageKey = pageKey)
-        authorsDao.add(originParams = originParams, entries = entries)
-    }
-
-    override suspend fun <R> withTransaction(block: suspend () -> R): R {
-        return database.withTransaction(block)
+    override suspend fun append(entities: List<AuthorEntity>, pageKey: Int) {
+        datasource.insert(
+            entities = entities,
+            originParams = originParams,
+            pageKey = pageKey
+        )
     }
 
     override fun getPagingSource(): PagingSource<Int, AuthorEntity> {
-        return database.authorsDao()
-            .getAuthorsPagingSource(originParams)
+        return datasource.getAuthorsPagingSourceSortedByName(originParams)
+    }
+
+    override suspend fun refresh(entities: List<AuthorEntity>, pageKey: Int) {
+        datasource.refresh(
+            entities = entities,
+            originParams = originParams,
+            pageKey = pageKey
+        )
     }
 
 }

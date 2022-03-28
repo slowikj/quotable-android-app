@@ -11,7 +11,8 @@ import androidx.room.PrimaryKey
 )
 data class AuthorOriginEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @Embedded val originParams: AuthorOriginParams
+    @Embedded val originParams: AuthorOriginParams,
+    val lastUpdatedMillis: Long
 )
 
 data class AuthorOriginParams(
@@ -19,12 +20,8 @@ data class AuthorOriginParams(
     val searchPhrase: String = ""
 ) {
 
-    enum class Type(private val str: String) {
-        ALL("all"),
-        EXAMPLE_FROM_DASHBOARD("example_from_dashboard");
-
-        override fun toString(): String {
-            return str
-        }
+    enum class Type {
+        ALL,
+        EXAMPLE_FROM_DASHBOARD;
     }
 }

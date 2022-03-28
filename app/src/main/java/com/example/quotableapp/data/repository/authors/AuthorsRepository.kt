@@ -1,11 +1,9 @@
 package com.example.quotableapp.data.repository.authors
 
 import androidx.paging.*
-import androidx.room.withTransaction
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.converters.author.AuthorConverters
-import com.example.quotableapp.data.db.QuotableDatabase
-import com.example.quotableapp.data.db.dao.AuthorsDao
+import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.AuthorsService
@@ -31,8 +29,7 @@ interface AuthorsRepository {
 @ExperimentalPagingApi
 class DefaultAuthorsRepository @Inject constructor(
     private val authorsService: AuthorsService,
-    private val authorsDao: AuthorsDao,
-    private val quotableDatabase: QuotableDatabase,
+    private val authorsLocalDataSource: AuthorsLocalDataSource,
     private val authorsRemoteMediatorFactory: AuthorsRemoteMediatorFactory,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val authorConverters: AuthorConverters,
@@ -55,14 +52,13 @@ class DefaultAuthorsRepository @Inject constructor(
             apiResponseInterpreter { authorsService.fetchAuthor(slug) }
                 .mapCatching { it.results.first() }
                 .mapCatching { authorDTO ->
-                    authorsDao.addAuthors(listOf(authorConverters.toDb(authorDTO)))
+                    authorsLocalDataSource.insert(entities = listOf(authorConverters.toDb(authorDTO)))
                 }
         }
     }
 
-    override fun getAuthorFlow(slug: String): Flow<Author> = authorsDao
+    override fun getAuthorFlow(slug: String): Flow<Author> = authorsLocalDataSource
         .getAuthorFlow(slug)
-        .distinctUntilChanged()
         .filterNotNull()
         .map(authorConverters::toDomain)
         .flowOn(coroutineDispatchers.IO)
@@ -95,31 +91,26 @@ class DefaultAuthorsRepository @Inject constructor(
                     sortBy = AuthorsService.SortByType.QuoteCount,
                     orderType = AuthorsService.OrderType.Desc
                 )
-            }.mapCatching { authorsResponseDTO -> addFirstQuotesToDatabase(authorsResponseDTO) }
+            }.mapCatching { authorsResponseDTO ->
+                refreshFirstQuotesToDatabase(authorsResponseDTO)
+            }
         }
     }
 
-    override val firstAuthorsFlow: Flow<List<Author>> = authorsDao
+    override val firstAuthorsFlow: Flow<List<Author>> = authorsLocalDataSource
         .getAuthorsSortedByQuoteCountDesc(
             originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
             limit = FIRST_AUTHORS_LIMIT
         )
-        .distinctUntilChanged()
-        .filterNotNull()
+        .filterNot { it.isEmpty() }
         .map { list -> list.map(authorConverters::toDomain) }
         .flowOn(coroutineDispatchers.IO)
 
-    private suspend fun addFirstQuotesToDatabase(responseDTO: AuthorsResponseDTO): Unit =
+    private suspend fun refreshFirstQuotesToDatabase(responseDTO: AuthorsResponseDTO): Unit =
         withContext(coroutineDispatchers.IO) {
-            quotableDatabase.withTransaction {
-                authorsDao.addRemoteKey(
-                    originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
-                    pageKey = 0
-                )
-                authorsDao.add(
-                    entries = responseDTO.results.map(authorConverters::toDb),
-                    originParams = FIRST_AUTHORS_ORIGIN_PARAMS
-                )
-            }
+            authorsLocalDataSource.refresh(
+                entities = responseDTO.results.map(authorConverters::toDb),
+                originParams = FIRST_AUTHORS_ORIGIN_PARAMS
+            )
         }
 }
