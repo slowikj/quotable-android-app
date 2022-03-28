@@ -56,7 +56,6 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     override fun getQuoteFlow(id: String): Flow<Quote> = quotesLocalDataSource
         .getQuoteFlow(id)
-        .distinctUntilChanged()
         .filterNotNull()
         .map(quoteConverters::toDomain)
         .flowOn(coroutineDispatchers.IO)
