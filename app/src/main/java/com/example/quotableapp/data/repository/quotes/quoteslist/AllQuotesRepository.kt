@@ -17,6 +17,7 @@ import com.example.quotableapp.data.repository.common.IntPagedRemoteService
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediator
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -65,6 +66,7 @@ class DefaultAllQuotesRepository @Inject constructor(
             originParams = firstQuotesParams,
             limit = FIRST_QUOTES_LIMIT
         )
+        .filterNot { it.isEmpty() }
         .map { quotes -> quotes.map(quotesConverters::toDomain) }
         .flowOn(coroutineDispatchers.IO)
 

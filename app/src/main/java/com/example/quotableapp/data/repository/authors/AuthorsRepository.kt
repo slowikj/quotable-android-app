@@ -10,10 +10,7 @@ import com.example.quotableapp.data.network.AuthorsService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -105,6 +102,7 @@ class DefaultAuthorsRepository @Inject constructor(
             originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
             limit = FIRST_AUTHORS_LIMIT
         )
+        .filterNot { it.isEmpty() }
         .map { list -> list.map(authorConverters::toDomain) }
         .flowOn(coroutineDispatchers.IO)
 
