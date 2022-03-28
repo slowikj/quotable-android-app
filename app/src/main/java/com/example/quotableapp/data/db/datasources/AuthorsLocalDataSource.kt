@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 class AuthorsLocalDataSource @Inject constructor(database: QuotableDatabase) :
-    BaseDataSource<AuthorsDao, AuthorEntity, AuthorOriginEntity, AuthorOriginParams>(database) {
+    BasePagedDataSource<AuthorsDao, AuthorEntity, AuthorOriginEntity, AuthorOriginParams, AuthorRemoteKeyEntity>(
+        database
+    ) {
 
     override val dao: AuthorsDao = database.authorsDao()
 
@@ -36,44 +38,16 @@ class AuthorsLocalDataSource @Inject constructor(database: QuotableDatabase) :
     suspend fun getPageKey(originParams: AuthorOriginParams): Int? =
         dao.getPageKey(originParams)
 
-    suspend fun refresh(
-        entities: List<AuthorEntity>,
-        originParams: AuthorOriginParams,
-        pageKey: Int,
-        lastUpdatedMillis: Long = System.currentTimeMillis()
-    ) = withTransaction {
-        deleteAll(originParams)
-        insert(
-            entities = entities,
-            originParams = originParams,
-            pageKey = pageKey,
-            lastUpdatedMillis = lastUpdatedMillis
-        )
-    }
-
-    suspend fun insert(
-        entities: List<AuthorEntity>,
-        originParams: AuthorOriginParams,
-        pageKey: Int,
-        lastUpdatedMillis: Long = System.currentTimeMillis()
-    ) = withTransaction {
-        val originId = insert(
-            entities = entities,
-            originParams = originParams,
-            lastUpdatedMillis = lastUpdatedMillis
-        )
+    override suspend fun insertOrUpdatePageKey(originId: Long, pageKey: Int) {
         dao.insert(AuthorRemoteKeyEntity(originId = originId, pageKey = pageKey))
     }
 
-    override suspend fun deleteAll(originParams: AuthorOriginParams) = withTransaction {
-        dao.deleteAllFromJoin(
-            type = originParams.type,
-            searchPhrase = originParams.searchPhrase,
-        )
-        dao.deletePageKey(
-            originType = originParams.type,
-            searchPhrase = originParams.searchPhrase,
-        )
+    override suspend fun deleteAllFromJoin(originParams: AuthorOriginParams) {
+        dao.deleteAllFromJoin(originParams)
+    }
+
+    override suspend fun deletePageKey(originParams: AuthorOriginParams) {
+        dao.deletePageKey(originParams)
     }
 
     override suspend fun getOriginId(originParams: AuthorOriginParams): Long? =

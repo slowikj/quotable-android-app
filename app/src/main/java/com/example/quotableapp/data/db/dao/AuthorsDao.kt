@@ -139,4 +139,7 @@ interface AuthorsDao : BaseDao<AuthorEntity, AuthorOriginEntity, AuthorOriginPar
         searchPhrase: String = ""
     )
 
+    suspend fun deleteAllFromJoin(originParams: AuthorOriginParams) =
+        deleteAllFromJoin(type = originParams.type, searchPhrase = originParams.searchPhrase)
+
 }

@@ -9,11 +9,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 class QuotesLocalDataSource @Inject constructor(database: QuotableDatabase) :
-    BaseDataSource<QuotesDao, QuoteEntity, QuoteOriginEntity, QuoteOriginParams>(database) {
+    BasePagedDataSource<QuotesDao, QuoteEntity, QuoteOriginEntity, QuoteOriginParams, QuoteRemoteKeyEntity>(database) {
 
     override val dao: QuotesDao = database.quotesDao()
 
-    fun getQuoteFlow(id: String): Flow<QuoteEntity> = dao.getQuoteFlow(id).distinctUntilChanged()
+    fun getQuoteFlow(id: String): Flow<QuoteEntity> = dao
+        .getQuoteFlow(id)
+        .distinctUntilChanged()
 
     fun getQuotesPagingSourceSortedByAuthor(
         originParams: QuoteOriginParams
@@ -25,42 +27,21 @@ class QuotesLocalDataSource @Inject constructor(database: QuotableDatabase) :
         originParams: QuoteOriginParams,
         limit: Int = 1,
     ): Flow<List<QuoteEntity>> {
-        return dao.getFirstQuotesSortedById(originParams = originParams, limit = limit)
+        return dao
+            .getFirstQuotesSortedById(originParams = originParams, limit = limit)
             .distinctUntilChanged()
     }
 
-    suspend fun refresh(
-        entities: List<QuoteEntity>,
-        originParams: QuoteOriginParams,
-        pageKey: Int,
-        lastUpdatedMillis: Long = System.currentTimeMillis()
-    ) = withTransaction {
-        deleteAll(originParams)
-        insert(
-            entities = entities,
-            originParams = originParams,
-            pageKey = pageKey,
-            lastUpdatedMillis = lastUpdatedMillis
-        )
-    }
-
-    suspend fun insert(
-        entities: List<QuoteEntity>,
-        originParams: QuoteOriginParams,
-        pageKey: Int,
-        lastUpdatedMillis: Long = System.currentTimeMillis()
-    ) = withTransaction {
-        val originId = insert(
-            entities = entities,
-            originParams = originParams,
-            lastUpdatedMillis = lastUpdatedMillis
-        )
-        dao.insert(QuoteRemoteKeyEntity(originId = originId, pageKey = pageKey))
-    }
-
-    override suspend fun deleteAll(originParams: QuoteOriginParams) = withTransaction {
+    override suspend fun deleteAllFromJoin(originParams: QuoteOriginParams) {
         dao.deleteAllFromJoin(originParams)
+    }
+
+    override suspend fun deletePageKey(originParams: QuoteOriginParams) {
         dao.deletePageKey(originParams)
+    }
+
+    override suspend fun insertOrUpdatePageKey(originId: Long, pageKey: Int) {
+        dao.insert(QuoteRemoteKeyEntity(originId = originId, pageKey = pageKey))
     }
 
     suspend fun getPageKey(
