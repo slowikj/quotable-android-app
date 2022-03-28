@@ -69,7 +69,7 @@ class TagsDaoTest {
     }
 
     @Test
-    fun when_TagOriginEntityIsAbsent_thenReturnNullForLastUpdated() = runBlocking {
+    fun when_TagOriginEntityIsAbsent_then_ReturnNullForLastUpdated() = runBlocking {
         // ARRANGE
         val absentTagType = TagOriginParams(type = TagOriginParams.Type.ALL)
 

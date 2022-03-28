@@ -131,7 +131,7 @@ class QuotesDaoTest {
     // ORIGIN --------------------------------
 
     @Test
-    fun when_InsertedNewOrigin_thenGetterReturnsNotNullOriginId() = runBlocking {
+    fun when_InsertedNewOrigin_then_GetterReturnsNotNullOriginId() = runBlocking {
         // ARRANGE
         val originParams = QuoteOriginParams(
             type = QuoteOriginParams.Type.ALL,
@@ -234,7 +234,7 @@ class QuotesDaoTest {
     }
 
     @Test
-    fun when_AddedSeveralQuotesOfSameOrigin_thenGetFirstQuotesReturnsThem() = runBlocking {
+    fun when_AddedSeveralQuotesOfSameOrigin_then_GetFirstQuotesReturnsThem() = runBlocking {
         // ARRANGE
         val originParams = QuoteOriginParams(
             type = QuoteOriginParams.Type.OF_AUTHOR,

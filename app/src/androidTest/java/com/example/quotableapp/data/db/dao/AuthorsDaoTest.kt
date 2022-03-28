@@ -171,7 +171,7 @@ class AuthorsDaoTest {
     }
 
     @Test
-    fun when_AddedOrigin_thenReturnIdNonNull() = runBlocking {
+    fun when_AddedOrigin_then_ReturnIdNonNull() = runBlocking {
         // ARRANGE
         val originParams = AuthorOriginParams(
             AuthorOriginParams.Type.ALL,
