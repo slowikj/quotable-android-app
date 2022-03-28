@@ -8,6 +8,7 @@ import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.entities.quote.*
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -441,5 +442,17 @@ class QuotesDaoTest {
         quotesDao.getQuoteFlow(quoteEntity.id).test {
             assertThat(awaitItem()).isEqualTo(quoteEntity)
         }
+    }
+
+    @Test
+    fun when_NoQuoteOfIdExists_then_ReturnNull() = runBlocking {
+        // ARRANGE
+        val quoteId = "123"
+
+        // ACT
+        val quoteFlow: Flow<QuoteEntity?> = quotesDao.getQuoteFlow(quoteId)
+
+        // ASSERT
+        assertThat(quoteFlow.first()).isEqualTo(null)
     }
 }

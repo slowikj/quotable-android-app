@@ -13,7 +13,7 @@ class QuotesLocalDataSource @Inject constructor(database: QuotableDatabase) :
 
     override val dao: QuotesDao = database.quotesDao()
 
-    fun getQuoteFlow(id: String): Flow<QuoteEntity> = dao
+    fun getQuoteFlow(id: String): Flow<QuoteEntity?> = dao
         .getQuoteFlow(id)
         .distinctUntilChanged()
 

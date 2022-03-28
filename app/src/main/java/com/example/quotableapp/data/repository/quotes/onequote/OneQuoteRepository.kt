@@ -40,8 +40,7 @@ class DefaultOneQuoteRepository @Inject constructor(
             originParams = randomQuoteOriginParams,
             limit = 1
         )
-        .distinctUntilChanged()
-        .filterNot { it.isNullOrEmpty() }
+        .filterNot { it.isEmpty() }
         .map { it.first() }
         .map(quoteConverters::toDomain)
         .flowOn(coroutineDispatchers.IO)
@@ -58,6 +57,7 @@ class DefaultOneQuoteRepository @Inject constructor(
     override fun getQuoteFlow(id: String): Flow<Quote> = quotesLocalDataSource
         .getQuoteFlow(id)
         .distinctUntilChanged()
+        .filterNotNull()
         .map(quoteConverters::toDomain)
         .flowOn(coroutineDispatchers.IO)
 
@@ -70,7 +70,7 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     private suspend fun updateDatabaseWithRandomQuote(quoteDTO: QuoteDTO): Unit =
         withContext(coroutineDispatchers.IO) {
-            quotesLocalDataSource.insert(
+            quotesLocalDataSource.refresh(
                 entities = listOf(quoteConverters.toDb(quoteDTO)),
                 originParams = randomQuoteOriginParams
             )

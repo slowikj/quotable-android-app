@@ -11,7 +11,7 @@ interface QuotesDao : BaseDao<QuoteEntity, QuoteOriginEntity, QuoteOriginParams>
     @Query(
         "SELECT * FROM quotes WHERE id = :id"
     )
-    fun getQuoteFlow(id: String): Flow<QuoteEntity>
+    fun getQuoteFlow(id: String): Flow<QuoteEntity?>
 
     @Transaction
     @Query(

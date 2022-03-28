@@ -11,7 +11,7 @@ interface AuthorsDao : BaseDao<AuthorEntity, AuthorOriginEntity, AuthorOriginPar
     @Query(
         "SELECT * from authors WHERE slug = :slug"
     )
-    fun getAuthorFlow(slug: String): Flow<AuthorEntity>
+    fun getAuthorFlow(slug: String): Flow<AuthorEntity?>
 
     @Transaction
     @Query(

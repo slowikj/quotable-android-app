@@ -11,6 +11,7 @@ import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -61,6 +62,7 @@ class DefaultAuthorsRepository @Inject constructor(
 
     override fun getAuthorFlow(slug: String): Flow<Author> = authorsLocalDataSource
         .getAuthorFlow(slug)
+        .filterNotNull()
         .map(authorConverters::toDomain)
         .flowOn(coroutineDispatchers.IO)
 

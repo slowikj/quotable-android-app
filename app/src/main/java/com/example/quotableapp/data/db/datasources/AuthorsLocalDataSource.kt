@@ -15,7 +15,7 @@ class AuthorsLocalDataSource @Inject constructor(database: QuotableDatabase) :
 
     override val dao: AuthorsDao = database.authorsDao()
 
-    fun getAuthorFlow(slug: String): Flow<AuthorEntity> =
+    fun getAuthorFlow(slug: String): Flow<AuthorEntity?> =
         dao.getAuthorFlow(slug).distinctUntilChanged()
 
     fun getAuthorsPagingSourceSortedByName(
