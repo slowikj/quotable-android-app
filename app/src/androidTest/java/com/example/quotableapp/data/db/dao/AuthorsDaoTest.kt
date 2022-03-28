@@ -40,11 +40,11 @@ class AuthorsDaoTest {
         // ARRANGE
         val key = 123
         val lastUpdatedMillis: Long = 1234
-        val originType = AuthorOriginParams.Type.ALL
-        val searchPhrase = "xzy"
+        val originParams =
+            AuthorOriginParams(type = AuthorOriginParams.Type.ALL, searchPhrase = "xzy")
         val originId = authorsDao.insert(
             AuthorOriginEntity(
-                originParams = AuthorOriginParams(type = originType, searchPhrase = searchPhrase),
+                originParams = originParams,
                 lastUpdatedMillis = lastUpdatedMillis
             )
         )
@@ -53,12 +53,7 @@ class AuthorsDaoTest {
         authorsDao.insert(AuthorRemoteKeyEntity(originId = originId, pageKey = key))
 
         // ASSERT
-        assertThat(
-            authorsDao.getPageKey(
-                originType = originType,
-                searchPhrase = searchPhrase
-            )
-        ).isEqualTo(key)
+        assertThat(authorsDao.getPageKey(originParams)).isEqualTo(key)
     }
 
     @Test
@@ -79,49 +74,39 @@ class AuthorsDaoTest {
 
         // ACT
         authorsDao.insert(AuthorRemoteKeyEntity(originId = originId, pageKey = key))
-        authorsDao.deletePageKey(
-            originType = originParams.type,
-            searchPhrase = originParams.searchPhrase
-        )
+        authorsDao.deletePageKey(originParams)
 
         // ASSERT
-        assertThat(
-            authorsDao.getPageKey(
-                originType = originParams.type,
-                searchPhrase = originParams.searchPhrase
-            )
-        ).isNull()
+        assertThat(authorsDao.getPageKey(originParams)).isNull()
     }
 
     @Test
-    fun when_RemoteKeyWasUpdated_then_returnNewValue() = runBlocking {
-        // ARRANGE
-        val originEntity = AuthorOriginEntity(
-            id = 1,
-            originParams = AuthorOriginParams(
-                type = AuthorOriginParams.Type.ALL,
-                searchPhrase = ""
-            ),
-            lastUpdatedMillis = 123
+    fun when_RemoteKeyWasUpdated_then_returnNewValue() {
+        val originParams = AuthorOriginParams(
+            type = AuthorOriginParams.Type.ALL,
+            searchPhrase = ""
         )
-        val initRemoteKeyEntity = AuthorRemoteKeyEntity(
-            originId = originEntity.id, pageKey = 0
-        )
-        val newPageKey = 3
-
-        authorsDao.insert(originEntity)
-        authorsDao.insert(initRemoteKeyEntity)
-
-        // ACT
-        authorsDao.insert(initRemoteKeyEntity.copy(pageKey = newPageKey))
-
-        // ASSERT
-        assertThat(
-            authorsDao.getPageKey(
-                originType = originEntity.originParams.type,
-                searchPhrase = originEntity.originParams.searchPhrase
+        return runBlocking {
+            // ARRANGE
+            val originEntity = AuthorOriginEntity(
+                id = 1,
+                originParams = originParams,
+                lastUpdatedMillis = 123
             )
-        ).isEqualTo(newPageKey)
+            val initRemoteKeyEntity = AuthorRemoteKeyEntity(
+                originId = originEntity.id, pageKey = 0
+            )
+            val newPageKey = 3
+
+            authorsDao.insert(originEntity)
+            authorsDao.insert(initRemoteKeyEntity)
+
+            // ACT
+            authorsDao.insert(initRemoteKeyEntity.copy(pageKey = newPageKey))
+
+            // ASSERT
+            assertThat(authorsDao.getPageKey(originParams)).isEqualTo(newPageKey)
+        }
     }
 
     // ORIGIN --------------------------------
@@ -143,12 +128,7 @@ class AuthorsDaoTest {
         )
 
         // ASSERT
-        assertThat(
-            authorsDao.getOriginId(
-                type = originParams.type,
-                searchPhrase = originParams.searchPhrase
-            )
-        ).isEqualTo(originId)
+        assertThat(authorsDao.getOriginId(originParams)).isEqualTo(originId)
     }
 
     @Test
@@ -173,18 +153,13 @@ class AuthorsDaoTest {
         )
 
         // ASSERT
-        assertThat(
-            authorsDao.getLastUpdatedMillis(
-                type = originParams.type,
-                searchPhrase = originParams.searchPhrase
-            )
-        ).isEqualTo(secondLastUpdatedMillis)
+        assertThat(authorsDao.getLastUpdatedMillis(originParams)).isEqualTo(secondLastUpdatedMillis)
     }
 
     @Test
     fun when_AbsentOrigin_then_LastUpdatedReturnsNullForIt() = runBlocking {
         // ARRANGE
-        val params = AuthorOriginParams(
+        val originParams = AuthorOriginParams(
             type = AuthorOriginParams.Type.ALL,
             "xyz"
         )
@@ -192,12 +167,7 @@ class AuthorsDaoTest {
         // ACT
 
         // ASSERT
-        assertThat(
-            authorsDao.getPageKey(
-                originType = params.type,
-                searchPhrase = params.searchPhrase
-            )
-        ).isNull()
+        assertThat(authorsDao.getPageKey(originParams)).isNull()
     }
 
     @Test
@@ -216,10 +186,7 @@ class AuthorsDaoTest {
         )
 
         // ACT
-        val res = authorsDao.getOriginId(
-            type = originParams.type,
-            searchPhrase = originParams.searchPhrase
-        )
+        val res = authorsDao.getOriginId(originParams)
 
         // ASSERT
         assertThat(res).isNotNull()
@@ -236,12 +203,7 @@ class AuthorsDaoTest {
         // ACT
 
         // ASSERT
-        assertThat(
-            authorsDao.getOriginId(
-                type = originParams.type,
-                searchPhrase = originParams.searchPhrase
-            )
-        ).isNull()
+        assertThat(authorsDao.getOriginId(originParams)).isNull()
     }
 
     @Test
@@ -267,7 +229,7 @@ class AuthorsDaoTest {
         }
 
         // ASSERT
-        origins.map { authorsDao.getOriginId(type = it.type, searchPhrase = it.searchPhrase) }
+        origins.map { authorsDao.getOriginId(it) }
             .forEach { assertThat(it).isNotNull() }
     }
 
@@ -324,10 +286,7 @@ class AuthorsDaoTest {
 
         // ASSERT
         val resFlows = allOriginParams.map {
-            authorsDao.getAuthorsSortedByQuoteCountDesc(
-                originType = it.type,
-                searchPhrase = it.searchPhrase
-            )
+            authorsDao.getAuthorsSortedByQuoteCountDesc(it)
         }
         for ((expectedAuthors, resultAuthors) in authorsPerOrigin.zip(resFlows)) {
             resultAuthors.test {
@@ -356,10 +315,7 @@ class AuthorsDaoTest {
             }
 
             // ASSERT
-            val pagingSource = authorsDao.getAuthorsPagingSourceSortedByName(
-                type = originParams.type,
-                searchPhrase = originParams.searchPhrase
-            )
+            val pagingSource = authorsDao.getAuthorsPagingSourceSortedByName(originParams)
             val loadResult = pagingSource.load(
                 PagingSource.LoadParams.Refresh(
                     key = 0,

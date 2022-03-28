@@ -1,10 +1,8 @@
 package com.example.quotableapp.data.repository.quotes.onequote
 
-import androidx.room.withTransaction
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.converters.quote.QuoteConverters
-import com.example.quotableapp.data.db.QuotableDatabase
-import com.example.quotableapp.data.db.dao.QuotesDao
+import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.QuotesService
@@ -28,7 +26,7 @@ class DefaultOneQuoteRepository @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val quotesService: QuotesService,
     private val quoteConverters: QuoteConverters,
-    private val quotableDatabase: QuotableDatabase,
+    private val quotesLocalDataSource: QuotesLocalDataSource,
     private val apiResponseInterpreter: ApiResponseInterpreter
 ) : OneQuoteRepository {
 
@@ -37,11 +35,9 @@ class DefaultOneQuoteRepository @Inject constructor(
             QuoteOriginParams(type = QuoteOriginParams.Type.RANDOM)
     }
 
-    private val quotesDao: QuotesDao = quotableDatabase.quotesDao()
-
-    override val randomQuote: Flow<Quote> = quotesDao
+    override val randomQuote: Flow<Quote> = quotesLocalDataSource
         .getFirstQuotesSortedById(
-            params = randomQuoteOriginParams,
+            originParams = randomQuoteOriginParams,
             limit = 1
         )
         .distinctUntilChanged()
@@ -54,12 +50,12 @@ class DefaultOneQuoteRepository @Inject constructor(
         return withContext(coroutineDispatchers.IO) {
             apiResponseInterpreter { quotesService.fetchQuote(id) }
                 .mapCatching { quoteDTO ->
-                    quotesDao.addQuotes(listOf(quoteConverters.toDb(quoteDTO)))
+                    quotesLocalDataSource.insert(listOf(quoteConverters.toDb(quoteDTO)))
                 }
         }
     }
 
-    override fun getQuoteFlow(id: String): Flow<Quote> = quotesDao
+    override fun getQuoteFlow(id: String): Flow<Quote> = quotesLocalDataSource
         .getQuoteFlow(id)
         .distinctUntilChanged()
         .map(quoteConverters::toDomain)
@@ -74,18 +70,9 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     private suspend fun updateDatabaseWithRandomQuote(quoteDTO: QuoteDTO): Unit =
         withContext(coroutineDispatchers.IO) {
-            quotableDatabase.withTransaction {
-                quotesDao.apply {
-                    deleteQuoteEntriesFrom(originParams = randomQuoteOriginParams)
-                    insertRemotePageKey(
-                        originParams = randomQuoteOriginParams,
-                        key = 0
-                    )
-                    addQuotes(
-                        originParams = randomQuoteOriginParams,
-                        quotes = listOf(quoteConverters.toDb(quoteDTO))
-                    )
-                }
-            }
+            quotesLocalDataSource.insert(
+                entities = listOf(quoteConverters.toDb(quoteDTO)),
+                originParams = randomQuoteOriginParams
+            )
         }
 }

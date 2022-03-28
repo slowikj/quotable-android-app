@@ -14,7 +14,7 @@ interface BaseDao<Entity, OriginEntity, OriginParams> {
 
     // Origin
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(origin: OriginEntity): Long
 
     @Update

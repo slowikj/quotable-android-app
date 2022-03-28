@@ -11,7 +11,8 @@ import androidx.room.PrimaryKey
 )
 data class QuoteOriginEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @Embedded val params: QuoteOriginParams
+    @Embedded val params: QuoteOriginParams,
+    val lastUpdatedMillis: Long
 )
 
 data class QuoteOriginParams(

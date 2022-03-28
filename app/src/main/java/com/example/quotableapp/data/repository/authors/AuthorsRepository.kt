@@ -3,7 +3,7 @@ package com.example.quotableapp.data.repository.authors
 import androidx.paging.*
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.converters.author.AuthorConverters
-import com.example.quotableapp.data.db.datasources.AuthorsDataSource
+import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.AuthorsService
@@ -32,7 +32,7 @@ interface AuthorsRepository {
 @ExperimentalPagingApi
 class DefaultAuthorsRepository @Inject constructor(
     private val authorsService: AuthorsService,
-    private val authorsDataSource: AuthorsDataSource,
+    private val authorsLocalDataSource: AuthorsLocalDataSource,
     private val authorsRemoteMediatorFactory: AuthorsRemoteMediatorFactory,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val authorConverters: AuthorConverters,
@@ -55,12 +55,12 @@ class DefaultAuthorsRepository @Inject constructor(
             apiResponseInterpreter { authorsService.fetchAuthor(slug) }
                 .mapCatching { it.results.first() }
                 .mapCatching { authorDTO ->
-                    authorsDataSource.insert(entities = listOf(authorConverters.toDb(authorDTO)))
+                    authorsLocalDataSource.insert(entities = listOf(authorConverters.toDb(authorDTO)))
                 }
         }
     }
 
-    override fun getAuthorFlow(slug: String): Flow<Author> = authorsDataSource
+    override fun getAuthorFlow(slug: String): Flow<Author> = authorsLocalDataSource
         .getAuthorFlow(slug)
         .filterNotNull()
         .map(authorConverters::toDomain)
@@ -98,7 +98,7 @@ class DefaultAuthorsRepository @Inject constructor(
         }
     }
 
-    override val firstAuthorsFlow: Flow<List<Author>> = authorsDataSource
+    override val firstAuthorsFlow: Flow<List<Author>> = authorsLocalDataSource
         .getAuthorsSortedByQuoteCountDesc(
             originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
             limit = FIRST_AUTHORS_LIMIT
@@ -109,7 +109,7 @@ class DefaultAuthorsRepository @Inject constructor(
 
     private suspend fun refreshFirstQuotesToDatabase(responseDTO: AuthorsResponseDTO): Unit =
         withContext(coroutineDispatchers.IO) {
-            authorsDataSource.refresh(
+            authorsLocalDataSource.refresh(
                 entities = responseDTO.results.map(authorConverters::toDb),
                 originParams = FIRST_AUTHORS_ORIGIN_PARAMS
             )

@@ -13,15 +13,11 @@ import androidx.room.Index
             entity = QuoteEntity::class,
             parentColumns = ["id"],
             childColumns = ["quoteId"],
-            onDelete = ForeignKey.NO_ACTION,
-            onUpdate = ForeignKey.NO_ACTION
         ),
         ForeignKey(
             entity = QuoteOriginEntity::class,
             parentColumns = ["id"],
             childColumns = ["originId"],
-            onDelete = ForeignKey.NO_ACTION,
-            onUpdate = ForeignKey.NO_ACTION,
         )
     ]
 )

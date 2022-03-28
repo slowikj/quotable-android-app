@@ -26,6 +26,13 @@ interface AuthorsDao : BaseDao<AuthorEntity, AuthorOriginEntity, AuthorOriginPar
         searchPhrase: String = ""
     ): PagingSource<Int, AuthorEntity>
 
+    fun getAuthorsPagingSourceSortedByName(
+        originParams: AuthorOriginParams
+    ): PagingSource<Int, AuthorEntity> = getAuthorsPagingSourceSortedByName(
+        type = originParams.type,
+        searchPhrase = originParams.searchPhrase
+    )
+
     @Transaction
     @Query(
         "SELECT * from authors where slug in (" +
@@ -41,6 +48,17 @@ interface AuthorsDao : BaseDao<AuthorEntity, AuthorOriginEntity, AuthorOriginPar
         limit: Int = Int.MAX_VALUE
     ): Flow<List<AuthorEntity>>
 
+    fun getAuthorsSortedByQuoteCountDesc(
+        originParams: AuthorOriginParams,
+        limit: Int = Int.MAX_VALUE
+    ): Flow<List<AuthorEntity>> = getAuthorsSortedByQuoteCountDesc(
+        originType = originParams.type,
+        searchPhrase = originParams.searchPhrase,
+        limit = limit
+    )
+
+    // origin
+
     @Query(
         "SELECT id from author_origins " +
                 "WHERE type = :type AND searchPhrase = :searchPhrase"
@@ -50,6 +68,12 @@ interface AuthorsDao : BaseDao<AuthorEntity, AuthorOriginEntity, AuthorOriginPar
         searchPhrase: String = ""
     ): Long?
 
+    suspend fun getOriginId(originParams: AuthorOriginParams): Long? =
+        getOriginId(
+            type = originParams.type,
+            searchPhrase = originParams.searchPhrase,
+        )
+
     @Query(
         "SELECT lastUpdatedMillis from author_origins " +
                 " WHERE type = :type AND searchPhrase = :searchPhrase"
@@ -58,6 +82,13 @@ interface AuthorsDao : BaseDao<AuthorEntity, AuthorOriginEntity, AuthorOriginPar
         type: AuthorOriginParams.Type,
         searchPhrase: String = ""
     ): Long?
+
+    suspend fun getLastUpdatedMillis(
+        originParams: AuthorOriginParams
+    ): Long? = getLastUpdatedMillis(
+        type = originParams.type,
+        searchPhrase = originParams.searchPhrase
+    )
 
     // Remote key
 
@@ -74,6 +105,11 @@ interface AuthorsDao : BaseDao<AuthorEntity, AuthorOriginEntity, AuthorOriginPar
         searchPhrase: String = ""
     ): Int?
 
+    suspend fun getPageKey(originParams: AuthorOriginParams): Int? = getPageKey(
+        originType = originParams.type,
+        searchPhrase = originParams.searchPhrase,
+    )
+
     @Query(
         "DELETE FROM author_remote_keys " +
                 "WHERE originId = (SELECT id from author_origins WHERE type = :originType AND searchPhrase = :searchPhrase)"
@@ -82,6 +118,10 @@ interface AuthorsDao : BaseDao<AuthorEntity, AuthorOriginEntity, AuthorOriginPar
         originType: AuthorOriginParams.Type,
         searchPhrase: String = ""
     )
+
+    suspend fun deletePageKey(originParams: AuthorOriginParams) {
+        deletePageKey(originType = originParams.type, searchPhrase = originParams.searchPhrase)
+    }
 
     // Join
 

@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
-class AuthorsDataSource @Inject constructor(database: QuotableDatabase) :
+class AuthorsLocalDataSource @Inject constructor(database: QuotableDatabase) :
     BaseDataSource<AuthorsDao, AuthorEntity, AuthorOriginEntity, AuthorOriginParams>(database) {
 
     override val dao: AuthorsDao = database.authorsDao()
@@ -19,49 +19,63 @@ class AuthorsDataSource @Inject constructor(database: QuotableDatabase) :
     fun getAuthorsPagingSourceSortedByName(
         originParams: AuthorOriginParams
     ): PagingSource<Int, AuthorEntity> =
-        dao.getAuthorsPagingSourceSortedByName(
-            type = originParams.type,
-            searchPhrase = originParams.searchPhrase
-        )
+        dao.getAuthorsPagingSourceSortedByName(originParams)
 
     fun getAuthorsSortedByQuoteCountDesc(
         originParams: AuthorOriginParams,
         limit: Int = Int.MAX_VALUE
     ): Flow<List<AuthorEntity>> = dao.getAuthorsSortedByQuoteCountDesc(
-        originType = originParams.type,
-        searchPhrase = originParams.searchPhrase,
+        originParams = originParams,
         limit = limit
     ).distinctUntilChanged()
 
     override suspend fun getLastUpdatedMillis(
         originParams: AuthorOriginParams
-    ): Long? = dao.getLastUpdatedMillis(
-        type = originParams.type,
-        searchPhrase = originParams.searchPhrase
-    )
+    ): Long? = dao.getLastUpdatedMillis(originParams)
 
     suspend fun getPageKey(originParams: AuthorOriginParams): Int? =
-        dao.getPageKey(
-            originType = originParams.type,
-            searchPhrase = originParams.searchPhrase,
+        dao.getPageKey(originParams)
+
+    suspend fun refresh(
+        entities: List<AuthorEntity>,
+        originParams: AuthorOriginParams,
+        pageKey: Int,
+        lastUpdatedMillis: Long = System.currentTimeMillis()
+    ) = withTransaction {
+        deleteAll(originParams)
+        insert(
+            entities = entities,
+            originParams = originParams,
+            pageKey = pageKey,
+            lastUpdatedMillis = lastUpdatedMillis
         )
-
-    suspend fun refresh(entities: List<AuthorEntity>, originParams: AuthorOriginParams, pageKey: Int) = withTransaction {
-        deleteAll(originParams)
-        insert(entities = entities, originParams = originParams, pageKey = pageKey)
     }
 
-    suspend fun refresh(entities: List<AuthorEntity>, originParams: AuthorOriginParams) = withTransaction {
-        deleteAll(originParams)
-        insert(entities = entities, originParams = originParams)
-    }
+    suspend fun refresh(
+        entities: List<AuthorEntity>,
+        originParams: AuthorOriginParams,
+        lastUpdatedMillis: Long = System.currentTimeMillis()
+    ) =
+        withTransaction {
+            deleteAll(originParams)
+            insert(
+                entities = entities,
+                originParams = originParams,
+                lastUpdatedMillis = lastUpdatedMillis
+            )
+        }
 
     suspend fun insert(
         entities: List<AuthorEntity>,
         originParams: AuthorOriginParams,
-        pageKey: Int
+        pageKey: Int,
+        lastUpdatedMillis: Long = System.currentTimeMillis()
     ) = withTransaction {
-        val originId = insert(entities = entities, originParams = originParams)
+        val originId = insert(
+            entities = entities,
+            originParams = originParams,
+            lastUpdatedMillis = lastUpdatedMillis
+        )
         dao.insert(AuthorRemoteKeyEntity(originId = originId, pageKey = pageKey))
     }
 
@@ -77,10 +91,7 @@ class AuthorsDataSource @Inject constructor(database: QuotableDatabase) :
     }
 
     override suspend fun getOriginId(originParams: AuthorOriginParams): Long? =
-        dao.getOriginId(
-            type = originParams.type,
-            searchPhrase = originParams.searchPhrase,
-        )
+        dao.getOriginId(originParams)
 
     override suspend fun prepareOriginEntity(
         originParams: AuthorOriginParams,

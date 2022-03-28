@@ -12,11 +12,14 @@ abstract class BaseDataSource<Dao : BaseDao<Entity, OriginEntity, OriginParams>,
 
     suspend fun insert(entities: List<Entity>) = dao.insert(entities = entities)
 
-    suspend fun insert(entities: List<Entity>, originParams: OriginParams): Long = withTransaction {
-        val currentTime = System.currentTimeMillis()
+    suspend fun insert(
+        entities: List<Entity>,
+        originParams: OriginParams,
+        lastUpdatedMillis: Long = System.currentTimeMillis()
+    ): Long = withTransaction {
         val originId: Long = insertOrUpdate(
             originParams = originParams,
-            lastUpdatedMillis = currentTime
+            lastUpdatedMillis = lastUpdatedMillis
         )
         dao.insert(entities = entities)
         insertIntoJoinTable(entities = entities, originId = originId)

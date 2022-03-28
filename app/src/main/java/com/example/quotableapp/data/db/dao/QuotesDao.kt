@@ -6,22 +6,19 @@ import com.example.quotableapp.data.db.entities.quote.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface QuotesDao {
+interface QuotesDao : BaseDao<QuoteEntity, QuoteOriginEntity, QuoteOriginParams> {
 
-    // ONE QUOTE ---------------------------------------------------
     @Query(
         "SELECT * FROM quotes WHERE id = :id"
     )
     fun getQuoteFlow(id: String): Flow<QuoteEntity>
 
-    // QUOTES ---------------------------------------------------
-
     @Transaction
     @Query(
-        "SELECT quotes.* from " +
-                "(SELECT quoteId from quote_with_origin_join WHERE originId = " +
-                "(SELECT id FROM quote_origins WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase)) " +
-                "INNER JOIN quotes on quotes.id = quoteId " +
+        "SELECT * FROM quotes WHERE id IN (" +
+                "SELECT quoteId from quote_with_origin_join " +
+                "INNER JOIN quote_origins AS qo ON qo.id = quote_with_origin_join.originId " +
+                "WHERE qo.type = :type AND qo.value = :value AND qo.searchPhrase = :searchPhrase)" +
                 "ORDER BY quotes.author"
     )
     fun getQuotesPagingSourceSortedByAuthor(
@@ -30,22 +27,23 @@ interface QuotesDao {
         searchPhrase: String = ""
     ): PagingSource<Int, QuoteEntity>
 
+
     fun getQuotesPagingSourceSortedByAuthor(
-        params: QuoteOriginParams
+        originParams: QuoteOriginParams
     ): PagingSource<Int, QuoteEntity> {
         return getQuotesPagingSourceSortedByAuthor(
-            type = params.type,
-            value = params.value,
-            searchPhrase = params.searchPhrase
+            type = originParams.type,
+            value = originParams.value,
+            searchPhrase = originParams.searchPhrase
         )
     }
 
     @Transaction
     @Query(
-        "SELECT quotes.* FROM " +
-                "(SELECT quoteId from quote_with_origin_join WHERE originId = " +
-                "(SELECT id from quote_origins WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase)) " +
-                "INNER JOIN quotes on quotes.id = quoteId " +
+        "SELECT quotes.* FROM quotes WHERE id IN (" +
+                "SELECT quoteId from quote_with_origin_join " +
+                "INNER JOIN quote_origins AS qo ON qo.id = quote_with_origin_join.originId " +
+                "WHERE qo.type = :type AND qo.value = :value AND qo.searchPhrase = :searchPhrase) " +
                 "ORDER BY id " +
                 "LIMIT :limit"
     )
@@ -53,53 +51,22 @@ interface QuotesDao {
         type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
         value: String = "",
         searchPhrase: String = "",
-        limit: Int = 1,
+        limit: Int = Int.MAX_VALUE,
     ): Flow<List<QuoteEntity>>
 
     fun getFirstQuotesSortedById(
-        params: QuoteOriginParams,
-        limit: Int = 1,
+        originParams: QuoteOriginParams,
+        limit: Int = Int.MAX_VALUE,
     ): Flow<List<QuoteEntity>> {
         return getFirstQuotesSortedById(
-            type = params.type,
-            value = params.value,
-            searchPhrase = params.searchPhrase,
+            type = originParams.type,
+            value = originParams.value,
+            searchPhrase = originParams.searchPhrase,
             limit = limit
         )
     }
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addQuotes(quotes: List<QuoteEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun add(quoteWithOrigin: QuoteWithOriginJoin)
-
-    @Transaction
-    suspend fun addQuotes(originParams: QuoteOriginParams, quotes: List<QuoteEntity>) {
-        addOrigin(QuoteOriginEntity(params = originParams))
-        val originId = getOriginId(originParams)!!
-        addQuotes(quotes)
-        quotes.forEach { quote ->
-            add(QuoteWithOriginJoin(quoteId = quote.id, originId = originId))
-        }
-    }
-
-    @Query(
-        "DELETE from quote_with_origin_join " +
-                "WHERE originId = :originId"
-    )
-    suspend fun deleteQuoteEntriesFrom(originId: Long)
-
-    @Transaction
-    suspend fun deleteQuoteEntriesFrom(originParams: QuoteOriginParams) {
-        val originId = getOriginId(originParams)
-        originId?.let { deleteQuoteEntriesFrom(it) }
-    }
-
     // ORIGIN ---------------------------------------------------
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addOrigin(originEntity: QuoteOriginEntity)
 
     @Query(
         "SELECT id FROM quote_origins " +
@@ -111,11 +78,30 @@ interface QuotesDao {
         searchPhrase: String = ""
     ): Long?
 
-    suspend fun getOriginId(params: QuoteOriginParams): Long? {
+    suspend fun getOriginId(originParams: QuoteOriginParams): Long? {
         return getOriginId(
-            type = params.type,
-            value = params.value,
-            searchPhrase = params.searchPhrase
+            type = originParams.type,
+            value = originParams.value,
+            searchPhrase = originParams.searchPhrase
+        )
+    }
+
+    @Transaction
+    @Query(
+        "SELECT lastUpdatedMillis from quote_origins " +
+                "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase"
+    )
+    suspend fun getLastUpdatedMillis(
+        type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
+        value: String = "",
+        searchPhrase: String = ""
+    ): Long?
+
+    suspend fun getLastUpdatedMillis(originParams: QuoteOriginParams): Long? {
+        return getLastUpdatedMillis(
+            type = originParams.type,
+            value = originParams.value,
+            searchPhrase = originParams.searchPhrase
         )
     }
 
@@ -125,33 +111,21 @@ interface QuotesDao {
     suspend fun insert(quoteRemoteKeyEntity: QuoteRemoteKeyEntity)
 
     @Transaction
-    suspend fun insertRemotePageKey(originParams: QuoteOriginParams, key: Int) {
-        addOrigin(QuoteOriginEntity(params = originParams))
-        val originId = getOriginId(originParams)!!
-        val pageKeyEntity = QuoteRemoteKeyEntity(
-            originId = originId,
-            pageKey = key,
-            lastUpdated = System.currentTimeMillis()
-        )
-        insert(pageKeyEntity)
-    }
-
-    @Transaction
     @Query(
         "DELETE FROM quote_remote_keys " +
                 "WHERE originId = (SELECT id FROM quote_origins " +
                 "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase LIMIT 1)"
     )
-    suspend fun deletePageRemoteKey(
+    suspend fun deletePageKey(
         type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
         value: String = "",
         searchPhrase: String = ""
     )
 
-    suspend fun deletePageRemoteKey(
+    suspend fun deletePageKey(
         params: QuoteOriginParams
     ) {
-        return deletePageRemoteKey(
+        return deletePageKey(
             type = params.type,
             value = params.value,
             searchPhrase = params.searchPhrase
@@ -165,42 +139,44 @@ interface QuotesDao {
                 "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase " +
                 "LIMIT 1"
     )
-    suspend fun getRemotePageKey(
+    suspend fun getPageKey(
         type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
         value: String = "",
         searchPhrase: String = ""
     ): Int?
 
-    suspend fun getRemotePageKey(
+    suspend fun getPageKey(
         params: QuoteOriginParams
     ): Int? {
-        return getRemotePageKey(
+        return getPageKey(
             type = params.type,
             value = params.value,
             searchPhrase = params.searchPhrase
         )
     }
 
+    // JOIN ---------------------------------------------------
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(quoteWithOrigin: QuoteWithOriginJoin)
+
     @Transaction
     @Query(
-        "SELECT lastUpdated FROM quote_remote_keys " +
-                "INNER JOIN quote_origins on quote_origins.id = originId " +
-                "WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase " +
-                "LIMIT 1"
+        "DELETE FROM quote_with_origin_join " +
+                "WHERE originId IN (" +
+                "SELECT id FROM quote_origins WHERE type = :type AND value = :value AND searchPhrase = :searchPhrase)"
     )
-    suspend fun getLastUpdatedMillis(
-        type: QuoteOriginParams.Type = QuoteOriginParams.Type.ALL,
-        value: String = "",
-        searchPhrase: String = ""
-    ): Long?
+    suspend fun deleteAllFromJoin(
+        type: QuoteOriginParams.Type,
+        value: String,
+        searchPhrase: String
+    )
 
-    suspend fun getLastUpdatedMillis(
-        params: QuoteOriginParams
-    ): Long? {
-        return getLastUpdatedMillis(
-            type = params.type,
-            value = params.value,
-            searchPhrase = params.searchPhrase
+    suspend fun deleteAllFromJoin(originParams: QuoteOriginParams) {
+        deleteAllFromJoin(
+            type = originParams.type,
+            value = originParams.value,
+            searchPhrase = originParams.searchPhrase
         )
     }
 
