@@ -32,19 +32,6 @@ class QuotesLocalDataSource @Inject constructor(database: QuotableDatabase) :
     suspend fun refresh(
         entities: List<QuoteEntity>,
         originParams: QuoteOriginParams,
-        lastUpdatedMillis: Long = System.currentTimeMillis()
-    ) = withTransaction {
-        deleteAll(originParams = originParams)
-        insert(
-            entities = entities,
-            originParams = originParams,
-            lastUpdatedMillis = lastUpdatedMillis
-        )
-    }
-
-    suspend fun refresh(
-        entities: List<QuoteEntity>,
-        originParams: QuoteOriginParams,
         pageKey: Int,
         lastUpdatedMillis: Long = System.currentTimeMillis()
     ) = withTransaction {
@@ -71,7 +58,7 @@ class QuotesLocalDataSource @Inject constructor(database: QuotableDatabase) :
         dao.insert(QuoteRemoteKeyEntity(originId = originId, pageKey = pageKey))
     }
 
-    suspend fun deleteAll(originParams: QuoteOriginParams) = withTransaction {
+    override suspend fun deleteAll(originParams: QuoteOriginParams) = withTransaction {
         dao.deleteAllFromJoin(originParams)
         dao.deletePageKey(originParams)
     }

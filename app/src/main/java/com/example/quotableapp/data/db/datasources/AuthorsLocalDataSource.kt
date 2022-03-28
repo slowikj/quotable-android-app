@@ -51,20 +51,6 @@ class AuthorsLocalDataSource @Inject constructor(database: QuotableDatabase) :
         )
     }
 
-    suspend fun refresh(
-        entities: List<AuthorEntity>,
-        originParams: AuthorOriginParams,
-        lastUpdatedMillis: Long = System.currentTimeMillis()
-    ) =
-        withTransaction {
-            deleteAll(originParams)
-            insert(
-                entities = entities,
-                originParams = originParams,
-                lastUpdatedMillis = lastUpdatedMillis
-            )
-        }
-
     suspend fun insert(
         entities: List<AuthorEntity>,
         originParams: AuthorOriginParams,
@@ -79,7 +65,7 @@ class AuthorsLocalDataSource @Inject constructor(database: QuotableDatabase) :
         dao.insert(AuthorRemoteKeyEntity(originId = originId, pageKey = pageKey))
     }
 
-    suspend fun deleteAll(originParams: AuthorOriginParams) = withTransaction {
+    override suspend fun deleteAll(originParams: AuthorOriginParams) = withTransaction {
         dao.deleteAllFromJoin(
             type = originParams.type,
             searchPhrase = originParams.searchPhrase,

@@ -1,15 +1,14 @@
 package com.example.quotableapp.data.db.dao
 
-import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.example.quotableapp.data.DataTestUtil
 import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.entities.tag.TagEntity
 import com.example.quotableapp.data.db.entities.tag.TagOriginEntity
-import com.example.quotableapp.data.db.entities.tag.TagOriginType
+import com.example.quotableapp.data.db.entities.tag.TagOriginParams
+import com.example.quotableapp.data.db.entities.tag.TagWithOriginJoin
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -39,40 +38,40 @@ class TagsDaoTest {
     @Test
     fun when_AddedOriginEntity_then_ReturnSuccessfullyId() = runBlocking {
         // ARRANGE
-        val originType = TagOriginType.ALL
+        val originParams = TagOriginParams(type = TagOriginParams.Type.ALL)
         val originEntity = TagOriginEntity(
-            type = originType,
+            originParams = originParams,
             lastUpdatedMillis = 123
         )
 
         // ACT
-        tagsDao.add(originEntity)
+        tagsDao.insert(originEntity)
 
         // ASSERT
-        assertThat(tagsDao.getTagOriginId(originType)).isNotNull()
+        assertThat(tagsDao.getOriginId(originParams)).isNotNull()
     }
 
     @Test
     fun when_AddedOriginEntity_then_ReturnSuccessfullyLastUpdated() = runBlocking {
         // ARRANGE
-        val originType = TagOriginType.ALL
+        val originParams = TagOriginParams(type = TagOriginParams.Type.ALL)
         val lastUpdatedMillis = 123L
         val originEntity = TagOriginEntity(
-            type = originType,
+            originParams = originParams,
             lastUpdatedMillis = lastUpdatedMillis
         )
 
         // ACT
-        tagsDao.add(originEntity)
+        tagsDao.insert(originEntity)
 
         // ASSERT
-        assertThat(tagsDao.getLastUpdatedMillis(originType)).isEqualTo(lastUpdatedMillis)
+        assertThat(tagsDao.getLastUpdatedMillis(originParams)).isEqualTo(lastUpdatedMillis)
     }
 
     @Test
     fun when_TagOriginEntityIsAbsent_thenReturnNullForLastUpdated() = runBlocking {
         // ARRANGE
-        val absentTagType = TagOriginType.ALL
+        val absentTagType = TagOriginParams(type = TagOriginParams.Type.ALL)
 
         // ACT
 
@@ -83,12 +82,12 @@ class TagsDaoTest {
     @Test
     fun when_AbsentOrigin_then_ReturnNullForId() = runBlocking {
         // ARRANGE
-        val absentTagType = TagOriginType.ALL
+        val absentTagType = TagOriginParams(type = TagOriginParams.Type.ALL)
 
         // ACT
 
         // ASSERT
-        assertThat(tagsDao.getTagOriginId(absentTagType)).isNull()
+        assertThat(tagsDao.getOriginId(absentTagType)).isNull()
     }
 
     @Test
@@ -99,30 +98,30 @@ class TagsDaoTest {
             TagEntity(id = "1223", name = "ax", quoteCount = 1233),
             TagEntity(id = "12223", name = "axx", quoteCount = 1233),
         )
-        val originType = TagOriginType.DASHBOARD_EXEMPLARY
+        val originParams = TagOriginParams(type = TagOriginParams.Type.DASHBOARD_EXEMPLARY)
 
         // ACT
-        tagsDao.add(tags = tags, originType = originType)
+        insert(originParams, tags, lastUpdatedMillis = 333)
 
         // ASSERT
-        tagsDao.getTags(type = originType).test {
+        tagsDao.getTagsSortedByName(originParams = originParams).test {
             assertThat(awaitItem()).isEqualTo(tags.sortedBy { it.name })
             cancelAndConsumeRemainingEvents()
         }
-        assertThat(tagsDao.getTagOriginId(originType)).isNotNull()
+        assertThat(tagsDao.getOriginId(originParams)).isNotNull()
     }
 
     @Test
     fun when_AddedTagsFromMultipleOrigins_then_GetReturnOnlyTagsRelatedToQueryOrigin() =
         runBlocking {
             // ARRANGE
-            val firstOriginType = TagOriginType.DASHBOARD_EXEMPLARY
+            val firstOriginParams = TagOriginParams(type = TagOriginParams.Type.DASHBOARD_EXEMPLARY)
             val tagsFromFirstOrigin = listOf(
                 TagEntity(id = "1", name = "x", quoteCount = 123),
                 TagEntity(id = "2", name = "y", quoteCount = 1233),
                 TagEntity(id = "3", name = "z", quoteCount = 1233),
             )
-            val secondOriginType = TagOriginType.ALL
+            val secondOriginParams = TagOriginParams(type = TagOriginParams.Type.ALL)
             val tagsFromSecondOrigin = listOf(
                 TagEntity(id = "878", name = "asasd", quoteCount = 123),
                 TagEntity(id = "1", name = "x", quoteCount = 1233),
@@ -132,50 +131,63 @@ class TagsDaoTest {
             )
 
             // ACT
-            tagsDao.add(tags = tagsFromFirstOrigin, originType = firstOriginType)
-            tagsDao.add(tags = tagsFromSecondOrigin, originType = secondOriginType)
+            insert(
+                tags = tagsFromFirstOrigin,
+                originParams = firstOriginParams,
+                lastUpdatedMillis = 123
+            )
+            insert(
+                tags = tagsFromSecondOrigin,
+                originParams = secondOriginParams,
+                lastUpdatedMillis = 155
+            )
 
             // ASSERT
-            tagsDao.getTags(type = firstOriginType).test {
+            tagsDao.getTagsSortedByName(originParams = firstOriginParams).test {
                 assertThat(awaitItem()).isEqualTo(tagsFromFirstOrigin.sortedBy { it.name })
                 cancelAndConsumeRemainingEvents()
             }
         }
 
     @Test
-    fun when_AddedSeveralOrigins_then_StoreOnlyTheLatestOne() = runBlocking {
+    fun when_UpdatedOriginSeveralTimes_then_StoreOnlyTheLatestValue() = runBlocking {
         // ARRANGE
-        val originType = TagOriginType.DASHBOARD_EXEMPLARY
+        val originParams = TagOriginParams(type = TagOriginParams.Type.DASHBOARD_EXEMPLARY)
         val lastUpdatedList: List<Long> = listOf(1, 2, 3)
 
         // ACT
+        val originId =
+            tagsDao.insert(TagOriginEntity(originParams = originParams, lastUpdatedMillis = 0))
         lastUpdatedList.forEach { lastUpdated ->
-            tagsDao.add(TagOriginEntity(type = originType, lastUpdatedMillis = lastUpdated))
+            tagsDao.update(
+                TagOriginEntity(
+                    id = originId,
+                    originParams = originParams,
+                    lastUpdatedMillis = lastUpdated
+                )
+            )
         }
 
         // ASSERT
-        assertThat(tagsDao.getLastUpdatedMillis(originType))
+        assertThat(tagsDao.getLastUpdatedMillis(originParams))
             .isEqualTo(lastUpdatedList.maxOrNull())
     }
 
-    @Test
-    fun when_AddedSameTagsWithOriginTwoTimes_then_ReturnTheLatestLastUpdated() = runBlocking {
-        // ARRANGE
-        val originType = TagOriginType.DASHBOARD_EXEMPLARY
-        val tags = listOf(
-            TagEntity(id = "1", name = "a", quoteCount = 1),
-            TagEntity(id = "2", name = "b", quoteCount = 2),
-            TagEntity(id = "3", name = "c", quoteCount = 3),
-        )
-
-        // ACT
-        tagsDao.add(tags = tags, originType = originType)
-        val firstLastUpdated = tagsDao.getLastUpdatedMillis(originType)
-        delay(200)
-        Log.d("tagsDao", "second")
-        tagsDao.add(tags = tags, originType = originType)
-
-        // ASSERT
-        assertThat(tagsDao.getLastUpdatedMillis(originType)).isGreaterThan(firstLastUpdated)
+    private suspend fun insert(
+        originParams: TagOriginParams,
+        tags: List<TagEntity>,
+        lastUpdatedMillis: Long
+    ) {
+        val originId =
+            tagsDao.insert(
+                TagOriginEntity(
+                    originParams = originParams,
+                    lastUpdatedMillis = lastUpdatedMillis
+                )
+            )
+        tagsDao.insert(entities = tags)
+        tags.forEach {
+            tagsDao.insert(TagWithOriginJoin(tagId = it.id, originId = originId))
+        }
     }
 }

@@ -10,6 +10,19 @@ abstract class BaseDataSource<Dao : BaseDao<Entity, OriginEntity, OriginParams>,
 
     protected abstract val dao: Dao
 
+    suspend fun refresh(
+        entities: List<Entity>,
+        originParams: OriginParams,
+        lastUpdatedMillis: Long = System.currentTimeMillis()
+    ) = withTransaction {
+        deleteAll(originParams = originParams)
+        insert(
+            entities = entities,
+            originParams = originParams,
+            lastUpdatedMillis = lastUpdatedMillis
+        )
+    }
+
     suspend fun insert(entities: List<Entity>) = dao.insert(entities = entities)
 
     suspend fun insert(
@@ -64,5 +77,7 @@ abstract class BaseDataSource<Dao : BaseDao<Entity, OriginEntity, OriginParams>,
     abstract suspend fun getOriginId(originParams: OriginParams): Long?
 
     abstract suspend fun getLastUpdatedMillis(originParams: OriginParams): Long?
+
+    abstract suspend fun deleteAll(originParams: OriginParams)
 
 }
