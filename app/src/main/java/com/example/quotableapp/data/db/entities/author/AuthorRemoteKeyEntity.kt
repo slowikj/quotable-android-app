@@ -10,9 +10,7 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = AuthorOriginEntity::class,
             parentColumns = ["id"],
-            childColumns = ["originId"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
+            childColumns = ["originId"]
         )
     ]
 )

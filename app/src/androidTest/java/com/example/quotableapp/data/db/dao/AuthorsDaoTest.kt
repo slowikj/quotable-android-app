@@ -7,6 +7,7 @@ import com.example.quotableapp.data.DataTestUtil
 import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.entities.author.*
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -107,6 +108,72 @@ class AuthorsDaoTest {
             // ASSERT
             assertThat(authorsDao.getPageKey(originParams)).isEqualTo(newPageKey)
         }
+    }
+
+    @Test
+    fun when_AuthorsWereUpdated_then_DoNotAffectJoinTable() = runBlocking {
+        // ARRANGE
+        val authors = listOf(
+            AuthorEntity(
+                slug = "1",
+                quoteCount = 11
+            ),
+            AuthorEntity(
+                slug = "2",
+                quoteCount = 22
+            )
+        )
+        val originParams = AuthorOriginParams(type = AuthorOriginParams.Type.ALL, searchPhrase = "")
+
+        // ACT
+        val originId = authorsDao.insert(
+            AuthorOriginEntity(
+                originParams = originParams,
+                lastUpdatedMillis = 123
+            )
+        )
+        authorsDao.insert(authors)
+        authors.forEach {
+            authorsDao.insert(AuthorWithOriginJoin(originId = originId, authorSlug = it.slug))
+        }
+        authorsDao.insert(authors)
+
+        // ASSERT
+        assertThat(authorsDao.getAuthorsSortedByQuoteCountDesc(originParams).first())
+            .isEqualTo(authors.sortedByDescending { it.quoteCount })
+    }
+
+    @Test
+    fun when_OriginWereUpdated_then_DoNotAffectRemoteKey() = runBlocking {
+        // ARRANGE
+        val originParams = AuthorOriginParams(type = AuthorOriginParams.Type.ALL, searchPhrase = "")
+        val pageKey = 2
+        val firstLastUpdatedMillis: Long = 111
+        val secondLastUpdatedMillis: Long = 155
+
+        // ACT
+        val originId = authorsDao.insert(
+            AuthorOriginEntity(
+                originParams = originParams,
+                lastUpdatedMillis = firstLastUpdatedMillis
+            )
+        )
+        authorsDao.insert(
+            AuthorRemoteKeyEntity(
+                originId = originId,
+                pageKey = pageKey
+            )
+        )
+        authorsDao.update(
+            AuthorOriginEntity(
+                id = originId,
+                originParams = originParams,
+                lastUpdatedMillis = secondLastUpdatedMillis
+            )
+        )
+
+        // ASSERT
+        assertThat(authorsDao.getPageKey(originParams)).isEqualTo(pageKey)
     }
 
     // ORIGIN --------------------------------
