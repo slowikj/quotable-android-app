@@ -9,7 +9,7 @@ import com.example.quotableapp.common.mapInnerElements
 import com.example.quotableapp.data.converters.quote.QuoteConverters
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.QuotesService
+import com.example.quotableapp.data.network.QuotesRemoteService
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediator
@@ -25,7 +25,7 @@ interface QuotesOfAuthorRepository {
 @ExperimentalPagingApi
 class DefaultQuotesOfAuthorRepository @Inject constructor(
     private val remoteMediatorFactory: QuotesRemoteMediatorFactory,
-    private val quotesService: QuotesService,
+    private val quotesRemoteService: QuotesRemoteService,
     private val pagingConfig: PagingConfig,
     private val quoteConverters: QuoteConverters,
     private val coroutineDispatchers: CoroutineDispatchers
@@ -44,7 +44,7 @@ class DefaultQuotesOfAuthorRepository @Inject constructor(
 
     private fun createQuotesOfAuthorRemoteMediator(authorSlug: String): QuotesRemoteMediator {
         val service: IntPagedRemoteService<QuotesResponseDTO> = { page: Int, limit: Int ->
-            quotesService.fetchQuotesOfAuthor(author = authorSlug, page = page, limit = limit)
+            quotesRemoteService.fetchQuotesOfAuthor(author = authorSlug, page = page, limit = limit)
         }
         return remoteMediatorFactory.create(
             originParams = QuoteOriginParams(

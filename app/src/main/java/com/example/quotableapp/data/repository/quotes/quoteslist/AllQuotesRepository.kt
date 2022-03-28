@@ -10,7 +10,7 @@ import com.example.quotableapp.data.converters.quote.QuoteConverters
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.QuotesService
+import com.example.quotableapp.data.network.QuotesRemoteService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
@@ -38,7 +38,7 @@ class DefaultAllQuotesRepository @Inject constructor(
     private val pagingConfig: PagingConfig,
     private val quotesConverters: QuoteConverters,
     private val apiResponseInterpreter: ApiResponseInterpreter,
-    private val quotesService: QuotesService,
+    private val quotesRemoteService: QuotesRemoteService,
     private val coroutineDispatchers: CoroutineDispatchers
 ) : AllQuotesRepository {
 
@@ -73,7 +73,7 @@ class DefaultAllQuotesRepository @Inject constructor(
     override suspend fun updateExemplaryQuotes(): Result<Unit> =
         withContext(coroutineDispatchers.IO) {
             apiResponseInterpreter {
-                quotesService.fetchQuotes(
+                quotesRemoteService.fetchQuotes(
                     page = 1,
                     limit = FIRST_QUOTES_LIMIT
                 )
@@ -83,9 +83,9 @@ class DefaultAllQuotesRepository @Inject constructor(
     private fun createAllQuotesRemoteMediator(searchPhrase: String?): QuotesRemoteMediator {
         val service: IntPagedRemoteService<QuotesResponseDTO> =
             if (searchPhrase.isNullOrEmpty()) { page: Int, limit: Int ->
-                quotesService.fetchQuotes(page = page, limit = limit)
+                quotesRemoteService.fetchQuotes(page = page, limit = limit)
             } else { page: Int, limit: Int ->
-                quotesService.fetchQuotesWithSearchPhrase(
+                quotesRemoteService.fetchQuotesWithSearchPhrase(
                     searchPhrase = searchPhrase,
                     page = page,
                     limit = limit

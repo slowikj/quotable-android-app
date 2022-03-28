@@ -5,7 +5,7 @@ import com.example.quotableapp.data.converters.tag.TagConverters
 import com.example.quotableapp.data.db.datasources.TagsLocalDataSource
 import com.example.quotableapp.data.db.entities.tag.TagOriginParams
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.data.network.TagsService
+import com.example.quotableapp.data.network.TagsRemoteService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.TagsResponseDTO
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +27,7 @@ interface TagsRepository {
 }
 
 class DefaultTagRepository @Inject constructor(
-    private val tagsService: TagsService,
+    private val tagsRemoteService: TagsRemoteService,
     private val tagsLocalDataSource: TagsLocalDataSource,
     private val responseInterpreter: ApiResponseInterpreter,
     private val coroutineDispatchers: CoroutineDispatchers,
@@ -85,7 +85,7 @@ class DefaultTagRepository @Inject constructor(
 
     private suspend fun fetchTagsDTO(): Result<TagsResponseDTO> {
         return withContext(coroutineDispatchers.IO) {
-            responseInterpreter { tagsService.fetchTags() }
+            responseInterpreter { tagsRemoteService.fetchTags() }
         }
     }
 

@@ -1,9 +1,9 @@
 package com.example.quotableapp.data.network.di
 
 import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.data.network.AuthorsService
-import com.example.quotableapp.data.network.QuotesService
-import com.example.quotableapp.data.network.TagsService
+import com.example.quotableapp.data.network.AuthorsRemoteService
+import com.example.quotableapp.data.network.QuotesRemoteService
+import com.example.quotableapp.data.network.TagsRemoteService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.common.DefaultQuotableApiResponseInterpreter
 import dagger.Module
@@ -32,16 +32,16 @@ object NetworkModule {
     private const val BASE_URL = "https://api.quotable.io"
 
     @Provides
-    fun getQuotesService(@DefaultRetrofitClient retrofitClient: Retrofit): QuotesService =
-        retrofitClient.create(QuotesService::class.java)
+    fun getQuotesService(@DefaultRetrofitClient retrofitClient: Retrofit): QuotesRemoteService =
+        retrofitClient.create(QuotesRemoteService::class.java)
 
     @Provides
-    fun getAuthorsService(@DefaultRetrofitClient retrofitClient: Retrofit): AuthorsService =
-        retrofitClient.create(AuthorsService::class.java)
+    fun getAuthorsService(@DefaultRetrofitClient retrofitClient: Retrofit): AuthorsRemoteService =
+        retrofitClient.create(AuthorsRemoteService::class.java)
 
     @Provides
-    fun getTagsService(@DefaultRetrofitClient retrofitClient: Retrofit): TagsService =
-        retrofitClient.create(TagsService::class.java)
+    fun getTagsService(@DefaultRetrofitClient retrofitClient: Retrofit): TagsRemoteService =
+        retrofitClient.create(TagsRemoteService::class.java)
 
     @Provides
     @DefaultRetrofitClient

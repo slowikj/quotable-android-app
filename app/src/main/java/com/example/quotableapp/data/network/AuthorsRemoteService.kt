@@ -5,7 +5,7 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface AuthorsService {
+interface AuthorsRemoteService {
 
     enum class SortByType(private val value: String) {
         Name("name"),

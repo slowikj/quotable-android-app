@@ -6,7 +6,7 @@ import com.example.quotableapp.data.converters.author.AuthorConverters
 import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.data.network.AuthorsService
+import com.example.quotableapp.data.network.AuthorsRemoteService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
@@ -28,7 +28,7 @@ interface AuthorsRepository {
 
 @ExperimentalPagingApi
 class DefaultAuthorsRepository @Inject constructor(
-    private val authorsService: AuthorsService,
+    private val authorsRemoteService: AuthorsRemoteService,
     private val authorsLocalDataSource: AuthorsLocalDataSource,
     private val authorsRemoteMediatorFactory: AuthorsRemoteMediatorFactory,
     private val coroutineDispatchers: CoroutineDispatchers,
@@ -49,7 +49,7 @@ class DefaultAuthorsRepository @Inject constructor(
 
     override suspend fun updateAuthor(slug: String): Result<Unit> {
         return withContext(coroutineDispatchers.IO) {
-            apiResponseInterpreter { authorsService.fetchAuthor(slug) }
+            apiResponseInterpreter { authorsRemoteService.fetchAuthor(slug) }
                 .mapCatching { it.results.first() }
                 .mapCatching { authorDTO ->
                     authorsLocalDataSource.insert(entities = listOf(authorConverters.toDb(authorDTO)))
@@ -67,7 +67,7 @@ class DefaultAuthorsRepository @Inject constructor(
         val remoteMediator = authorsRemoteMediatorFactory.create(
             originParams = ALL_AUTHORS_ORIGIN_PARAMS
         ) { page: Int, limit: Int ->
-            authorsService.fetchAuthors(
+            authorsRemoteService.fetchAuthors(
                 page = page,
                 limit = limit
             )
@@ -85,11 +85,11 @@ class DefaultAuthorsRepository @Inject constructor(
     override suspend fun updateFirstAuthors(): Result<Unit> {
         return withContext(coroutineDispatchers.IO) {
             apiResponseInterpreter {
-                authorsService.fetchAuthors(
+                authorsRemoteService.fetchAuthors(
                     page = 1,
                     limit = FIRST_AUTHORS_LIMIT,
-                    sortBy = AuthorsService.SortByType.QuoteCount,
-                    orderType = AuthorsService.OrderType.Desc
+                    sortBy = AuthorsRemoteService.SortByType.QuoteCount,
+                    orderType = AuthorsRemoteService.OrderType.Desc
                 )
             }.mapCatching { authorsResponseDTO ->
                 refreshFirstQuotesToDatabase(authorsResponseDTO)

@@ -5,7 +5,7 @@ import com.example.quotableapp.data.converters.quote.QuoteConverters
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.QuotesService
+import com.example.quotableapp.data.network.QuotesRemoteService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuoteDTO
 import kotlinx.coroutines.flow.*
@@ -24,7 +24,7 @@ interface OneQuoteRepository {
 
 class DefaultOneQuoteRepository @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val quotesService: QuotesService,
+    private val quotesRemoteService: QuotesRemoteService,
     private val quoteConverters: QuoteConverters,
     private val quotesLocalDataSource: QuotesLocalDataSource,
     private val apiResponseInterpreter: ApiResponseInterpreter
@@ -47,7 +47,7 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     override suspend fun updateQuote(id: String): Result<Unit> {
         return withContext(coroutineDispatchers.IO) {
-            apiResponseInterpreter { quotesService.fetchQuote(id) }
+            apiResponseInterpreter { quotesRemoteService.fetchQuote(id) }
                 .mapCatching { quoteDTO ->
                     quotesLocalDataSource.insert(listOf(quoteConverters.toDb(quoteDTO)))
                 }
@@ -62,7 +62,7 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     override suspend fun updateRandomQuote(): Result<Unit> {
         return withContext(coroutineDispatchers.IO) {
-            apiResponseInterpreter { quotesService.fetchRandomQuote() }
+            apiResponseInterpreter { quotesRemoteService.fetchRandomQuote() }
                 .mapCatching { updateDatabaseWithRandomQuote(it) }
         }
     }

@@ -7,7 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface QuotesService {
+interface QuotesRemoteService {
 
     enum class SortByType(private val value: String) {
         Author("author"),
