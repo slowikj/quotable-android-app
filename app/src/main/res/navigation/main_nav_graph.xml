@@ -15,16 +15,14 @@
 
         <action
             android:id="@+id/showOneQuote"
-            app:destination="@id/oneQuoteFragment" />
+            app:destination="@id/oneQuoteFragment"
+            app:enterAnim="@anim/from_bottom"
+            app:popExitAnim="@anim/to_bottom" />
         <action
             android:id="@+id/showQuotesOfTag"
-            app:destination="@id/tagQuotesFragment" />
+            app:destination="@id/tagQuotesFragment"
+            app:popExitAnim="@anim/to_bottom" />
     </fragment>
-
-    <fragment
-        android:id="@+id/authorDetailsFragment"
-        android:name="com.example.quotableapp.ui.author.AuthorDetailsFragment"
-        android:label="AuthorDetailsFragment" />
 
     <fragment
         android:id="@+id/dashboardFragment"
@@ -32,19 +30,26 @@
         android:label="DashboardFragment">
         <action
             android:id="@+id/showAllAuthors"
-            app:destination="@id/authorsListFragment" />
+            app:destination="@id/authorsListFragment"
+            app:popExitAnim="@anim/to_bottom" />
         <action
             android:id="@+id/showAuthor"
-            app:destination="@id/authorFragment" />
+            app:destination="@id/authorFragment"
+            app:enterAnim="@anim/from_bottom"
+            app:popExitAnim="@anim/to_bottom" />
         <action
             android:id="@+id/showAllQuotes"
-            app:destination="@id/allQuotesFragment" />
+            app:destination="@id/allQuotesFragment"
+            app:popExitAnim="@anim/to_bottom" />
         <action
             android:id="@+id/showOneQuote"
-            app:destination="@id/oneQuoteFragment" />
+            app:destination="@id/oneQuoteFragment"
+            app:enterAnim="@anim/from_bottom"
+            app:popExitAnim="@anim/to_bottom" />
         <action
             android:id="@+id/showAllTags"
-            app:destination="@id/tagsListFragment" />
+            app:destination="@id/tagsListFragment"
+            app:popExitAnim="@anim/to_bottom" />
         <action
             android:id="@+id/showQuotesOfTag"
             app:destination="@id/tagQuotesFragment" />
@@ -56,13 +61,18 @@
         android:label="AllQuotesFragment">
         <action
             android:id="@+id/showQuotesOfTag"
-            app:destination="@id/tagQuotesFragment" />
+            app:destination="@id/tagQuotesFragment"
+            app:popExitAnim="@anim/to_bottom" />
         <action
             android:id="@+id/showAuthor"
-            app:destination="@id/authorFragment" />
+            app:destination="@id/authorFragment"
+            app:enterAnim="@anim/from_bottom"
+            app:popExitAnim="@anim/to_bottom" />
         <action
             android:id="@+id/showOneQuote"
-            app:destination="@id/oneQuoteFragment" />
+            app:destination="@id/oneQuoteFragment"
+            app:enterAnim="@anim/from_bottom"
+            app:popExitAnim="@anim/to_bottom" />
     </fragment>
 
     <fragment
@@ -74,13 +84,18 @@
             app:argType="string" />
         <action
             android:id="@+id/showOneQuote"
-            app:destination="@id/oneQuoteFragment" />
+            app:destination="@id/oneQuoteFragment"
+            app:enterAnim="@anim/from_bottom"
+            app:popExitAnim="@anim/to_bottom" />
         <action
             android:id="@+id/showAuthor"
-            app:destination="@id/authorFragment" />
+            app:destination="@id/authorFragment"
+            app:enterAnim="@anim/from_bottom"
+            app:popExitAnim="@anim/to_bottom" />
         <action
             android:id="@+id/showQuotesOfTag"
-            app:destination="@id/tagQuotesFragment" />
+            app:destination="@id/tagQuotesFragment"
+            app:popExitAnim="@anim/to_bottom" />
     </fragment>
 
 
@@ -90,7 +105,9 @@
         android:label="AuthorsListFragment">
         <action
             android:id="@+id/showAuthor"
-            app:destination="@id/authorFragment" />
+            app:destination="@id/authorFragment"
+            app:enterAnim="@anim/from_bottom"
+            app:popExitAnim="@anim/to_bottom" />
     </fragment>
 
     <fragment
@@ -102,10 +119,13 @@
             app:argType="string" />
         <action
             android:id="@+id/showAuthor"
-            app:destination="@id/authorFragment" />
+            app:destination="@id/authorFragment"
+            app:enterAnim="@anim/from_bottom"
+            app:popExitAnim="@anim/to_bottom" />
         <action
             android:id="@+id/showQuotesOfTag"
-            app:destination="@id/tagQuotesFragment" />
+            app:destination="@id/tagQuotesFragment"
+            app:popExitAnim="@anim/to_bottom" />
     </fragment>
     <fragment
         android:id="@+id/tagsListFragment"
