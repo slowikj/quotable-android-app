@@ -38,7 +38,7 @@
                 app:expandedTitleGravity="center_horizontal|bottom"
                 app:expandedTitleTextAppearance="?textAppearanceHeadline5"
                 app:expandedTitleTextColor="?attr/colorOnPrimary"
-                app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+                app:layout_scrollFlags="scroll|snap|enterAlwaysCollapsed"
                 app:statusBarScrim="?attr/colorPrimary"
                 tools:title="Author Name">
 
@@ -61,6 +61,7 @@
                         tools:text="short description" />
 
                     <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/iv_author"
                         loadImageWithPersonPlaceholder="@{viewModel.authorState.data.photoUrl}"
                         android:layout_width="@dimen/fragment_author_img_dim"
                         android:layout_height="@dimen/fragment_author_img_dim"
@@ -104,7 +105,7 @@
                 android:id="@+id/tabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/cut_bg"
+                android:background="?colorPrimary"
                 android:theme="@style/ThemeOverlay.QuotableApp.AuthorToolbar"
                 app:tabBackground="?attr/colorPrimary"
                 app:tabIndicatorColor="?attr/colorSecondary"
