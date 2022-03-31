@@ -5,7 +5,7 @@ import com.example.quotableapp.data.converters.tag.TagConverters
 import com.example.quotableapp.data.db.datasources.TagsLocalDataSource
 import com.example.quotableapp.data.db.entities.tag.TagOriginParams
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.data.network.TagsRemoteService
+import com.example.quotableapp.data.network.services.TagsRemoteService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.TagsResponseDTO
 import kotlinx.coroutines.flow.Flow

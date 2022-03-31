@@ -6,7 +6,7 @@ import com.example.quotableapp.data.converters.author.AuthorConverters
 import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.data.network.AuthorsRemoteService
+import com.example.quotableapp.data.network.services.AuthorsRemoteService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory

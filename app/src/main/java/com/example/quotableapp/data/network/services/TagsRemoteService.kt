@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.network
+package com.example.quotableapp.data.network.services
 
 import com.example.quotableapp.data.network.model.TagsResponseDTO
 import retrofit2.Response
