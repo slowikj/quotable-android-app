@@ -2,7 +2,6 @@ package com.example.quotableapp.data.repository.quotes.quoteslist
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
-import app.cash.turbine.test
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.converters.quote.QuoteConverters
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
