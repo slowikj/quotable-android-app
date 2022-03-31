@@ -47,7 +47,7 @@ class DefaultAllQuotesRepository @Inject constructor(
             type = QuoteOriginParams.Type.EXAMPLE_FROM_DASHBOARD
         )
 
-        private const val FIRST_QUOTES_LIMIT = 10
+        const val FIRST_QUOTES_LIMIT = 10
     }
 
     override fun fetchAllQuotes(searchPhrase: String?): Flow<PagingData<Quote>> {

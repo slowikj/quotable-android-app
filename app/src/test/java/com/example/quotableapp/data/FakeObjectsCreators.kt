@@ -1,5 +1,6 @@
 package com.example.quotableapp.data
 
+import androidx.paging.PagingConfig
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import kotlinx.coroutines.CoroutineDispatcher
@@ -31,3 +32,10 @@ fun getTestCoroutineDispatchers(): CoroutineDispatchers {
             get() = TestCoroutineDispatcher()
     }
 }
+
+fun getExemplaryPagingConfig(): PagingConfig = PagingConfig(
+    pageSize = 30,
+    enablePlaceholders = true,
+    initialLoadSize = 30,
+    prefetchDistance = 10
+)
