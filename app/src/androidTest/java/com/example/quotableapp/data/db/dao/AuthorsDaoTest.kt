@@ -182,7 +182,7 @@ class AuthorsDaoTest {
     fun when_UpdateExistingOrigin_then_DoNotChangeOriginId() = runBlocking {
         // ARRANGE
         val originParams = AuthorOriginParams(
-            type = AuthorOriginParams.Type.EXAMPLE_FROM_DASHBOARD,
+            type = AuthorOriginParams.Type.DASHBOARD_EXEMPLARY,
             searchPhrase = ""
         )
 
@@ -202,7 +202,7 @@ class AuthorsDaoTest {
     fun when_UpdateExistingOrigin_then_LastUpdatedIsChanged() = runBlocking {
         // ARRANGE
         val originParams = AuthorOriginParams(
-            type = AuthorOriginParams.Type.EXAMPLE_FROM_DASHBOARD,
+            type = AuthorOriginParams.Type.DASHBOARD_EXEMPLARY,
             searchPhrase = ""
         )
         val secondLastUpdatedMillis: Long = 200
@@ -282,7 +282,7 @@ class AuthorsDaoTest {
             AuthorOriginParams(AuthorOriginParams.Type.ALL, "a"),
             AuthorOriginParams(AuthorOriginParams.Type.ALL, "b"),
             AuthorOriginParams(AuthorOriginParams.Type.ALL, "c"),
-            AuthorOriginParams(AuthorOriginParams.Type.EXAMPLE_FROM_DASHBOARD, ""),
+            AuthorOriginParams(AuthorOriginParams.Type.DASHBOARD_EXEMPLARY, ""),
         )
 
         // ACT
@@ -329,7 +329,7 @@ class AuthorsDaoTest {
         val allOriginParams = listOf(
             AuthorOriginParams(AuthorOriginParams.Type.ALL, "xyz"),
             AuthorOriginParams(AuthorOriginParams.Type.ALL, "c"),
-            AuthorOriginParams(AuthorOriginParams.Type.EXAMPLE_FROM_DASHBOARD, ""),
+            AuthorOriginParams(AuthorOriginParams.Type.DASHBOARD_EXEMPLARY, ""),
         )
         val allAuthors = prepareExemplaryAuthors(size = 10)
         val authorsPerOrigin = listOf(

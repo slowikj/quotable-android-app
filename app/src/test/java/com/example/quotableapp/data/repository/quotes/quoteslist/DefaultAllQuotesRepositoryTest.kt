@@ -119,7 +119,7 @@ class DefaultAllQuotesRepositoryTest {
             whenever(
                 dependencyManager.localDataSource.getFirstQuotesSortedById(
                     originParams = eq(QuoteOriginParams(
-                        QuoteOriginParams.Type.EXAMPLE_FROM_DASHBOARD
+                        QuoteOriginParams.Type.DASHBOARD_EXEMPLARY
                     )),
                     limit = anyInt()
                 )

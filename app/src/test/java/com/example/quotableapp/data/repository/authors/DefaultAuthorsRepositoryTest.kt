@@ -134,9 +134,9 @@ class DefaultAuthorsRepositoryTest {
     }
 
     @Test
-    fun given_WorkingAPIConnection_when_updateFirstAuthors_then_ReturnSuccess() = runBlockingTest {
+    fun given_WorkingAPIConnection_when_updateExemplaryAuthors_then_ReturnSuccess() = runBlockingTest {
         // given
-        val authorResponseSize = DefaultAuthorsRepository.FIRST_AUTHORS_LIMIT
+        val authorResponseSize = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_LIMIT
         val authorDTOs = prepareAuthorExemplaryDTOs(size = authorResponseSize)
         whenever(
             dependencyManager.remoteService.fetchAuthors(
@@ -155,7 +155,7 @@ class DefaultAuthorsRepositoryTest {
         val authorEntities = authorDTOs.map { dependencyManager.converters.toDb(it) }
 
         // when
-        val res = dependencyManager.repository.updateFirstAuthors()
+        val res = dependencyManager.repository.updateExemplaryAuthors()
 
         // then
         assertThat(res.isSuccess).isTrue()
@@ -164,9 +164,9 @@ class DefaultAuthorsRepositoryTest {
     }
 
     @Test
-    fun given_NoAPIConnection_when_updateFirstAuthors_then_ReturnFailure() = runBlockingTest {
+    fun given_NoAPIConnection_when_updateExemplaryAuthors_then_ReturnFailure() = runBlockingTest {
         // given
-        val authorResponseSize = DefaultAuthorsRepository.FIRST_AUTHORS_LIMIT
+        val authorResponseSize = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_LIMIT
         whenever(
             dependencyManager.remoteService.fetchAuthors(
                 page = 1,
@@ -177,7 +177,7 @@ class DefaultAuthorsRepositoryTest {
         ).thenReturn(Response.error(500, "".toResponseBody()))
 
         // when
-        val res = dependencyManager.repository.updateFirstAuthors()
+        val res = dependencyManager.repository.updateExemplaryAuthors()
 
         // then
         assertThat(res.isFailure).isTrue()
@@ -186,11 +186,11 @@ class DefaultAuthorsRepositoryTest {
     }
 
     @Test
-    fun given_AvailableLocalData_when_getFirstAuthorsFlow_then_returnFlowWithData() =
+    fun given_AvailableLocalData_when_getExemplaryAuthorsFlow_then_returnFlowWithData() =
         runBlockingTest {
             // given
-            val originParams = DefaultAuthorsRepository.FIRST_AUTHORS_ORIGIN_PARAMS
-            val entitiesSize = DefaultAuthorsRepository.FIRST_AUTHORS_LIMIT
+            val originParams = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_ORIGIN_PARAMS
+            val entitiesSize = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_LIMIT
             val authorEntities = prepareAuthorExemplaryEntities(
                 size = entitiesSize
             )
@@ -209,7 +209,7 @@ class DefaultAuthorsRepositoryTest {
             val authors = authorEntities.map { dependencyManager.converters.toDomain(it) }
 
             // when
-            val authorsFlow = dependencyManager.repository.firstAuthorsFlow
+            val authorsFlow = dependencyManager.repository.exemplaryAuthorsFlow
 
             // then
             assertThat(authorsFlow.single()).isEqualTo(authors)
@@ -217,11 +217,11 @@ class DefaultAuthorsRepositoryTest {
         }
 
     @Test
-    fun given_NoLocalData_when_getFirstAuthorsFlow_then_returnFlowWithNoEmission() =
+    fun given_NoLocalData_when_getExemplaryAuthorsFlow_then_returnFlowWithNoEmission() =
         runBlockingTest {
             // given
-            val originParams = DefaultAuthorsRepository.FIRST_AUTHORS_ORIGIN_PARAMS
-            val entitiesSize = DefaultAuthorsRepository.FIRST_AUTHORS_LIMIT
+            val originParams = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_ORIGIN_PARAMS
+            val entitiesSize = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_LIMIT
             whenever(
                 dependencyManager.localDataSource
                     .getAuthorsSortedByQuoteCountDesc(
@@ -231,7 +231,7 @@ class DefaultAuthorsRepositoryTest {
             ).thenReturn(flowOf(emptyList()))
 
             // when
-            val authorsFlow = dependencyManager.repository.firstAuthorsFlow
+            val authorsFlow = dependencyManager.repository.exemplaryAuthorsFlow
 
             // then
             assertThat(authorsFlow.count()).isEqualTo(0)
