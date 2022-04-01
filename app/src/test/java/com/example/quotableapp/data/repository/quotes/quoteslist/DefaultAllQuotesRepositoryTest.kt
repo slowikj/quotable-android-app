@@ -7,7 +7,7 @@ import com.example.quotableapp.data.converters.quote.QuoteConverters
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
-import com.example.quotableapp.data.getExemplaryPagingConfig
+import com.example.quotableapp.data.getTestPagingConfig
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
 import com.example.quotableapp.data.getTestCoroutineDispatchers
 import com.example.quotableapp.data.model.Quote
@@ -39,7 +39,7 @@ class DefaultAllQuotesRepositoryTest {
     class DependencyManager(
         val remoteMediatorFactory: QuotesRemoteMediatorFactory = mock(),
         val localDataSource: QuotesLocalDataSource = mock(),
-        val pagingConfig: PagingConfig = getExemplaryPagingConfig(),
+        val pagingConfig: PagingConfig = getTestPagingConfig(),
         val converters: QuoteConverters = mock(),
         val apiResponseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter(),
         val remoteService: QuotesRemoteService = mock(),

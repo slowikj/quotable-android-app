@@ -10,7 +10,7 @@ data class AuthorEntity(
     val bio: String = "",
     val description: String = "",
     val name: String = "",
-    val quoteCount: Int,
+    val quoteCount: Int = 0,
     val dateAdded: String = "",
     val dateModified: String = ""
 )

@@ -38,9 +38,9 @@ class DefaultAuthorsRepository @Inject constructor(
 ) : AuthorsRepository {
 
     companion object {
-        private const val FIRST_AUTHORS_LIMIT = 10
+        const val FIRST_AUTHORS_LIMIT = 10
 
-        private val FIRST_AUTHORS_ORIGIN_PARAMS =
+        val FIRST_AUTHORS_ORIGIN_PARAMS =
             AuthorOriginParams(type = AuthorOriginParams.Type.EXAMPLE_FROM_DASHBOARD)
 
         private val ALL_AUTHORS_ORIGIN_PARAMS =

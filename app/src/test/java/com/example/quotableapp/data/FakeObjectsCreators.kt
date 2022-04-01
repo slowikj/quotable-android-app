@@ -33,7 +33,7 @@ fun getTestCoroutineDispatchers(): CoroutineDispatchers {
     }
 }
 
-fun getExemplaryPagingConfig(): PagingConfig = PagingConfig(
+fun getTestPagingConfig(): PagingConfig = PagingConfig(
     pageSize = 30,
     enablePlaceholders = true,
     initialLoadSize = 30,
