@@ -128,4 +128,7 @@ dependencies {
     // rv-animators
     implementation 'jp.wasabeef:recyclerview-animators:4.0.2'
 
+    // splash screen
+    implementation 'androidx.core:core-splashscreen:1.0.0-beta02'
+
 }
