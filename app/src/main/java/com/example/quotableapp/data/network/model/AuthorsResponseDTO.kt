@@ -6,8 +6,4 @@ data class AuthorsResponseDTO(
     val page: Int,
     val totalPages: Int,
     val results: List<AuthorDTO>
-) : PagedDTO {
-    override val endOfPaginationReached: Boolean
-        get() = page >= totalPages
-
-}
+)
