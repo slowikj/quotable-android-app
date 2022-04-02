@@ -289,7 +289,7 @@ class QuotesDaoTest {
             QuoteOriginParams(type = QuoteOriginParams.Type.ALL, value = "xyz", searchPhrase = ""),
             QuoteOriginParams(type = QuoteOriginParams.Type.ALL, value = "c", searchPhrase = ""),
             QuoteOriginParams(
-                type = QuoteOriginParams.Type.EXAMPLE_FROM_DASHBOARD,
+                type = QuoteOriginParams.Type.DASHBOARD_EXEMPLARY,
                 value = "",
                 searchPhrase = ""
             ),

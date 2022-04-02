@@ -24,7 +24,7 @@ data class QuoteOriginParams(
         ALL,
         OF_TAG,
         OF_AUTHOR,
-        EXAMPLE_FROM_DASHBOARD,
+        DASHBOARD_EXEMPLARY,
         RANDOM;
     }
 }

@@ -22,6 +22,6 @@ data class AuthorOriginParams(
 
     enum class Type {
         ALL,
-        EXAMPLE_FROM_DASHBOARD;
+        DASHBOARD_EXEMPLARY;
     }
 }

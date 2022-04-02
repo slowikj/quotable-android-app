@@ -1,6 +1,7 @@
 package com.example.quotableapp.data.repository.authors.paging
 
 import androidx.paging.ExperimentalPagingApi
+import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.converters.Converter
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
@@ -47,11 +48,13 @@ class AuthorsRemoteMediator @AssistedInject constructor(
     @Assisted remoteService: IntPagedRemoteService<AuthorsResponseDTO>,
     apiResultInterpreter: ApiResponseInterpreter,
     dtoToEntityConverter: Converter<AuthorsResponseDTO, List<AuthorEntity>>,
+    coroutineDispatchers: CoroutineDispatchers
 ) : IntPageKeyRemoteMediator<AuthorEntity, AuthorsResponseDTO>(
     persistenceManager,
     cacheTimeoutMilliseconds,
     remoteService,
     apiResultInterpreter,
     dtoToEntityConverter,
+    coroutineDispatchers
 ) {
 }

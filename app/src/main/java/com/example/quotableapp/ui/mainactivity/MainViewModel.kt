@@ -2,6 +2,7 @@ package com.example.quotableapp.ui.mainactivity
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.data.repository.tags.TagsRepository
@@ -11,13 +12,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val quotesRepository: QuotesRepository,
     private val authorsRepository: AuthorsRepository,
-    private val tagsRepository: TagsRepository
+    private val tagsRepository: TagsRepository,
+    private val coroutineDispatchers: CoroutineDispatchers
 ) : ViewModel() {
 
     private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
@@ -25,15 +28,17 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val deferredList = listOf(
-                async { quotesRepository.updateExemplaryQuotes() },
-                async { quotesRepository.updateRandomQuote() },
-                async { authorsRepository.updateFirstAuthors() },
-                async { tagsRepository.updateAllTags() }
-            )
+            withContext(coroutineDispatchers.IO) {
+                val deferredList = listOf(
+                    async { quotesRepository.updateExemplaryQuotes() },
+                    async { quotesRepository.updateRandomQuote() },
+                    async { authorsRepository.updateExemplaryAuthors() },
+                    async { tagsRepository.updateAllTags() }
+                )
 
-            deferredList.forEach {
-                it.join()
+                deferredList.forEach {
+                    it.join()
+                }
             }
 
             _isLoading.value = false

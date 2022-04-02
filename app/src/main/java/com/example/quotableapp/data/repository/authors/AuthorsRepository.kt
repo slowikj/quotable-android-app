@@ -6,9 +6,9 @@ import com.example.quotableapp.data.converters.author.AuthorConverters
 import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.data.network.services.AuthorsRemoteService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
+import com.example.quotableapp.data.network.services.AuthorsRemoteService
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -21,9 +21,9 @@ interface AuthorsRepository {
 
     fun fetchAllAuthors(): Flow<PagingData<Author>>
 
-    suspend fun updateFirstAuthors(): Result<Unit>
+    suspend fun updateExemplaryAuthors(): Result<Unit>
 
-    val firstAuthorsFlow: Flow<List<Author>>
+    val exemplaryAuthorsFlow: Flow<List<Author>>
 }
 
 @ExperimentalPagingApi
@@ -38,10 +38,10 @@ class DefaultAuthorsRepository @Inject constructor(
 ) : AuthorsRepository {
 
     companion object {
-        private const val FIRST_AUTHORS_LIMIT = 10
+        const val EXEMPLARY_AUTHORS_LIMIT = 10
 
-        private val FIRST_AUTHORS_ORIGIN_PARAMS =
-            AuthorOriginParams(type = AuthorOriginParams.Type.EXAMPLE_FROM_DASHBOARD)
+        val EXEMPLARY_AUTHORS_ORIGIN_PARAMS =
+            AuthorOriginParams(type = AuthorOriginParams.Type.DASHBOARD_EXEMPLARY)
 
         private val ALL_AUTHORS_ORIGIN_PARAMS =
             AuthorOriginParams(type = AuthorOriginParams.Type.ALL)
@@ -82,35 +82,35 @@ class DefaultAuthorsRepository @Inject constructor(
             }
     }
 
-    override suspend fun updateFirstAuthors(): Result<Unit> {
+    override suspend fun updateExemplaryAuthors(): Result<Unit> {
         return withContext(coroutineDispatchers.IO) {
             apiResponseInterpreter {
                 authorsRemoteService.fetchAuthors(
                     page = 1,
-                    limit = FIRST_AUTHORS_LIMIT,
+                    limit = EXEMPLARY_AUTHORS_LIMIT,
                     sortBy = AuthorsRemoteService.SortByType.QuoteCount,
                     orderType = AuthorsRemoteService.OrderType.Desc
                 )
             }.mapCatching { authorsResponseDTO ->
-                refreshFirstQuotesToDatabase(authorsResponseDTO)
+                refreshExemplaryQuotesToDatabase(authorsResponseDTO)
             }
         }
     }
 
-    override val firstAuthorsFlow: Flow<List<Author>> = authorsLocalDataSource
+    override val exemplaryAuthorsFlow: Flow<List<Author>> = authorsLocalDataSource
         .getAuthorsSortedByQuoteCountDesc(
-            originParams = FIRST_AUTHORS_ORIGIN_PARAMS,
-            limit = FIRST_AUTHORS_LIMIT
+            originParams = EXEMPLARY_AUTHORS_ORIGIN_PARAMS,
+            limit = EXEMPLARY_AUTHORS_LIMIT
         )
         .filterNot { it.isEmpty() }
         .map { list -> list.map(authorConverters::toDomain) }
         .flowOn(coroutineDispatchers.IO)
 
-    private suspend fun refreshFirstQuotesToDatabase(responseDTO: AuthorsResponseDTO): Unit =
+    private suspend fun refreshExemplaryQuotesToDatabase(responseDTO: AuthorsResponseDTO): Unit =
         withContext(coroutineDispatchers.IO) {
             authorsLocalDataSource.refresh(
                 entities = responseDTO.results.map(authorConverters::toDb),
-                originParams = FIRST_AUTHORS_ORIGIN_PARAMS
+                originParams = EXEMPLARY_AUTHORS_ORIGIN_PARAMS
             )
         }
 }

@@ -37,7 +37,7 @@ class DashboardViewModel @Inject constructor(
 
     private val exemplaryAuthorsUiStateManager = UiStateManager<List<Author>, UiError>(
         coroutineScope = viewModelScope,
-        sourceDataFlow = authorsRepository.firstAuthorsFlow
+        sourceDataFlow = authorsRepository.exemplaryAuthorsFlow
     )
     val exemplaryAuthorsState: StateFlow<AuthorListState> = exemplaryAuthorsUiStateManager.stateFlow
 
@@ -72,7 +72,7 @@ class DashboardViewModel @Inject constructor(
 
     fun updateAuthors() {
         exemplaryAuthorsUiStateManager.updateData(
-            requestFunc = { authorsRepository.updateFirstAuthors() },
+            requestFunc = { authorsRepository.updateExemplaryAuthors() },
             errorTransformer = { UiError.IOError }
         )
     }

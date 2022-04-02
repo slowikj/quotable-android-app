@@ -43,11 +43,11 @@ class DefaultAllQuotesRepository @Inject constructor(
 ) : AllQuotesRepository {
 
     companion object {
-        private val firstQuotesParams: QuoteOriginParams = QuoteOriginParams(
-            type = QuoteOriginParams.Type.EXAMPLE_FROM_DASHBOARD
+        private val EXEMPLARY_QUOTES_PARAMS: QuoteOriginParams = QuoteOriginParams(
+            type = QuoteOriginParams.Type.DASHBOARD_EXEMPLARY
         )
 
-        private const val FIRST_QUOTES_LIMIT = 10
+        const val EXEMPLARY_QUOTES_LIMIT = 10
     }
 
     override fun fetchAllQuotes(searchPhrase: String?): Flow<PagingData<Quote>> {
@@ -63,8 +63,8 @@ class DefaultAllQuotesRepository @Inject constructor(
 
     override val exemplaryQuotes: Flow<List<Quote>> = quotesLocalDataSource
         .getFirstQuotesSortedById(
-            originParams = firstQuotesParams,
-            limit = FIRST_QUOTES_LIMIT
+            originParams = EXEMPLARY_QUOTES_PARAMS,
+            limit = EXEMPLARY_QUOTES_LIMIT
         )
         .filterNot { it.isEmpty() }
         .map { quotes -> quotes.map(quotesConverters::toDomain) }
@@ -75,9 +75,9 @@ class DefaultAllQuotesRepository @Inject constructor(
             apiResponseInterpreter {
                 quotesRemoteService.fetchQuotes(
                     page = 1,
-                    limit = FIRST_QUOTES_LIMIT
+                    limit = EXEMPLARY_QUOTES_LIMIT
                 )
-            }.mapCatching { quotesDTO -> updateDatabaseWithFirstQuotes(quotesDTO) }
+            }.mapCatching { quotesDTO -> updateDatabaseWithExemplaryQuotes(quotesDTO) }
         }
 
     private fun createAllQuotesRemoteMediator(searchPhrase: String?): QuotesRemoteMediator {
@@ -101,11 +101,11 @@ class DefaultAllQuotesRepository @Inject constructor(
         )
     }
 
-    private suspend fun updateDatabaseWithFirstQuotes(dto: QuotesResponseDTO): Unit =
+    private suspend fun updateDatabaseWithExemplaryQuotes(dto: QuotesResponseDTO): Unit =
         withContext(coroutineDispatchers.IO) {
             quotesLocalDataSource.refresh(
                 entities = dto.results.map(quotesConverters::toDb),
-                originParams = firstQuotesParams
+                originParams = EXEMPLARY_QUOTES_PARAMS
             )
         }
 }

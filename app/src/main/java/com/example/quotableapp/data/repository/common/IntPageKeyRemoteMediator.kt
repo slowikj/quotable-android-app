@@ -4,34 +4,37 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
+import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.converters.Converter
 import com.example.quotableapp.data.db.common.PersistenceManager
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
-import com.example.quotableapp.data.network.model.PagedDTO
+import kotlinx.coroutines.withContext
 
 @ExperimentalPagingApi
-abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO>(
+abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO>(
     val persistenceManager: PersistenceManager<ValueEntity, Int>,
     private val cacheTimeoutMilliseconds: Long,
     private val remoteService: IntPagedRemoteService<ValueDTO>,
     private val apiResultInterpreter: ApiResponseInterpreter,
-    private val dtoToEntitiesConverter: Converter<ValueDTO, List<ValueEntity>>
+    private val dtoToEntitiesConverter: Converter<ValueDTO, List<ValueEntity>>,
+    private val coroutineDispatchers: CoroutineDispatchers
 ) : RemoteMediator<Int, ValueEntity>() {
 
-    override suspend fun initialize(): InitializeAction {
-        val lastUpdated = persistenceManager.getLastUpdated() ?: 0
-        return if (System.currentTimeMillis() - lastUpdated > cacheTimeoutMilliseconds) {
-            InitializeAction.LAUNCH_INITIAL_REFRESH
-        } else {
-            InitializeAction.SKIP_INITIAL_REFRESH
+    override suspend fun initialize(): InitializeAction =
+        withContext(coroutineDispatchers.Default) {
+            val lastUpdated = persistenceManager.getLastUpdated() ?: 0
+            if (System.currentTimeMillis() - lastUpdated > cacheTimeoutMilliseconds) {
+                InitializeAction.LAUNCH_INITIAL_REFRESH
+            } else {
+                InitializeAction.SKIP_INITIAL_REFRESH
+            }
         }
-    }
 
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, ValueEntity>
-    ): MediatorResult {
-        return try {
+    ): MediatorResult = withContext(coroutineDispatchers.Default) {
+        try {
             getMediatorResult(loadType, state)
         } catch (e: Throwable) {
             MediatorResult.Error(e)
@@ -56,8 +59,9 @@ abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO : PagedDTO>(
         return apiResultInterpreter { remoteService(newLoadKey, pageSize) }
             .fold(
                 onSuccess = { dto ->
-                    updateLocalDatabase(loadType, newLoadKey, dtoToEntitiesConverter(dto))
-                    MediatorResult.Success(endOfPaginationReached = dto.endOfPaginationReached)
+                    val entities = dtoToEntitiesConverter(dto)
+                    updateLocalDatabase(loadType, newLoadKey, entities)
+                    MediatorResult.Success(endOfPaginationReached = entities.isEmpty())
                 },
                 onFailure = {
                     MediatorResult.Error(it)
