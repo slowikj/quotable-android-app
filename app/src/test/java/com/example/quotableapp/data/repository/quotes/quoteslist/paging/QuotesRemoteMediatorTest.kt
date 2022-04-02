@@ -115,7 +115,7 @@ class QuotesRemoteMediatorTest {
     )
 
     private fun mockSuccessfulAPIWithDataAndProperConverters(dataSize: Int) {
-        val responseDTO = QuotesFactory.getQuotesResponseDTO(size = dataSize)
+        val responseDTO = QuotesFactory.getResponseDTO(size = dataSize)
 
         dependencyManager.remoteService = { page: Int, limit: Int ->
             Response.success(responseDTO)

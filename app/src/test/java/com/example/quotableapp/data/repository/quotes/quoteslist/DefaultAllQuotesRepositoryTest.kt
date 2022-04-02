@@ -3,17 +3,16 @@ package com.example.quotableapp.data.repository.quotes.quoteslist
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
 import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.data.QuotesFactory
 import com.example.quotableapp.data.converters.quote.QuoteConverters
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
-import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
-import com.example.quotableapp.data.getTestPagingConfig
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
 import com.example.quotableapp.data.getTestCoroutineDispatchers
+import com.example.quotableapp.data.getTestPagingConfig
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuoteDTO
-import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.network.services.QuotesRemoteService
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediatorFactory
 import com.google.common.truth.Truth.assertThat
@@ -88,7 +87,7 @@ class DefaultAllQuotesRepositoryTest {
     fun given_WorkingAPIConnection_when_updateExemplaryQuotes_then_ReturnSuccess() =
         runBlockingTest {
             // given
-            val quotesDTO = (1..10).map { QuoteDTO(id = it.toString(), content = it.toString()) }
+            val quotesResponseDTO = QuotesFactory.getResponseDTO(size = 10)
             whenever(
                 dependencyManager.remoteService.fetchQuotes(
                     page = anyInt(),
@@ -96,7 +95,7 @@ class DefaultAllQuotesRepositoryTest {
                     sortBy = any(),
                     order = any()
                 )
-            ).thenReturn(Response.success(prepareResponseFrom(quotesDTO)))
+            ).thenReturn(Response.success(quotesResponseDTO))
 
             whenever(dependencyManager.converters.toDomain(any<QuoteDTO>()))
                 .thenReturn(Quote(id = "xxxx"))
@@ -114,18 +113,20 @@ class DefaultAllQuotesRepositoryTest {
     fun given_LocalDataAvailable_when_GetExemplaryQuotes_then_ReturnFlowWithQuotes() =
         runBlockingTest {
             // given
-            val quotesEntities = getExemplaryQuoteEntities(size = 10)
+            val quotesEntities = QuotesFactory.getEntities(size = 10)
             val quotes = quotesEntities.map { Quote(id = it.id) }
             whenever(
                 dependencyManager.localDataSource.getFirstQuotesSortedById(
-                    originParams = eq(QuoteOriginParams(
-                        QuoteOriginParams.Type.DASHBOARD_EXEMPLARY
-                    )),
+                    originParams = eq(
+                        QuoteOriginParams(
+                            QuoteOriginParams.Type.DASHBOARD_EXEMPLARY
+                        )
+                    ),
                     limit = anyInt()
                 )
             ).thenReturn(flowOf(quotesEntities))
 
-            for(entity in quotesEntities) {
+            for (entity in quotesEntities) {
                 whenever(dependencyManager.converters.toDomain(entity))
                     .thenReturn(Quote(id = entity.id))
             }
@@ -150,17 +151,4 @@ class DefaultAllQuotesRepositoryTest {
         assertThat(resFlow.count()).isEqualTo(0)
     }
 
-    private fun getExemplaryQuoteEntities(size: Int): List<QuoteEntity> = (1..size).map {
-        QuoteEntity(id = it.toString())
-    }
-
-    private fun prepareResponseFrom(quotesDTO: List<QuoteDTO>): QuotesResponseDTO =
-        QuotesResponseDTO(
-            count = quotesDTO.size,
-            totalCount = quotesDTO.size,
-            page = 1,
-            totalPages = 1,
-            lastItemIndex = quotesDTO.size - 1,
-            results = quotesDTO,
-        )
 }

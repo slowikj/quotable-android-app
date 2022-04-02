@@ -1,16 +1,15 @@
 package com.example.quotableapp.data.repository.tags
 
 import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.data.TagsFactory
 import com.example.quotableapp.data.converters.tag.TagConverters
 import com.example.quotableapp.data.db.datasources.TagsLocalDataSource
-import com.example.quotableapp.data.db.entities.tag.TagEntity
 import com.example.quotableapp.data.db.entities.tag.TagOriginParams
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
 import com.example.quotableapp.data.getTestCoroutineDispatchers
 import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.TagDTO
-import com.example.quotableapp.data.network.model.TagsResponseDTO
 import com.example.quotableapp.data.network.services.TagsRemoteService
 import com.google.common.truth.Truth
 import com.nhaarman.mockitokotlin2.*
@@ -71,10 +70,9 @@ class DefaultTagRepositoryTest {
     fun given_WorkingAPIConnection_when_updateExemplaryTags_then_ReturnSuccess() =
         runBlockingTest {
             // given
-            val tagsDTO = (1..10).map { TagDTO(id = it.toString()) }
             whenever(
                 dependencyManager.remoteService.fetchTags()
-            ).thenReturn(Response.success(prepareResponseFrom(tagsDTO)))
+            ).thenReturn(Response.success(TagsFactory.getResponseDTO(size = 10)))
 
             whenever(dependencyManager.converters.toModel(any<TagDTO>()))
                 .thenReturn(Tag(name = "xxxx"))
@@ -106,10 +104,9 @@ class DefaultTagRepositoryTest {
     fun given_WorkingAPIConnection_when_updateAllTags_then_ReturnSuccess() =
         runBlockingTest {
             // given
-            val tagsDTO = (1..10).map { TagDTO(id = it.toString()) }
             whenever(
                 dependencyManager.remoteService.fetchTags()
-            ).thenReturn(Response.success(prepareResponseFrom(tagsDTO)))
+            ).thenReturn(Response.success(TagsFactory.getResponseDTO(size = 10)))
 
             whenever(dependencyManager.converters.toModel(any<TagDTO>()))
                 .thenReturn(Tag(name = "xxxx"))
@@ -127,7 +124,7 @@ class DefaultTagRepositoryTest {
     fun given_LocalDataAvailable_when_GetExemplaryTags_then_ReturnFlowWithTags() =
         runBlockingTest {
             // given
-            val tagEntities = getExemplaryTagEntities(size = 10)
+            val tagEntities = TagsFactory.getEntities(size = 10)
             val tags = tagEntities.map { Tag(name = it.name) }
             whenever(
                 dependencyManager.localDataSource.getTagsSortedByName(
@@ -173,7 +170,7 @@ class DefaultTagRepositoryTest {
     fun given_LocalDataAvailable_when_GetAllTags_then_ReturnFlowWithTags() =
         runBlockingTest {
             // given
-            val tagEntities = getExemplaryTagEntities(size = 10)
+            val tagEntities = TagsFactory.getEntities(size = 10)
             val tags = tagEntities.map { Tag(name = it.name) }
             whenever(
                 dependencyManager.localDataSource.getTagsSortedByName(
@@ -215,9 +212,4 @@ class DefaultTagRepositoryTest {
         Truth.assertThat(resFlow.count()).isEqualTo(0)
     }
 
-    private fun getExemplaryTagEntities(size: Int): List<TagEntity> =
-        (1..size).map { TagEntity(id = it.toString(), name = it.toString()) }
-
-    private fun prepareResponseFrom(tagsDTO: List<TagDTO>): TagsResponseDTO =
-        tagsDTO
 }

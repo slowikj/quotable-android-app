@@ -3,6 +3,7 @@ package com.example.quotableapp.data.repository.authors
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
 import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.data.AuthorsFactory
 import com.example.quotableapp.data.converters.author.AuthorConverters
 import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
@@ -11,8 +12,6 @@ import com.example.quotableapp.data.getTestCoroutineDispatchers
 import com.example.quotableapp.data.getTestPagingConfig
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
-import com.example.quotableapp.data.network.model.AuthorDTO
-import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.network.services.AuthorsRemoteService
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
 import com.google.common.truth.Truth.assertThat
@@ -66,8 +65,8 @@ class DefaultAuthorsRepositoryTest {
     fun given_WorkingAPIConnection_when_updateAuthor_then_ReturnSuccess() = runBlockingTest {
         // given
         val authorSlug = "1"
-        val authorDTO = AuthorDTO(id = authorSlug)
-        val authorResponseDTO = prepareAuthorResponseDTO(listOf(authorDTO))
+        val authorResponseDTO = AuthorsFactory.getResponseDTO(size = 1)
+        val authorDTO = authorResponseDTO.results.first()
         whenever(dependencyManager.remoteService.fetchAuthor(authorSlug = authorSlug))
             .thenReturn(Response.success(authorResponseDTO))
 
@@ -134,34 +133,36 @@ class DefaultAuthorsRepositoryTest {
     }
 
     @Test
-    fun given_WorkingAPIConnection_when_updateExemplaryAuthors_then_ReturnSuccess() = runBlockingTest {
-        // given
-        val authorResponseSize = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_LIMIT
-        val authorDTOs = prepareAuthorExemplaryDTOs(size = authorResponseSize)
-        whenever(
-            dependencyManager.remoteService.fetchAuthors(
-                page = 1,
-                limit = authorResponseSize,
-                sortBy = AuthorsRemoteService.SortByType.QuoteCount,
-                orderType = AuthorsRemoteService.OrderType.Desc
-            )
-        ).thenReturn(Response.success(prepareAuthorResponseDTO(authorDTOs)))
-
-        for (dto in authorDTOs) {
+    fun given_WorkingAPIConnection_when_updateExemplaryAuthors_then_ReturnSuccess() =
+        runBlockingTest {
+            // given
+            val authorResponseSize = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_LIMIT
+            val authorResponseDTO = AuthorsFactory.getResponseDTO(size = authorResponseSize)
             whenever(
-                dependencyManager.converters.toDb(dto)
-            ).thenReturn(AuthorEntity(slug = dto.slug, quoteCount = dto.quoteCount))
+                dependencyManager.remoteService.fetchAuthors(
+                    page = 1,
+                    limit = authorResponseSize,
+                    sortBy = AuthorsRemoteService.SortByType.QuoteCount,
+                    orderType = AuthorsRemoteService.OrderType.Desc
+                )
+            ).thenReturn(Response.success(authorResponseDTO))
+
+            for (dto in authorResponseDTO.results) {
+                whenever(
+                    dependencyManager.converters.toDb(dto)
+                ).thenReturn(AuthorEntity(slug = dto.slug, quoteCount = dto.quoteCount))
+            }
+            val authorEntities =
+                authorResponseDTO.results.map { dependencyManager.converters.toDb(it) }
+
+            // when
+            val res = dependencyManager.repository.updateExemplaryAuthors()
+
+            // then
+            assertThat(res.isSuccess).isTrue()
+            verify(dependencyManager.localDataSource, times(1))
+                .refresh(eq(authorEntities), any(), anyLong())
         }
-        val authorEntities = authorDTOs.map { dependencyManager.converters.toDb(it) }
-
-        // when
-        val res = dependencyManager.repository.updateExemplaryAuthors()
-
-        // then
-        assertThat(res.isSuccess).isTrue()
-        verify(dependencyManager.localDataSource, times(1))
-            .refresh(eq(authorEntities), any(), anyLong())
-    }
 
     @Test
     fun given_NoAPIConnection_when_updateExemplaryAuthors_then_ReturnFailure() = runBlockingTest {
@@ -191,9 +192,7 @@ class DefaultAuthorsRepositoryTest {
             // given
             val originParams = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_ORIGIN_PARAMS
             val entitiesSize = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_LIMIT
-            val authorEntities = prepareAuthorExemplaryEntities(
-                size = entitiesSize
-            )
+            val authorEntities = AuthorsFactory.getEntities(size = entitiesSize)
             whenever(
                 dependencyManager.localDataSource
                     .getAuthorsSortedByQuoteCountDesc(
@@ -236,19 +235,4 @@ class DefaultAuthorsRepositoryTest {
             // then
             assertThat(authorsFlow.count()).isEqualTo(0)
         }
-
-    private fun prepareAuthorExemplaryDTOs(size: Int): List<AuthorDTO> =
-        (1..size).map { AuthorDTO(id = it.toString(), quoteCount = it) }
-
-    private fun prepareAuthorResponseDTO(dtoItems: List<AuthorDTO>): AuthorsResponseDTO =
-        AuthorsResponseDTO(
-            count = dtoItems.size,
-            totalCount = dtoItems.size,
-            page = 1,
-            totalPages = 1,
-            results = dtoItems
-        )
-
-    private fun prepareAuthorExemplaryEntities(size: Int): List<AuthorEntity> =
-        (1..size).map { AuthorEntity(slug = it.toString(), quoteCount = it) }
 }
