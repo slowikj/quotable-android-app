@@ -73,6 +73,10 @@
             app:destination="@id/oneQuoteFragment"
             app:enterAnim="@anim/from_bottom"
             app:popExitAnim="@anim/to_bottom" />
+        <argument
+            android:name="isSearchExpanded"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
 
     <fragment

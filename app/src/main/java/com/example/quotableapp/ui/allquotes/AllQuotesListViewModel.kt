@@ -28,8 +28,13 @@ class AllQuotesListViewModel @Inject constructor(
     companion object {
         const val SEARCH_QUERY_TAG = "search_query_tag"
 
+        const val SET_SEARCH_EXPANDED_TAG = "isSearchExpanded"
+
         private const val SEARCH_VIEW_DEBOUNCE_TIME_MILLIS = 150L
     }
+
+    val isSearchViewExpanded: MutableLiveData<Boolean> = savedStateHandle
+        .getLiveData(SET_SEARCH_EXPANDED_TAG)
 
     private val _lastSearchQuery: MutableLiveData<String> = savedStateHandle
         .getLiveData(SEARCH_QUERY_TAG, "")

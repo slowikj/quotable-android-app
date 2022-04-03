@@ -102,6 +102,7 @@
         <entry key="app/src/main/res/layout/toolbar_simple.xml" value="0.23007246376811594" />
         <entry key="app/src/main/res/menu/menu_bottom_nav.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/menu/menu_fragment_all_quotes.xml" value="0.25833333333333336" />
+        <entry key="app/src/main/res/menu/menu_fragment_dashboard.xml" value="0.35625" />
       </map>
     </option>
   </component>

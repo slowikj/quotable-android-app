@@ -5,6 +5,8 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.widget.Toast
 import androidx.annotation.ColorRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.example.quotableapp.R
 
@@ -32,4 +34,9 @@ fun Fragment.copyToClipBoard(label: String, text: String) {
         activity!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clipData = ClipData.newPlainText(label, text)
     clipboardManager.setPrimaryClip(clipData)
+}
+
+fun Fragment.setupMenuToolbar(toolbar: Toolbar) {
+    setHasOptionsMenu(true)
+    (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
 }

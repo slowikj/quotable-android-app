@@ -1,9 +1,7 @@
 package com.example.quotableapp.ui.dashboard
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,6 +11,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.model.Tag
@@ -20,6 +19,7 @@ import com.example.quotableapp.databinding.DashboardRecyclerViewItemBinding
 import com.example.quotableapp.databinding.FragmentDashboardBinding
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.extensions.handle
+import com.example.quotableapp.ui.common.extensions.setupMenuToolbar
 import com.example.quotableapp.ui.dashboard.adapters.AuthorsDashboardAdapter
 import com.example.quotableapp.ui.dashboard.adapters.DashboardTagsAdapter
 import com.example.quotableapp.ui.dashboard.adapters.QuotesDashboardAdapter
@@ -54,6 +54,7 @@ class DashboardFragment : Fragment() {
         binding = FragmentDashboardBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = this@DashboardFragment.viewLifecycleOwner
         }
+        setupMenuToolbar(toolbar = binding.appbarLayout.toolbar)
         return binding.root
     }
 
@@ -73,6 +74,19 @@ class DashboardFragment : Fragment() {
             binding.swipeToRefresh.isRefreshing = false
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_fragment_dashboard, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
+            R.id.action_search -> {
+                showAllQuotes(initSearchExpanded = true)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
 
     @JvmName("handleQuoteListState")
     private fun handle(quotesState: UiState<List<Quote>, DashboardViewModel.UiError>) {
@@ -108,8 +122,10 @@ class DashboardFragment : Fragment() {
         findNavController().navigate(action)
     }
 
-    private fun showAllQuotes() {
-        val action = DashboardFragmentDirections.showAllQuotes()
+    private fun showAllQuotes(initSearchExpanded: Boolean) {
+        val action = DashboardFragmentDirections.showAllQuotes().apply {
+            this.isSearchExpanded = initSearchExpanded
+        }
         findNavController().navigate(action)
     }
 
@@ -176,7 +192,7 @@ class DashboardFragment : Fragment() {
         setupCategoryEntry(
             binding = binding.rowQuotes,
             listAdapter = quotesAdapter,
-            onCategoryClickListener = { showAllQuotes() },
+            onCategoryClickListener = { showAllQuotes(initSearchExpanded = false) },
             onDataRetryRequest = { viewModel.updateQuotes() })
     }
 
