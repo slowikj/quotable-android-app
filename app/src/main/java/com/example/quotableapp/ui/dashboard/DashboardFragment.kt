@@ -39,7 +39,7 @@ class DashboardFragment : Fragment() {
     }
 
     private val quotesAdapter: QuotesDashboardAdapter by lazy {
-        QuotesDashboardAdapter(onClick = { showQuote(it.id) })
+        QuotesDashboardAdapter(onClick = { showQuote(it) })
     }
 
     private val tagsAdapter: DashboardTagsAdapter by lazy {
@@ -112,8 +112,8 @@ class DashboardFragment : Fragment() {
         }
     }
 
-    private fun showQuote(quoteId: String) {
-        val action = DashboardFragmentDirections.showOneQuote(quoteId)
+    private fun showQuote(quote: Quote) {
+        val action = DashboardFragmentDirections.showOneQuote(quote)
         findNavController().navigate(action)
     }
 
@@ -163,7 +163,7 @@ class DashboardFragment : Fragment() {
                 viewModel.updateRandomQuote()
             }
             root.setOnClickListener {
-                viewModel.randomQuote.value.data?.let { showQuote(it.id) }
+                viewModel.randomQuote.value.data?.let { showQuote(it) }
             }
             btnRefresh.setOnClickListener {
                 viewModel.updateRandomQuote()

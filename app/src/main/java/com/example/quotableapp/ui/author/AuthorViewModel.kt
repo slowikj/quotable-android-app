@@ -43,7 +43,7 @@ class AuthorViewModel @Inject constructor(
     sealed class NavigationAction {
         data class ToQuotesOfTag(val tag: String) : NavigationAction()
 
-        data class ToOneQuote(val quoteId: String) : NavigationAction()
+        data class ToOneQuote(val quote: Quote) : NavigationAction()
     }
 
     private val _navigationActions = MutableSharedFlow<NavigationAction>()
@@ -86,7 +86,7 @@ class AuthorViewModel @Inject constructor(
 
     fun onQuoteClick(quote: Quote) {
         viewModelScope.launch {
-            _navigationActions.emit(NavigationAction.ToOneQuote(quote.id))
+            _navigationActions.emit(NavigationAction.ToOneQuote(quote))
         }
     }
 

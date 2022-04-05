@@ -73,7 +73,7 @@ class AllQuotesFragment : QuotesListFragment() {
     }
 
     override fun showQuote(quote: Quote) {
-        val action = AllQuotesFragmentDirections.showOneQuote(quote.id)
+        val action = AllQuotesFragmentDirections.showOneQuote(quote)
         findNavController().navigate(action)
     }
 

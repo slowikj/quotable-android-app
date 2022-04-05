@@ -118,9 +118,6 @@
         android:id="@+id/oneQuoteFragment"
         android:name="com.example.quotableapp.ui.onequote.OneQuoteFragment"
         android:label="OneQuoteFragment">
-        <argument
-            android:name="quoteId"
-            app:argType="string" />
         <action
             android:id="@+id/showAuthor"
             app:destination="@id/authorFragment"
@@ -130,6 +127,9 @@
             android:id="@+id/showQuotesOfTag"
             app:destination="@id/tagQuotesFragment"
             app:popExitAnim="@anim/to_bottom" />
+        <argument
+            android:name="quote"
+            app:argType="com.example.quotableapp.data.model.Quote" />
     </fragment>
     <fragment
         android:id="@+id/tagsListFragment"

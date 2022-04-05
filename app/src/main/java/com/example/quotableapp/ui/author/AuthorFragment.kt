@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.R
+import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentAuthorBinding
 import com.example.quotableapp.ui.common.extensions.handle
 import com.google.android.material.tabs.TabLayoutMediator
@@ -67,12 +68,12 @@ class AuthorFragment : Fragment() {
 
     private fun handle(action: AuthorViewModel.NavigationAction) =
         when (action) {
-            is AuthorViewModel.NavigationAction.ToOneQuote -> showOneQuote(action.quoteId)
+            is AuthorViewModel.NavigationAction.ToOneQuote -> showOneQuote(action.quote)
             is AuthorViewModel.NavigationAction.ToQuotesOfTag -> showQuotesOfTag(action.tag)
         }
 
-    private fun showOneQuote(quoteId: String) {
-        val action = AuthorFragmentDirections.showOneQuote(quoteId)
+    private fun showOneQuote(quote: Quote) {
+        val action = AuthorFragmentDirections.showOneQuote(quote)
         findNavController().navigate(action)
     }
 

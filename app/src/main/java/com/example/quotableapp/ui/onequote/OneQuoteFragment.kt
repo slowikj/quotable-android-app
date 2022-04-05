@@ -50,6 +50,10 @@ class OneQuoteFragment : Fragment() {
     }
 
     private fun setupUi() {
+        binding.swipeToRefresh.setOnRefreshListener {
+            binding.swipeToRefresh.isRefreshing = false
+            viewModel.updateQuoteUi()
+        }
         with(binding.quoteLayout) {
             tvAuthor.setOnClickListener { viewModel.onAuthorClick() }
             ivAuthor.setOnClickListener { viewModel.onAuthorClick() }
