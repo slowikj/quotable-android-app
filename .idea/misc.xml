@@ -90,7 +90,7 @@
         <entry key="app/src/main/res/layout/main_layout.xml" value="0.24909420289855072" />
         <entry key="app/src/main/res/layout/one_quote_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/layout/quote_actions.xml" value="0.19157608695652173" />
-        <entry key="app/src/main/res/layout/quote_card_details.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/quote_card_details.xml" value="0.5" />
         <entry key="app/src/main/res/layout/quote_fragment.xml" value="0.33" />
         <entry key="app/src/main/res/layout/quote_item_list_tag.xml" value="0.1" />
         <entry key="app/src/main/res/layout/refreshable_recyclerview.xml" value="0.1" />

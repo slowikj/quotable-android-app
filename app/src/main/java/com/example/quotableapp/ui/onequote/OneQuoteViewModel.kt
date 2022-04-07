@@ -13,8 +13,10 @@ import com.example.quotableapp.ui.common.extensions.defaultSharingStarted
 import com.example.quotableapp.ui.common.formatters.formatToClipboard
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -98,16 +100,38 @@ class OneQuoteViewModel @Inject constructor(
             started = defaultSharingStarted
         )
 
+    private var quoteRepoSyncJob: Job? = null
+
     init {
-        startSynchronizingQuoteChangesFromRepository()
+        when (val quoteId = savedStateHandle.get<Quote>(QUOTE_TAG)?.id) {
+            null -> _quoteErrorFlow.value = UiError.InternalStateError
+            else -> startSynchronizingQuoteChangesFromRepository(quoteId)
+        }
     }
 
     fun updateQuoteUi() {
         val quoteId = _quoteFlow.value?.id ?: return
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineDispatchers.Default) {
             _quoteIsLoadingFlow.value = true
             val response = oneQuoteRepository.updateQuote(quoteId)
             _quoteErrorFlow.value = response.exceptionOrNull()?.let { UiError.IOError() }
+            _quoteIsLoadingFlow.value = false
+        }
+    }
+
+    fun randomizeQuote() {
+        viewModelScope.launch(coroutineDispatchers.Default) {
+            _quoteIsLoadingFlow.value = true
+            val response = oneQuoteRepository.getRandomQuote()
+            response.fold(
+                onSuccess = { quote ->
+                    startSynchronizingQuoteChangesFromRepository(quote.id)
+                    updateSavedStateHandle(quote)
+                },
+                onFailure = {
+                    _quoteErrorFlow.value = UiError.IOError()
+                }
+            )
             _quoteIsLoadingFlow.value = false
         }
     }
@@ -118,14 +142,16 @@ class OneQuoteViewModel @Inject constructor(
         }
     }
 
-    private fun startSynchronizingQuoteChangesFromRepository() {
-        when (val quoteId = savedStateHandle.get<Quote>(QUOTE_TAG)?.id) {
-            null -> _quoteErrorFlow.value = UiError.InternalStateError
-            else -> flowOf(quoteId)
-                .flatMapLatest { oneQuoteRepository.getQuoteFlow(it) }
-                .flowOn(coroutineDispatchers.Default)
-                .onEach { quote -> savedStateHandle.set(QUOTE_TAG, quote) }
-                .launchIn(viewModelScope)
+    private fun startSynchronizingQuoteChangesFromRepository(quoteId: String) {
+        quoteRepoSyncJob?.cancel()
+        quoteRepoSyncJob = oneQuoteRepository.getQuoteFlow(quoteId)
+            .onEach { quote -> updateSavedStateHandle(quote) }
+            .launchIn(viewModelScope)
+    }
+
+    private suspend fun updateSavedStateHandle(quote: Quote) {
+        withContext(coroutineDispatchers.Main) {
+            savedStateHandle.set(QUOTE_TAG, quote)
         }
     }
 

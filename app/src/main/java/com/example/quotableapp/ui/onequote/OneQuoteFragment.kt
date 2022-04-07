@@ -86,6 +86,7 @@ class OneQuoteFragment : Fragment() {
             btnShare.setOnClickListener { onShareClick(quote) }
             btnLike.setOnClickListener { onLikeClick(quote) }
             btnCopy.setOnClickListener { onCopyClick(quote) }
+            btnRandomize.setOnClickListener { onRandomizeClick() }
         }
     }
 
@@ -109,5 +110,9 @@ class OneQuoteFragment : Fragment() {
 
     private fun onShareClick(quote: QuoteUi) {
         showToast("TODO: Will be implemented soon!")
+    }
+
+    private fun onRandomizeClick() {
+        viewModel.randomizeQuote()
     }
 }
