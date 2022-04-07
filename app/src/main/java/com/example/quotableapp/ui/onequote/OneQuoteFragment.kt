@@ -18,9 +18,7 @@ import com.example.quotableapp.ui.common.extensions.showToast
 import com.example.quotableapp.ui.common.rvAdapters.QuoteTagsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -30,7 +28,7 @@ class OneQuoteFragment : Fragment() {
 
     private lateinit var binding: FragmentOneQuoteBinding
 
-    private val tagsAdapter = QuoteTagsAdapter(onClick = { viewModel.onTagClick(it) })
+    private val tagsAdapter = QuoteTagsAdapter(onClick = { showQuotesOfTag(it) })
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,37 +52,40 @@ class OneQuoteFragment : Fragment() {
             binding.swipeToRefresh.isRefreshing = false
             viewModel.updateQuoteUi()
         }
-        with(binding.quoteLayout) {
-            tvAuthor.setOnClickListener { viewModel.onAuthorClick() }
-            ivAuthor.setOnClickListener { viewModel.onAuthorClick() }
-            btnCopy.setOnClickListener { viewModel.onCopyClick() }
-            btnLike.setOnClickListener { showToast("TODO: Implemented soon!") } // TODO
-            btnShare.setOnClickListener { showToast("TODO: Implemented soon!") } //TODO
-            rvTags.adapter = tagsAdapter
-        }
+        binding.quoteLayout.rvTags.adapter = tagsAdapter
         binding.dataLoadHandler.btnRetry.setOnClickListener { viewModel.updateQuoteUi() }
     }
 
     private fun setObservingViewModel() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { viewModel.quoteState.collectLatest { handle(it) } }
-                launch { viewModel.action.collect { handle(it) } }
+                viewModel.quoteUiState.collectLatest { handle(it) }
             }
         }
     }
 
     private fun handle(state: QuoteUiState) {
         binding.dataLoadHandler.handle(state)
-        tagsAdapter.submitList(state.data?.tags)
+        if (state.data != null) {
+            val quote = state.data
+            tagsAdapter.submitList(quote.tags)
+            setupListeners(quote)
+        }
+        if (state.error is OneQuoteViewModel.UiError.IOError) {
+            showErrorToast()
+        }
+        state.error?.let {
+            viewModel.onErrorConsumed(it)
+        }
     }
 
-    private fun handle(action: OneQuoteViewModel.Action) {
-        when (action) {
-            is OneQuoteViewModel.Action.ShowError -> showErrorToast()
-            is OneQuoteViewModel.Action.Navigation.ToAuthorQuotes -> showAuthorFragment(action.authorSlug)
-            is OneQuoteViewModel.Action.Navigation.ToTagQuotes -> showQuotesOfTag(action.tag)
-            is OneQuoteViewModel.Action.CopyToClipboard -> copyQuoteToClipBoardWithToast(action.formattedText)
+    private fun setupListeners(quote: QuoteUi) {
+        with(binding.quoteLayout) {
+            ivAuthor.setOnClickListener { showAuthorFragment(quote.authorSlug) }
+            tvAuthor.setOnClickListener { showAuthorFragment(quote.authorSlug) }
+            btnShare.setOnClickListener { onShareClick(quote) }
+            btnLike.setOnClickListener { onLikeClick(quote) }
+            btnCopy.setOnClickListener { onCopyClick(quote) }
         }
     }
 
@@ -96,5 +97,17 @@ class OneQuoteFragment : Fragment() {
     private fun showAuthorFragment(authorSlug: String) {
         val action = OneQuoteFragmentDirections.showAuthor(authorSlug)
         findNavController().navigate(action)
+    }
+
+    private fun onCopyClick(quote: QuoteUi) {
+        copyQuoteToClipBoardWithToast(quote.formattedText)
+    }
+
+    private fun onLikeClick(quote: QuoteUi) {
+        showToast("TODO: Will be implemented soon!")
+    }
+
+    private fun onShareClick(quote: QuoteUi) {
+        showToast("TODO: Will be implemented soon!")
     }
 }

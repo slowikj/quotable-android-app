@@ -50,37 +50,16 @@ class OneQuoteViewModel @Inject constructor(
 ) : ViewModel() {
 
     sealed class UiError : Throwable() {
-        object IOError : UiError()
+        data class IOError(val messageId: Int? = null) : UiError()
 
         object InternalStateError : UiError()
-    }
-
-    sealed class Action {
-        sealed class Navigation : Action() {
-            data class ToAuthorQuotes(val authorSlug: String) : Action()
-
-            data class ToTagQuotes(val tag: String) : Action()
-        }
-
-        object ShowError : Action()
-
-        data class CopyToClipboard(val formattedText: String) : Action()
     }
 
     companion object {
         const val QUOTE_TAG = "quote"
     }
 
-    init {
-        flowOf(savedStateHandle.get<Quote>(QUOTE_TAG)!!.id)
-            .catch { _quoteErrorFlow.value = UiError.InternalStateError }
-            .flatMapLatest { quoteId -> oneQuoteRepository.getQuoteFlow(quoteId) }
-            .flowOn(coroutineDispatchers.Default)
-            .onEach { quote -> savedStateHandle.set(QUOTE_TAG, quote) }
-            .launchIn(viewModelScope)
-    }
-
-    private val _quoteFlow = savedStateHandle
+    private val _quoteFlow: StateFlow<Quote?> = savedStateHandle
         .getLiveData<Quote>(QUOTE_TAG)
         .asFlow()
         .onEach { quote ->
@@ -105,7 +84,7 @@ class OneQuoteViewModel @Inject constructor(
             started = defaultSharingStarted
         )
 
-    val quoteState: StateFlow<QuoteUiState> = combine(
+    val quoteUiState: StateFlow<QuoteUiState> = combine(
         _quoteFlow, _quoteIsLoadingFlow, _quoteErrorFlow, _authorPhotoUrlFlow
     ) { quote, quoteIsLoading, quoteError, authorPhotoUrl ->
         QuoteUiState(
@@ -119,38 +98,34 @@ class OneQuoteViewModel @Inject constructor(
             started = defaultSharingStarted
         )
 
-    private val _action: MutableSharedFlow<Action> = MutableSharedFlow()
-    val action = _action.asSharedFlow()
+    init {
+        startSynchronizingQuoteChangesFromRepository()
+    }
 
     fun updateQuoteUi() {
         val quoteId = _quoteFlow.value?.id ?: return
         viewModelScope.launch {
             _quoteIsLoadingFlow.value = true
             val response = oneQuoteRepository.updateQuote(quoteId)
-            _quoteErrorFlow.value = response.exceptionOrNull()?.let { UiError.IOError }
+            _quoteErrorFlow.value = response.exceptionOrNull()?.let { UiError.IOError() }
             _quoteIsLoadingFlow.value = false
         }
     }
 
-    fun onAuthorClick() {
-        quoteState.value.data?.authorSlug?.let { authorSlug ->
-            viewModelScope.launch {
-                _action.emit(Action.Navigation.ToAuthorQuotes(authorSlug))
-            }
+    fun onErrorConsumed(error: UiError) {
+        if (error !is UiError.InternalStateError) {
+            _quoteErrorFlow.value = null
         }
     }
 
-    fun onTagClick(tag: String) {
-        viewModelScope.launch {
-            _action.emit(Action.Navigation.ToTagQuotes(tag))
-        }
-    }
-
-    fun onCopyClick() {
-        viewModelScope.launch {
-            quoteState.value.data?.let {
-                _action.emit(Action.CopyToClipboard(it.formattedText))
-            }
+    private fun startSynchronizingQuoteChangesFromRepository() {
+        when (val quoteId = savedStateHandle.get<Quote>(QUOTE_TAG)?.id) {
+            null -> _quoteErrorFlow.value = UiError.InternalStateError
+            else -> flowOf(quoteId)
+                .flatMapLatest { oneQuoteRepository.getQuoteFlow(it) }
+                .flowOn(coroutineDispatchers.Default)
+                .onEach { quote -> savedStateHandle.set(QUOTE_TAG, quote) }
+                .launchIn(viewModelScope)
         }
     }
 

@@ -31,13 +31,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/small_space"
-                android:visibility="@{(viewModel.quoteState.loading || viewModel.quoteState.data == null) ? View.GONE : View.VISIBLE}"
+                android:visibility="@{(viewModel.quoteUiState.loading || viewModel.quoteUiState.data == null) ? View.GONE : View.VISIBLE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.5"
-                bind:quoteUi="@{viewModel.quoteState.data}" />
+                bind:quoteUi="@{viewModel.quoteUiState.data}" />
 
             <include
                 android:id="@+id/dataLoadHandler"
