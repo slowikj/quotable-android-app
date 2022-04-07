@@ -1,6 +1,7 @@
 package com.example.quotableapp.data.repository.quotes.onequote
 
 import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.data.QuotesFactory
 import com.example.quotableapp.data.converters.quote.QuoteConverters
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
@@ -156,19 +157,22 @@ class DefaultOneQuoteRepositoryTest {
     }
 
     @Test
-    fun given_NoLocalDataAvailable_when_GetRandomQuote_then_ReturnFlowWithNoEmission() = runBlockingTest {
-        // given
-        whenever(dependencyManager.localDataSource.getFirstQuotesSortedById(
-            originParams = QuoteOriginParams(type = QuoteOriginParams.Type.RANDOM),
-            limit = 1
-        )).thenReturn(flowOf(emptyList()))
+    fun given_NoLocalDataAvailable_when_GetRandomQuote_then_ReturnFlowWithNoEmission() =
+        runBlockingTest {
+            // given
+            whenever(
+                dependencyManager.localDataSource.getFirstQuotesSortedById(
+                    originParams = QuoteOriginParams(type = QuoteOriginParams.Type.RANDOM),
+                    limit = 1
+                )
+            ).thenReturn(flowOf(emptyList()))
 
-        // when
-        val randomQuoteFlow = dependencyManager.repository.randomQuote
+            // when
+            val randomQuoteFlow = dependencyManager.repository.randomQuote
 
-        // then
-        assertThat(randomQuoteFlow.count()).isEqualTo(0)
-    }
+            // then
+            assertThat(randomQuoteFlow.count()).isEqualTo(0)
+        }
 
     @Test
     fun given_LocalDataAvailable_when_GetQuote_then_ReturnFlowWithQuote() = runBlockingTest {
@@ -202,5 +206,42 @@ class DefaultOneQuoteRepositoryTest {
 
         // then
         assertThat(quoteFlow.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun given_RemoteAPIWorking_when_getRandomQuote_then_ReturnValidQuote() = runBlockingTest {
+        // given
+        val quoteDTO = QuotesFactory.getDTOs(1).first()
+        val quoteEntity = QuotesFactory.getEntities(1).first()
+        val quote = QuotesFactory.getQuotes(1).first()
+
+        whenever(dependencyManager.converters.toDomain(quoteDTO))
+            .thenReturn(quote)
+        whenever(dependencyManager.converters.toDb(quoteDTO))
+            .thenReturn(quoteEntity)
+
+        whenever(dependencyManager.remoteService.fetchRandomQuote())
+            .thenReturn(Response.success(quoteDTO))
+
+        // when
+        val response = dependencyManager.repository.getRandomQuote()
+
+        // then
+        assertThat(response.isSuccess).isTrue()
+        assertThat(response.getOrNull()).isEqualTo(quote)
+        verify(dependencyManager.localDataSource, times(1)).insert(listOf(quoteEntity))
+    }
+
+    @Test
+    fun given_RemoteAPINotWorking_when_getRandomQuote_then_ReturnFailure() = runBlockingTest {
+        // given
+        whenever(dependencyManager.remoteService.fetchRandomQuote())
+            .thenReturn(Response.error(500, "".toResponseBody()))
+
+        // when
+        val response = dependencyManager.repository.getRandomQuote()
+
+        // then
+        assertThat(response.isFailure).isTrue()
     }
 }

@@ -97,16 +97,16 @@
                 android:id="@+id/btn_like"
                 android:layout_width="@dimen/icon_button_dim"
                 android:layout_height="@dimen/icon_button_dim"
-                android:layout_marginTop="@dimen/larger_space"
                 android:alpha="?attr/tertiaryContentAlpha"
                 android:src="@drawable/ic_favorite_border"
                 android:tint="?attr/colorOnSurface"
+                android:layout_marginTop="@dimen/larger_space"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btn_copy"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_author" />
+                app:layout_constraintTop_toBottomOf="@id/tv_author" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/btn_copy"
@@ -115,11 +115,11 @@
                 android:alpha="?attr/tertiaryContentAlpha"
                 android:src="@drawable/ic_copy"
                 android:tint="?attr/colorOnSurface"
-                app:layout_constraintBottom_toBottomOf="@+id/btn_like"
+                app:layout_constraintTop_toTopOf="@id/btn_like"
+                app:layout_constraintBottom_toBottomOf="@id/btn_like"
                 app:layout_constraintEnd_toStartOf="@+id/btn_share"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/btn_like"
-                app:layout_constraintTop_toTopOf="@+id/btn_like" />
+                app:layout_constraintStart_toEndOf="@+id/btn_like" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/btn_share"
@@ -128,11 +128,24 @@
                 android:alpha="?attr/tertiaryContentAlpha"
                 android:src="@drawable/ic_share"
                 android:tint="?attr/colorOnSurface"
-                app:layout_constraintBottom_toBottomOf="@+id/btn_copy"
+                app:layout_constraintTop_toTopOf="@id/btn_like"
+                app:layout_constraintBottom_toBottomOf="@id/btn_like"
+                app:layout_constraintEnd_toStartOf="@+id/btn_randomize"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/btn_copy" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_randomize"
+                android:layout_width="@dimen/icon_button_dim"
+                android:layout_height="@dimen/icon_button_dim"
+                android:alpha="?attr/tertiaryContentAlpha"
+                android:src="@drawable/ic_refresh"
+                android:tint="?attr/colorOnSurface"
+                app:layout_constraintTop_toTopOf="@id/btn_like"
+                app:layout_constraintBottom_toBottomOf="@id/btn_like"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/btn_copy"
-                app:layout_constraintTop_toTopOf="@+id/btn_copy" />
+                app:layout_constraintStart_toEndOf="@+id/btn_share" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
