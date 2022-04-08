@@ -2,14 +2,12 @@ package com.example.quotableapp.data.repository.tags
 
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.TagsFactory
-import com.example.quotableapp.data.converters.tag.TagConverters
+import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.TagsLocalDataSource
 import com.example.quotableapp.data.db.entities.tag.TagOriginParams
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
 import com.example.quotableapp.data.getTestCoroutineDispatchers
-import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
-import com.example.quotableapp.data.network.model.TagDTO
 import com.example.quotableapp.data.network.services.TagsRemoteService
 import com.google.common.truth.Truth
 import com.nhaarman.mockitokotlin2.*
@@ -33,7 +31,6 @@ class DefaultTagRepositoryTest {
         val localDataSource: TagsLocalDataSource = mock(),
         val responseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter(),
         val coroutineDispatchers: CoroutineDispatchers = getTestCoroutineDispatchers(),
-        val converters: TagConverters = mock()
     ) {
         val repository: DefaultTagRepository
             get() = DefaultTagRepository(
@@ -41,7 +38,6 @@ class DefaultTagRepositoryTest {
                 tagsLocalDataSource = localDataSource,
                 responseInterpreter = responseInterpreter,
                 coroutineDispatchers = coroutineDispatchers,
-                tagConverters = converters
             )
     }
 
@@ -74,9 +70,6 @@ class DefaultTagRepositoryTest {
                 dependencyManager.remoteService.fetchTags()
             ).thenReturn(Response.success(TagsFactory.getResponseDTO(size = 10)))
 
-            whenever(dependencyManager.converters.toModel(any<TagDTO>()))
-                .thenReturn(Tag(name = "xxxx"))
-
             // when
             val res = dependencyManager.repository.updateExemplaryTags()
 
@@ -108,9 +101,6 @@ class DefaultTagRepositoryTest {
                 dependencyManager.remoteService.fetchTags()
             ).thenReturn(Response.success(TagsFactory.getResponseDTO(size = 10)))
 
-            whenever(dependencyManager.converters.toModel(any<TagDTO>()))
-                .thenReturn(Tag(name = "xxxx"))
-
             // when
             val res = dependencyManager.repository.updateAllTags()
 
@@ -125,7 +115,6 @@ class DefaultTagRepositoryTest {
         runBlockingTest {
             // given
             val tagEntities = TagsFactory.getEntities(size = 10)
-            val tags = tagEntities.map { Tag(name = it.name) }
             whenever(
                 dependencyManager.localDataSource.getTagsSortedByName(
                     originParams = eq(
@@ -137,16 +126,11 @@ class DefaultTagRepositoryTest {
                 )
             ).thenReturn(flowOf(tagEntities))
 
-            for (entity in tagEntities) {
-                whenever(dependencyManager.converters.toModel(entity))
-                    .thenReturn(Tag(name = entity.name))
-            }
-
             // when
             val resFlow = dependencyManager.repository.exemplaryTags
 
             // then
-            Truth.assertThat(resFlow.single()).isEqualTo(tags)
+            Truth.assertThat(resFlow.single()).isEqualTo(tagEntities.map { it.toDomain() })
         }
 
     @Test
@@ -171,7 +155,6 @@ class DefaultTagRepositoryTest {
         runBlockingTest {
             // given
             val tagEntities = TagsFactory.getEntities(size = 10)
-            val tags = tagEntities.map { Tag(name = it.name) }
             whenever(
                 dependencyManager.localDataSource.getTagsSortedByName(
                     originParams = eq(
@@ -183,16 +166,11 @@ class DefaultTagRepositoryTest {
                 )
             ).thenReturn(flowOf(tagEntities))
 
-            for (entity in tagEntities) {
-                whenever(dependencyManager.converters.toModel(entity))
-                    .thenReturn(Tag(name = entity.name))
-            }
-
             // when
             val resFlow = dependencyManager.repository.allTagsFlow
 
             // then
-            Truth.assertThat(resFlow.single()).isEqualTo(tags)
+            Truth.assertThat(resFlow.single()).isEqualTo(tagEntities.map { it.toDomain() })
         }
 
     @Test

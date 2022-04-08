@@ -1,13 +1,14 @@
 package com.example.quotableapp.data.repository.tags
 
 import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.data.converters.tag.TagConverters
+import com.example.quotableapp.data.converters.toDb
+import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.TagsLocalDataSource
 import com.example.quotableapp.data.db.entities.tag.TagOriginParams
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.data.network.services.TagsRemoteService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.TagsResponseDTO
+import com.example.quotableapp.data.network.services.TagsRemoteService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flowOn
@@ -30,8 +31,7 @@ class DefaultTagRepository @Inject constructor(
     private val tagsRemoteService: TagsRemoteService,
     private val tagsLocalDataSource: TagsLocalDataSource,
     private val responseInterpreter: ApiResponseInterpreter,
-    private val coroutineDispatchers: CoroutineDispatchers,
-    private val tagConverters: TagConverters
+    private val coroutineDispatchers: CoroutineDispatchers
 ) : TagsRepository {
 
     companion object {
@@ -58,7 +58,7 @@ class DefaultTagRepository @Inject constructor(
     override val allTagsFlow: Flow<List<Tag>> = tagsLocalDataSource
         .getTagsSortedByName(originParams = TAG_ORIGIN_PARAMS_ALL)
         .filterNot { it.isEmpty() }
-        .map { list -> list.map(tagConverters::toModel) }
+        .map { list -> list.map { it.toDomain() } }
         .flowOn(coroutineDispatchers.IO)
 
     override suspend fun updateExemplaryTags(): Result<Unit> {
@@ -80,7 +80,7 @@ class DefaultTagRepository @Inject constructor(
             limit = TAGS_EXEMPLARY_LIMIT
         )
         .filterNot { it.isEmpty() }
-        .map { list -> list.map(tagConverters::toModel) }
+        .map { list -> list.map { it.toDomain() } }
         .flowOn(coroutineDispatchers.IO)
 
     private suspend fun fetchTagsDTO(): Result<TagsResponseDTO> {
@@ -95,7 +95,7 @@ class DefaultTagRepository @Inject constructor(
     ): Unit = withContext(coroutineDispatchers.IO) {
         tagsLocalDataSource.refresh(
             originParams = tagOriginParams,
-            entities = tagsDTO.map(tagConverters::toDb)
+            entities = tagsDTO.map { it.toDb() }
         )
     }
 }

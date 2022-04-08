@@ -59,6 +59,8 @@ class OneQuoteViewModel @Inject constructor(
 
     companion object {
         const val QUOTE_TAG = "quote"
+
+        const val AUTHOR_PHOTO_REQUEST_SIZE: Int = 200
     }
 
     private val _quoteFlow: StateFlow<Quote?> = savedStateHandle
@@ -78,7 +80,7 @@ class OneQuoteViewModel @Inject constructor(
     private val _authorPhotoUrlFlow: StateFlow<String?> = _quoteFlow
         .filterNotNull()
         .flatMapLatest { quote -> authorsRepository.getAuthorFlow(quote.authorSlug) }
-        .map { author -> author.photoUrl }
+        .map { author -> author.getPhotoUrl(AUTHOR_PHOTO_REQUEST_SIZE) }
         .flowOn(coroutineDispatchers.Default)
         .stateIn(
             initialValue = null,

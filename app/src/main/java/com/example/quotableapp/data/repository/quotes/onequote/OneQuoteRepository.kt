@@ -1,7 +1,8 @@
 package com.example.quotableapp.data.repository.quotes.onequote
 
 import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.data.converters.quote.QuoteConverters
+import com.example.quotableapp.data.converters.toDb
+import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
@@ -28,7 +29,6 @@ interface OneQuoteRepository {
 class DefaultOneQuoteRepository @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val quotesRemoteService: QuotesRemoteService,
-    private val quoteConverters: QuoteConverters,
     private val quotesLocalDataSource: QuotesLocalDataSource,
     private val apiResponseInterpreter: ApiResponseInterpreter
 ) : OneQuoteRepository {
@@ -45,14 +45,14 @@ class DefaultOneQuoteRepository @Inject constructor(
         )
         .filterNot { it.isEmpty() }
         .map { it.first() }
-        .map(quoteConverters::toDomain)
+        .map { it.toDomain() }
         .flowOn(coroutineDispatchers.IO)
 
     override suspend fun getRandomQuote(): Result<Quote> = withContext(coroutineDispatchers.IO) {
         apiResponseInterpreter { quotesRemoteService.fetchRandomQuote() }
             .mapCatching { quoteDTO ->
                 insertQuoteToDb(quoteDTO)
-                quoteConverters.toDomain(quoteDTO)
+                quoteDTO.toDomain()
             }
     }
 
@@ -66,7 +66,7 @@ class DefaultOneQuoteRepository @Inject constructor(
     override fun getQuoteFlow(id: String): Flow<Quote> = quotesLocalDataSource
         .getQuoteFlow(id)
         .filterNotNull()
-        .map(quoteConverters::toDomain)
+        .map { it.toDomain() }
         .flowOn(coroutineDispatchers.IO)
 
     override suspend fun updateRandomQuote(): Result<Unit> {
@@ -78,14 +78,14 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     private suspend fun insertQuoteToDb(quoteDTO: QuoteDTO): Unit {
         withContext(coroutineDispatchers.IO) {
-            quotesLocalDataSource.insert(listOf(quoteConverters.toDb(quoteDTO)))
+            quotesLocalDataSource.insert(listOf(quoteDTO.toDb()))
         }
     }
 
     private suspend fun updateDatabaseWithRandomQuote(quoteDTO: QuoteDTO): Unit =
         withContext(coroutineDispatchers.IO) {
             quotesLocalDataSource.refresh(
-                entities = listOf(quoteConverters.toDb(quoteDTO)),
+                entities = listOf(quoteDTO.toDb()),
                 originParams = randomQuoteOriginParams
             )
         }

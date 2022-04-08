@@ -6,11 +6,11 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.common.mapInnerElements
-import com.example.quotableapp.data.converters.quote.QuoteConverters
+import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.services.QuotesRemoteService
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
+import com.example.quotableapp.data.network.services.QuotesRemoteService
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediator
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediatorFactory
@@ -27,7 +27,6 @@ class DefaultQuotesOfAuthorRepository @Inject constructor(
     private val remoteMediatorFactory: QuotesRemoteMediatorFactory,
     private val quotesRemoteService: QuotesRemoteService,
     private val pagingConfig: PagingConfig,
-    private val quoteConverters: QuoteConverters,
     private val coroutineDispatchers: CoroutineDispatchers
 ) : QuotesOfAuthorRepository {
 
@@ -38,7 +37,7 @@ class DefaultQuotesOfAuthorRepository @Inject constructor(
             remoteMediator = remoteMediator,
             pagingSourceFactory = { remoteMediator.persistenceManager.getPagingSource() }
         ).flow
-            .mapInnerElements { quoteDTO -> quoteConverters.toDomain(quoteDTO) }
+            .mapInnerElements { quoteDTO -> quoteDTO.toDomain() }
             .flowOn(coroutineDispatchers.IO)
     }
 

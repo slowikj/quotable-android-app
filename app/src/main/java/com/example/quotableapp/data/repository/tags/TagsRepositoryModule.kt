@@ -1,7 +1,5 @@
 package com.example.quotableapp.data.repository.tags
 
-import com.example.quotableapp.data.converters.tag.DefaultTagConverters
-import com.example.quotableapp.data.converters.tag.TagConverters
 import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.dao.TagsDao
 import dagger.Binds
@@ -20,8 +18,6 @@ object TagsRepositoryModule {
     @Module
     @InstallIn(SingletonComponent::class)
     interface Declarations {
-        @Binds
-        fun bindTagConverters(converters: DefaultTagConverters): TagConverters
 
         @Binds
         fun bindTagsRepository(repository: DefaultTagRepository): TagsRepository

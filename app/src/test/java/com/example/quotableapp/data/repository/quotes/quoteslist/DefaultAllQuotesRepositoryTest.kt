@@ -4,7 +4,6 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.QuotesFactory
-import com.example.quotableapp.data.converters.quote.QuoteConverters
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
@@ -39,7 +38,6 @@ class DefaultAllQuotesRepositoryTest {
         val remoteMediatorFactory: QuotesRemoteMediatorFactory = mock(),
         val localDataSource: QuotesLocalDataSource = mock(),
         val pagingConfig: PagingConfig = getTestPagingConfig(),
-        val converters: QuoteConverters = mock(),
         val apiResponseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter(),
         val remoteService: QuotesRemoteService = mock(),
         val coroutineDispatchers: CoroutineDispatchers = getTestCoroutineDispatchers(),
@@ -49,7 +47,6 @@ class DefaultAllQuotesRepositoryTest {
                 quotesRemoteMediatorFactory = remoteMediatorFactory,
                 quotesLocalDataSource = localDataSource,
                 pagingConfig = pagingConfig,
-                quotesConverters = converters,
                 apiResponseInterpreter = apiResponseInterpreter,
                 quotesRemoteService = remoteService,
                 coroutineDispatchers = coroutineDispatchers
@@ -97,9 +94,6 @@ class DefaultAllQuotesRepositoryTest {
                 )
             ).thenReturn(Response.success(quotesResponseDTO))
 
-            whenever(dependencyManager.converters.toDomain(any<QuoteDTO>()))
-                .thenReturn(Quote(id = "xxxx"))
-
             // when
             val res = dependencyManager.repository.updateExemplaryQuotes()
 
@@ -125,11 +119,6 @@ class DefaultAllQuotesRepositoryTest {
                     limit = anyInt()
                 )
             ).thenReturn(flowOf(quotesEntities))
-
-            for (entity in quotesEntities) {
-                whenever(dependencyManager.converters.toDomain(entity))
-                    .thenReturn(Quote(id = entity.id))
-            }
 
             // when
             val resFlow = dependencyManager.repository.exemplaryQuotes

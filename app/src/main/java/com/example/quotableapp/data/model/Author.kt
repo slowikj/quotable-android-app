@@ -12,6 +12,10 @@ data class Author(
     val name: String = "",
     val quoteCount: Int,
     val dateAdded: String = "",
-    val dateModified: String = "",
-    val photoUrl: String = ""
-): Parcelable
+    val dateModified: String = ""
+) : Parcelable {
+
+    fun getPhotoUrl(size: Int): String {
+        return "https://images.quotable.dev/profile/$size/$slug.jpg"
+    }
+}

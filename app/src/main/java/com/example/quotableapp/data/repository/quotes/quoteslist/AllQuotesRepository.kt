@@ -6,13 +6,14 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.common.mapInnerElements
-import com.example.quotableapp.data.converters.quote.QuoteConverters
+import com.example.quotableapp.data.converters.toDb
+import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.services.QuotesRemoteService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
+import com.example.quotableapp.data.network.services.QuotesRemoteService
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediator
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediatorFactory
@@ -36,7 +37,6 @@ class DefaultAllQuotesRepository @Inject constructor(
     private val quotesRemoteMediatorFactory: QuotesRemoteMediatorFactory,
     private val quotesLocalDataSource: QuotesLocalDataSource,
     private val pagingConfig: PagingConfig,
-    private val quotesConverters: QuoteConverters,
     private val apiResponseInterpreter: ApiResponseInterpreter,
     private val quotesRemoteService: QuotesRemoteService,
     private val coroutineDispatchers: CoroutineDispatchers
@@ -57,7 +57,7 @@ class DefaultAllQuotesRepository @Inject constructor(
             remoteMediator = remoteMediator,
             pagingSourceFactory = { remoteMediator.persistenceManager.getPagingSource() }
         ).flow
-            .mapInnerElements { quoteDTO -> quotesConverters.toDomain(quoteDTO) }
+            .mapInnerElements { quoteDTO -> quoteDTO.toDomain() }
             .flowOn(coroutineDispatchers.IO)
     }
 
@@ -67,7 +67,7 @@ class DefaultAllQuotesRepository @Inject constructor(
             limit = EXEMPLARY_QUOTES_LIMIT
         )
         .filterNot { it.isEmpty() }
-        .map { quotes -> quotes.map(quotesConverters::toDomain) }
+        .map { quotes -> quotes.map { it.toDomain() } }
         .flowOn(coroutineDispatchers.IO)
 
     override suspend fun updateExemplaryQuotes(): Result<Unit> =
@@ -104,7 +104,7 @@ class DefaultAllQuotesRepository @Inject constructor(
     private suspend fun updateDatabaseWithExemplaryQuotes(dto: QuotesResponseDTO): Unit =
         withContext(coroutineDispatchers.IO) {
             quotesLocalDataSource.refresh(
-                entities = dto.results.map(quotesConverters::toDb),
+                entities = dto.results.map { it.toDb() },
                 originParams = EXEMPLARY_QUOTES_PARAMS
             )
         }

@@ -24,7 +24,7 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/appCompatImageView"
-                loadImageWithPersonPlaceholder="@{model.photoUrl}"
+                loadImageWithPersonPlaceholder="@{model.getPhotoUrl(200)}"
                 android:layout_width="@dimen/dashboard_author_img_dim"
                 android:layout_height="@dimen/dashboard_author_img_dim"
                 app:layout_constraintBottom_toTopOf="@id/author_name"

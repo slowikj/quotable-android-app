@@ -2,8 +2,6 @@ package com.example.quotableapp.data.repository.quotes
 
 import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.data.converters.Converter
-import com.example.quotableapp.data.converters.quote.DefaultQuoteConverters
-import com.example.quotableapp.data.converters.quote.QuoteConverters
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.quotes.onequote.DefaultOneQuoteRepository
@@ -21,14 +19,8 @@ import dagger.hilt.components.SingletonComponent
 object QuotesRepositoryModule {
 
     @Provides
-    fun provideQuoteResponseDTOToEntityListConverter(quoteConverters: QuoteConverters):
-            Converter<QuotesResponseDTO, List<QuoteEntity>> {
-        return QuotesListDTOResponseToEntitiesConverter(quoteConverters)
-    }
-
-    @Provides
-    fun provideQuoteConverters(): QuoteConverters {
-        return DefaultQuoteConverters()
+    fun provideQuoteResponseDTOToEntityListConverter(): Converter<QuotesResponseDTO, List<QuoteEntity>> {
+        return QuotesListDTOResponseToEntitiesConverter()
     }
 
     @Module

@@ -2,13 +2,13 @@ package com.example.quotableapp.data.repository.quotes.onequote
 
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.QuotesFactory
-import com.example.quotableapp.data.converters.quote.QuoteConverters
+import com.example.quotableapp.data.converters.toDb
+import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
 import com.example.quotableapp.data.getTestCoroutineDispatchers
-import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.network.services.QuotesRemoteService
@@ -33,7 +33,6 @@ class DefaultOneQuoteRepositoryTest {
     class DependencyManager(
         val coroutineDispatchers: CoroutineDispatchers = getTestCoroutineDispatchers(),
         val remoteService: QuotesRemoteService = mock(),
-        val converters: QuoteConverters = mock(),
         val localDataSource: QuotesLocalDataSource = mock(),
         val apiResponseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter()
     ) {
@@ -41,7 +40,6 @@ class DefaultOneQuoteRepositoryTest {
             get() = DefaultOneQuoteRepository(
                 coroutineDispatchers = coroutineDispatchers,
                 quotesRemoteService = remoteService,
-                quoteConverters = converters,
                 quotesLocalDataSource = localDataSource,
                 apiResponseInterpreter = apiResponseInterpreter
             )
@@ -79,10 +77,6 @@ class DefaultOneQuoteRepositoryTest {
                 Response.success(randomQuote)
             )
 
-            val quoteEntity = QuoteEntity(id = randomQuote.id, content = randomQuote.content)
-            whenever(dependencyManager.converters.toDb(any()))
-                .thenReturn(quoteEntity)
-
             // when
             val res = dependencyManager.repository.updateRandomQuote()
 
@@ -91,7 +85,7 @@ class DefaultOneQuoteRepositoryTest {
             verify(
                 dependencyManager.localDataSource, times(1)
             ).refresh(
-                entities = eq(listOf(quoteEntity)),
+                entities = eq(listOf(randomQuote.toDb())),
                 originParams = eq(QuoteOriginParams(type = QuoteOriginParams.Type.RANDOM)),
                 lastUpdatedMillis = anyLong()
             )
@@ -120,25 +114,25 @@ class DefaultOneQuoteRepositoryTest {
         // given
         val quoteId = "1"
         val quoteDTO = QuoteDTO(id = quoteId, content = "abc")
-        val quoteEntity = QuoteEntity(id = quoteId, content = "abc")
         whenever(dependencyManager.remoteService.fetchQuote(quoteDTO.id)).thenReturn(
             Response.success(quoteDTO)
         )
-        whenever(dependencyManager.converters.toDb(quoteDTO)).thenReturn(quoteEntity)
 
         // when
         val res = dependencyManager.repository.updateQuote(quoteId)
 
         // then
         assertThat(res.isSuccess).isTrue()
-        verify(dependencyManager.localDataSource, times(1)).insert(entities = listOf(quoteEntity))
+        verify(
+            dependencyManager.localDataSource,
+            times(1)
+        ).insert(entities = listOf(quoteDTO.toDb()))
     }
 
     @Test
     fun given_LocalDataAvailable_when_GetRandomQuote_then_ReturnFlowWithQuote() = runBlockingTest {
         // given
         val quoteEntity = QuoteEntity(id = "1", content = "content")
-        val quote = Quote(id = "1", content = "content")
         whenever(
             dependencyManager.localDataSource.getFirstQuotesSortedById(
                 originParams = QuoteOriginParams(type = QuoteOriginParams.Type.RANDOM),
@@ -146,14 +140,11 @@ class DefaultOneQuoteRepositoryTest {
             )
         ).thenReturn(flowOf(listOf(quoteEntity)))
 
-        whenever(dependencyManager.converters.toDomain(quoteEntity))
-            .doReturn(quote)
-
         // when
         val randomQuoteFlow = dependencyManager.repository.randomQuote
 
         // then
-        assertThat(randomQuoteFlow.single()).isEqualTo(quote)
+        assertThat(randomQuoteFlow.single()).isEqualTo(quoteEntity.toDomain())
     }
 
     @Test
@@ -179,19 +170,15 @@ class DefaultOneQuoteRepositoryTest {
         // given
         val quoteId = "1"
         val quoteEntity = QuoteEntity(id = quoteId, content = "content")
-        val quote = Quote(id = quoteId, content = "content")
 
         whenever(dependencyManager.localDataSource.getQuoteFlow(id = quoteId))
             .thenReturn(flowOf(quoteEntity))
-
-        whenever(dependencyManager.converters.toDomain(any<QuoteEntity>()))
-            .thenReturn(quote)
 
         // when
         val quoteFlow = dependencyManager.repository.getQuoteFlow(id = quoteId)
 
         // then
-        assertThat(quoteFlow.single()).isEqualTo(quote)
+        assertThat(quoteFlow.single()).isEqualTo(quoteEntity.toDomain())
     }
 
     @Test
@@ -212,13 +199,6 @@ class DefaultOneQuoteRepositoryTest {
     fun given_RemoteAPIWorking_when_getRandomQuote_then_ReturnValidQuote() = runBlockingTest {
         // given
         val quoteDTO = QuotesFactory.getDTOs(1).first()
-        val quoteEntity = QuotesFactory.getEntities(1).first()
-        val quote = QuotesFactory.getQuotes(1).first()
-
-        whenever(dependencyManager.converters.toDomain(quoteDTO))
-            .thenReturn(quote)
-        whenever(dependencyManager.converters.toDb(quoteDTO))
-            .thenReturn(quoteEntity)
 
         whenever(dependencyManager.remoteService.fetchRandomQuote())
             .thenReturn(Response.success(quoteDTO))
@@ -228,8 +208,8 @@ class DefaultOneQuoteRepositoryTest {
 
         // then
         assertThat(response.isSuccess).isTrue()
-        assertThat(response.getOrNull()).isEqualTo(quote)
-        verify(dependencyManager.localDataSource, times(1)).insert(listOf(quoteEntity))
+        assertThat(response.getOrNull()).isEqualTo(quoteDTO.toDomain())
+        verify(dependencyManager.localDataSource, times(1)).insert(listOf(quoteDTO.toDb()))
     }
 
     @Test

@@ -4,7 +4,8 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.AuthorsFactory
-import com.example.quotableapp.data.converters.author.AuthorConverters
+import com.example.quotableapp.data.converters.toDb
+import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
@@ -37,7 +38,6 @@ class DefaultAuthorsRepositoryTest {
         val localDataSource: AuthorsLocalDataSource = mock(),
         val remoteMediatorFactory: AuthorsRemoteMediatorFactory = mock(),
         val coroutineDispatchers: CoroutineDispatchers = getTestCoroutineDispatchers(),
-        val converters: AuthorConverters = mock(),
         val pagingConfig: PagingConfig = getTestPagingConfig(),
         val apiResponseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter()
     ) {
@@ -48,7 +48,6 @@ class DefaultAuthorsRepositoryTest {
                 authorsLocalDataSource = localDataSource,
                 authorsRemoteMediatorFactory = remoteMediatorFactory,
                 coroutineDispatchers = coroutineDispatchers,
-                authorConverters = converters,
                 pagingConfig = pagingConfig,
                 apiResponseInterpreter = apiResponseInterpreter
             )
@@ -66,13 +65,8 @@ class DefaultAuthorsRepositoryTest {
         // given
         val authorSlug = "1"
         val authorResponseDTO = AuthorsFactory.getResponseDTO(size = 1)
-        val authorDTO = authorResponseDTO.results.first()
         whenever(dependencyManager.remoteService.fetchAuthor(authorSlug = authorSlug))
             .thenReturn(Response.success(authorResponseDTO))
-
-        val authorEntity = AuthorEntity(slug = authorSlug)
-        whenever(dependencyManager.converters.toDb(authorDTO))
-            .thenReturn(authorEntity)
 
         // when
         val res = dependencyManager.repository.updateAuthor(authorSlug)
@@ -80,7 +74,7 @@ class DefaultAuthorsRepositoryTest {
         // then
         assertThat(res.isSuccess).isTrue()
         verify(dependencyManager.localDataSource, times(1))
-            .insert(listOf(authorEntity))
+            .insert(authorResponseDTO.results.map { it.toDb() })
     }
 
     @Test
@@ -108,8 +102,6 @@ class DefaultAuthorsRepositoryTest {
             .thenReturn(listOf(authorEntity).asFlow())
 
         val author = Author(slug = authorEntity.slug, quoteCount = authorEntity.quoteCount)
-        whenever(dependencyManager.converters.toDomain(authorEntity))
-            .thenReturn(author)
 
         // when
         val authorFlow = dependencyManager.repository.getAuthorFlow(slug = authorSlug)
@@ -147,13 +139,8 @@ class DefaultAuthorsRepositoryTest {
                 )
             ).thenReturn(Response.success(authorResponseDTO))
 
-            for (dto in authorResponseDTO.results) {
-                whenever(
-                    dependencyManager.converters.toDb(dto)
-                ).thenReturn(AuthorEntity(slug = dto.slug, quoteCount = dto.quoteCount))
-            }
             val authorEntities =
-                authorResponseDTO.results.map { dependencyManager.converters.toDb(it) }
+                authorResponseDTO.results.map { it.toDb() }
 
             // when
             val res = dependencyManager.repository.updateExemplaryAuthors()
@@ -201,11 +188,7 @@ class DefaultAuthorsRepositoryTest {
                     )
             ).thenReturn(flowOf(authorEntities))
 
-            for (entity in authorEntities) {
-                whenever(dependencyManager.converters.toDomain(entity))
-                    .thenReturn(Author(slug = entity.slug, quoteCount = entity.quoteCount))
-            }
-            val authors = authorEntities.map { dependencyManager.converters.toDomain(it) }
+            val authors = authorEntities.map { it.toDomain() }
 
             // when
             val authorsFlow = dependencyManager.repository.exemplaryAuthorsFlow
