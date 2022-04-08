@@ -2,6 +2,7 @@ package com.example.quotableapp.ui.author
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
@@ -16,13 +17,16 @@ import com.example.quotableapp.ui.common.UiStateManager
 import com.example.quotableapp.ui.common.extensions.defaultSharingStarted
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import javax.inject.Inject
 
-@OptIn(ExperimentalPagingApi::class)
+@OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
 typealias AuthorUiState = UiState<Author, AuthorViewModel.UiError>
 
+@ExperimentalCoroutinesApi
 @ExperimentalPagingApi
 @HiltViewModel
 class AuthorViewModel @Inject constructor(
@@ -33,7 +37,9 @@ class AuthorViewModel @Inject constructor(
 ) : ViewModel(), QuotesProvider {
 
     companion object {
-        const val AUTHOR_KEY = "authorSlug"
+        const val AUTHOR_SLUG_KEY = "authorSlug"
+
+        const val AUTHOR_KEY = "author"
     }
 
     sealed class UiError : Throwable() {
@@ -50,7 +56,7 @@ class AuthorViewModel @Inject constructor(
     val navigationActions = _navigationActions.asSharedFlow()
 
     private val authorSlug: String
-        get() = savedStateHandle[AUTHOR_KEY]!!
+        get() = savedStateHandle[AUTHOR_SLUG_KEY]!!
 
     override val quotes: Flow<PagingData<Quote>?> =
         quotesRepository.fetchQuotesOfAuthor(authorSlug)
@@ -62,13 +68,16 @@ class AuthorViewModel @Inject constructor(
             )
 
     private val authorUiStateManager = UiStateManager<Author, UiError>(
-        coroutineScope = viewModelScope,
-        sourceDataFlow = authorsRepository.getAuthorFlow(authorSlug)
+        coroutineScope = viewModelScope + dispatchers.Default,
+        sourceDataFlow = savedStateHandle.getLiveData<Author>(AUTHOR_KEY).asFlow()
     )
     val authorState: StateFlow<AuthorUiState> = authorUiStateManager.stateFlow
 
     init {
-        updateAuthor()
+        if (savedStateHandle.get<Author>(AUTHOR_KEY) == null) {
+            updateAuthor()
+        }
+        startSyncingSavedStateHandleWithRepo()
     }
 
     fun updateAuthor() {
@@ -88,6 +97,12 @@ class AuthorViewModel @Inject constructor(
         viewModelScope.launch {
             _navigationActions.emit(NavigationAction.ToOneQuote(quote))
         }
+    }
+
+    private fun startSyncingSavedStateHandleWithRepo() {
+        authorsRepository.getAuthorFlow(authorSlug)
+            .onEach { savedStateHandle[AUTHOR_KEY] = it }
+            .launchIn(viewModelScope)
     }
 
 }

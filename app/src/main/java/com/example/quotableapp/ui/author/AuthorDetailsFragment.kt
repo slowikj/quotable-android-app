@@ -13,9 +13,11 @@ import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.databinding.FragmentAuthorDetailsBinding
 import com.example.quotableapp.ui.common.extensions.handle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@ExperimentalCoroutinesApi
 @ExperimentalPagingApi
 @AndroidEntryPoint
 class AuthorDetailsFragment : Fragment() {

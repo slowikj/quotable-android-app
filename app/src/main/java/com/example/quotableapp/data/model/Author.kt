@@ -1,5 +1,9 @@
 package com.example.quotableapp.data.model
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class Author(
     val slug: String,
     val link: String = "",
@@ -10,4 +14,4 @@ data class Author(
     val dateAdded: String = "",
     val dateModified: String = "",
     val photoUrl: String = ""
-)
+): Parcelable

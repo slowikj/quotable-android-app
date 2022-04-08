@@ -35,7 +35,7 @@ class DashboardFragment : Fragment() {
     private val viewModel: DashboardViewModel by viewModels()
 
     private val authorsAdapter by lazy {
-        AuthorsDashboardAdapter(onClick = { showAuthor(it.slug) })
+        AuthorsDashboardAdapter(onClick = { showAuthor(it) })
     }
 
     private val quotesAdapter: QuotesDashboardAdapter by lazy {
@@ -117,8 +117,10 @@ class DashboardFragment : Fragment() {
         findNavController().navigate(action)
     }
 
-    private fun showAuthor(authorSlug: String) {
-        val action = DashboardFragmentDirections.showAuthor(authorSlug)
+    private fun showAuthor(author: Author) {
+        val action = DashboardFragmentDirections.showAuthor(author.slug).apply {
+            this.author = author
+        }
         findNavController().navigate(action)
     }
 
