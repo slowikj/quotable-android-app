@@ -57,7 +57,6 @@ class DefaultTagRepository @Inject constructor(
 
     override val allTagsFlow: Flow<List<Tag>> = tagsLocalDataSource
         .getTagsSortedByName(originParams = TAG_ORIGIN_PARAMS_ALL)
-        .filterNot { it.isEmpty() }
         .map { list -> list.map { it.toDomain() } }
         .flowOn(coroutineDispatchers.IO)
 
@@ -79,7 +78,6 @@ class DefaultTagRepository @Inject constructor(
             originParams = TAG_ORIGIN_PARAMS_EXEMPLARY,
             limit = TAGS_EXEMPLARY_LIMIT
         )
-        .filterNot { it.isEmpty() }
         .map { list -> list.map { it.toDomain() } }
         .flowOn(coroutineDispatchers.IO)
 

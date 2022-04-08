@@ -15,9 +15,9 @@ import com.example.quotableapp.data.network.services.QuotesRemoteService
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
@@ -148,22 +148,21 @@ class DefaultOneQuoteRepositoryTest {
     }
 
     @Test
-    fun given_NoLocalDataAvailable_when_GetRandomQuote_then_ReturnFlowWithNoEmission() =
-        runBlockingTest {
-            // given
-            whenever(
-                dependencyManager.localDataSource.getFirstQuotesSortedById(
-                    originParams = QuoteOriginParams(type = QuoteOriginParams.Type.RANDOM),
-                    limit = 1
-                )
-            ).thenReturn(flowOf(emptyList()))
+    fun given_NoLocalDataAvailable_when_GetRandomQuote_then_ReturnFlowWithNull() = runBlockingTest {
+        // given
+        whenever(
+            dependencyManager.localDataSource.getFirstQuotesSortedById(
+                originParams = QuoteOriginParams(type = QuoteOriginParams.Type.RANDOM),
+                limit = 1
+            )
+        ).thenReturn(flowOf(emptyList()))
 
-            // when
-            val randomQuoteFlow = dependencyManager.repository.randomQuote
+        // when
+        val randomQuoteFlow = dependencyManager.repository.randomQuote
 
-            // then
-            assertThat(randomQuoteFlow.count()).isEqualTo(0)
-        }
+        // then
+        assertThat(randomQuoteFlow.toList()).isEqualTo(listOf(null))
+    }
 
     @Test
     fun given_LocalDataAvailable_when_GetQuote_then_ReturnFlowWithQuote() = runBlockingTest {
@@ -182,7 +181,7 @@ class DefaultOneQuoteRepositoryTest {
     }
 
     @Test
-    fun given_NoLocalDataAvailable_when_GetQuote_thenReturnFlowWithNoEmission() = runBlockingTest {
+    fun given_NoLocalDataAvailable_when_GetQuote_thenReturnFlowWithNull() = runBlockingTest {
         // given
         val quoteId = "1"
         whenever(dependencyManager.localDataSource.getQuoteFlow(quoteId))
@@ -192,7 +191,7 @@ class DefaultOneQuoteRepositoryTest {
         val quoteFlow = dependencyManager.repository.getQuoteFlow(id = quoteId)
 
         // then
-        assertThat(quoteFlow.count()).isEqualTo(0)
+        assertThat(quoteFlow.toList()).isEqualTo(listOf(null))
     }
 
     @Test
@@ -224,4 +223,5 @@ class DefaultOneQuoteRepositoryTest {
         // then
         assertThat(response.isFailure).isTrue()
     }
+
 }

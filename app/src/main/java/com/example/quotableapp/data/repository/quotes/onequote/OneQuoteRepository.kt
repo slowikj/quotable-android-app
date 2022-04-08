@@ -9,7 +9,9 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.network.services.QuotesRemoteService
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -19,11 +21,11 @@ interface OneQuoteRepository {
 
     suspend fun updateQuote(id: String): Result<Unit>
 
-    fun getQuoteFlow(id: String): Flow<Quote>
+    fun getQuoteFlow(id: String): Flow<Quote?>
 
     suspend fun updateRandomQuote(): Result<Unit>
 
-    val randomQuote: Flow<Quote>
+    val randomQuote: Flow<Quote?>
 }
 
 class DefaultOneQuoteRepository @Inject constructor(
@@ -38,15 +40,14 @@ class DefaultOneQuoteRepository @Inject constructor(
             QuoteOriginParams(type = QuoteOriginParams.Type.RANDOM)
     }
 
-    override val randomQuote: Flow<Quote> = quotesLocalDataSource
+    override val randomQuote: Flow<Quote?> = quotesLocalDataSource
         .getFirstQuotesSortedById(
             originParams = randomQuoteOriginParams,
             limit = 1
         )
-        .filterNot { it.isEmpty() }
-        .map { it.first() }
-        .map { it.toDomain() }
-        .flowOn(coroutineDispatchers.IO)
+        .map { it.firstOrNull() }
+        .map { it?.toDomain() }
+        .flowOn(coroutineDispatchers.Default)
 
     override suspend fun getRandomQuote(): Result<Quote> = withContext(coroutineDispatchers.IO) {
         apiResponseInterpreter { quotesRemoteService.fetchRandomQuote() }
@@ -63,11 +64,10 @@ class DefaultOneQuoteRepository @Inject constructor(
         }
     }
 
-    override fun getQuoteFlow(id: String): Flow<Quote> = quotesLocalDataSource
+    override fun getQuoteFlow(id: String): Flow<Quote?> = quotesLocalDataSource
         .getQuoteFlow(id)
-        .filterNotNull()
-        .map { it.toDomain() }
-        .flowOn(coroutineDispatchers.IO)
+        .map { it?.toDomain() }
+        .flowOn(coroutineDispatchers.Default)
 
     override suspend fun updateRandomQuote(): Result<Unit> {
         return withContext(coroutineDispatchers.IO) {

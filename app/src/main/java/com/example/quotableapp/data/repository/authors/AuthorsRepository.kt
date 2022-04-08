@@ -18,7 +18,7 @@ import javax.inject.Inject
 interface AuthorsRepository {
     suspend fun updateAuthor(slug: String): Result<Unit>
 
-    fun getAuthorFlow(slug: String): Flow<Author>
+    fun getAuthorFlow(slug: String): Flow<Author?>
 
     fun fetchAllAuthors(): Flow<PagingData<Author>>
 
@@ -57,10 +57,9 @@ class DefaultAuthorsRepository @Inject constructor(
         }
     }
 
-    override fun getAuthorFlow(slug: String): Flow<Author> = authorsLocalDataSource
+    override fun getAuthorFlow(slug: String): Flow<Author?> = authorsLocalDataSource
         .getAuthorFlow(slug)
-        .filterNotNull()
-        .map { it.toDomain() }
+        .map { it?.toDomain() }
         .flowOn(coroutineDispatchers.IO)
 
     override fun fetchAllAuthors(): Flow<PagingData<Author>> {

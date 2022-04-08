@@ -14,7 +14,7 @@ data class UiState<V, E>(
 
 class UiStateManager<V, E>(
     private val coroutineScope: CoroutineScope,
-    private val sourceDataFlow: Flow<V>,
+    private val sourceDataFlow: Flow<V?>,
     private val initIsLoading: Boolean = false,
     private val initError: E? = null,
     private val initData: V? = null

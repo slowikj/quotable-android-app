@@ -18,10 +18,7 @@ import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMedia
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.count
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
@@ -111,7 +108,7 @@ class DefaultAuthorsRepositoryTest {
     }
 
     @Test
-    fun given_NoLocalData_when_getAuthorFlow_then_ReturnFlowWithNoEmission() = runBlockingTest {
+    fun given_NoLocalData_when_getAuthorFlow_then_ReturnFlowWithNull() = runBlockingTest {
         // given
         val authorSlug = "1"
         whenever(dependencyManager.localDataSource.getAuthorFlow(slug = authorSlug))
@@ -121,7 +118,7 @@ class DefaultAuthorsRepositoryTest {
         val authorFlow = dependencyManager.repository.getAuthorFlow(slug = authorSlug)
 
         // then
-        assertThat(authorFlow.count()).isEqualTo(0)
+        assertThat(authorFlow.toList()).isEqualTo(listOf(null))
     }
 
     @Test

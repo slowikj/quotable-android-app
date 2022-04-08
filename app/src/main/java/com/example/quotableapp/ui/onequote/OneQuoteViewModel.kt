@@ -53,8 +53,6 @@ class OneQuoteViewModel @Inject constructor(
 
     sealed class UiError : Throwable() {
         data class IOError(val messageId: Int? = null) : UiError()
-
-        object InternalStateError : UiError()
     }
 
     companion object {
@@ -63,24 +61,25 @@ class OneQuoteViewModel @Inject constructor(
         const val AUTHOR_PHOTO_REQUEST_SIZE: Int = 200
     }
 
-    private val _quoteFlow: StateFlow<Quote?> = savedStateHandle
+    private val _quoteFlow: Flow<Quote> = savedStateHandle
         .getLiveData<Quote>(QUOTE_TAG)
         .asFlow()
-        .onEach { quote ->
-            viewModelScope.launch { authorsRepository.updateAuthor(quote.authorSlug) }
-        }
-        .stateIn(
-            initialValue = null,
-            scope = viewModelScope,
-            started = defaultSharingStarted
-        )
+
     private val _quoteIsLoadingFlow = MutableStateFlow<Boolean>(false)
     private val _quoteErrorFlow = MutableStateFlow<UiError?>(null)
 
     private val _authorPhotoUrlFlow: StateFlow<String?> = _quoteFlow
-        .filterNotNull()
-        .flatMapLatest { quote -> authorsRepository.getAuthorFlow(quote.authorSlug) }
-        .map { author -> author.getPhotoUrl(AUTHOR_PHOTO_REQUEST_SIZE) }
+        .map { quote -> quote.authorSlug }
+        .flatMapLatest { authorSlug ->
+            authorsRepository.getAuthorFlow(authorSlug)
+                .combine(flowOf(authorSlug)) { author, slug -> Pair(author, slug) }
+        }
+        .onEach { authorWithSlug ->
+            if (authorWithSlug.first == null) viewModelScope.launch {
+                authorsRepository.updateAuthor(authorWithSlug.second)
+            }
+        }
+        .map { authorWithSlug -> authorWithSlug.first?.getPhotoUrl(AUTHOR_PHOTO_REQUEST_SIZE) }
         .flowOn(coroutineDispatchers.Default)
         .stateIn(
             initialValue = null,
@@ -93,7 +92,7 @@ class OneQuoteViewModel @Inject constructor(
     ) { quote, quoteIsLoading, quoteError, authorPhotoUrl ->
         QuoteUiState(
             isLoading = quoteIsLoading, error = quoteError,
-            data = quote?.let { QuoteUi(quote = it, authorPhotoUrl = authorPhotoUrl) }
+            data = QuoteUi(quote = quote, authorPhotoUrl = authorPhotoUrl)
         )
     }.flowOn(coroutineDispatchers.Default)
         .stateIn(
@@ -105,14 +104,12 @@ class OneQuoteViewModel @Inject constructor(
     private var quoteRepoSyncJob: Job? = null
 
     init {
-        when (val quoteId = savedStateHandle.get<Quote>(QUOTE_TAG)?.id) {
-            null -> _quoteErrorFlow.value = UiError.InternalStateError
-            else -> startSynchronizingQuoteChangesFromRepository(quoteId)
-        }
+        val quoteId = savedStateHandle.get<Quote>(QUOTE_TAG)!!.id
+        startSyncingQuoteChangesFromRepository(quoteId)
     }
 
     fun updateQuoteUi() {
-        val quoteId = _quoteFlow.value?.id ?: return
+        val quoteId = quoteUiState.value.data?.quoteId ?: return
         viewModelScope.launch(coroutineDispatchers.Default) {
             _quoteIsLoadingFlow.value = true
             val response = oneQuoteRepository.updateQuote(quoteId)
@@ -127,7 +124,7 @@ class OneQuoteViewModel @Inject constructor(
             val response = oneQuoteRepository.getRandomQuote()
             response.fold(
                 onSuccess = { quote ->
-                    startSynchronizingQuoteChangesFromRepository(quote.id)
+                    startSyncingQuoteChangesFromRepository(quote.id)
                     updateSavedStateHandle(quote)
                 },
                 onFailure = {
@@ -139,14 +136,13 @@ class OneQuoteViewModel @Inject constructor(
     }
 
     fun onErrorConsumed(error: UiError) {
-        if (error !is UiError.InternalStateError) {
-            _quoteErrorFlow.value = null
-        }
+        _quoteErrorFlow.value = null
     }
 
-    private fun startSynchronizingQuoteChangesFromRepository(quoteId: String) {
+    private fun startSyncingQuoteChangesFromRepository(quoteId: String) {
         quoteRepoSyncJob?.cancel()
         quoteRepoSyncJob = oneQuoteRepository.getQuoteFlow(quoteId)
+            .filterNotNull()
             .onEach { quote -> updateSavedStateHandle(quote) }
             .launchIn(viewModelScope)
     }
