@@ -16,14 +16,17 @@ import com.example.quotableapp.R
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.databinding.FragmentAuthorBinding
 import com.example.quotableapp.ui.common.extensions.handle
+import com.example.quotableapp.ui.common.extensions.showErrorToast
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
 @ExperimentalPagingApi
+@ExperimentalCoroutinesApi
 @ExperimentalTime
 @FlowPreview
 @AndroidEntryPoint
@@ -47,7 +50,7 @@ class AuthorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        handleToolbar()
+        handleAuthorStateUpdates()
         handleNavigationFlow()
         setupViewPager()
         binding.dataLoadHandlerToolbar.btnRetry.setOnClickListener {
@@ -57,8 +60,7 @@ class AuthorFragment : Fragment() {
 
     private fun handleNavigationFlow() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel
-                .navigationActions
+            viewModel.navigationActions
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .collectLatest {
                     handle(it)
@@ -94,14 +96,22 @@ class AuthorFragment : Fragment() {
         }.attach()
     }
 
-    private fun handleToolbar() {
+    private fun handleAuthorStateUpdates() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel
                 .authorState
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .collectLatest {
                     binding.dataLoadHandlerToolbar.handle(it)
+                    showErrorToastIfNoData(it)
                 }
+        }
+    }
+
+    private fun showErrorToastIfNoData(authorUiState: AuthorUiState) {
+        if (authorUiState.data != null && authorUiState.error != null) {
+            showErrorToast()
+            viewModel.consumeError(authorUiState.error)
         }
     }
 

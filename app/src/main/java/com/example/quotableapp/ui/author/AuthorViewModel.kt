@@ -43,7 +43,7 @@ class AuthorViewModel @Inject constructor(
     }
 
     sealed class UiError : Throwable() {
-        object IOError : UiError()
+        data class IOError(val messageId: Int? = null) : UiError()
     }
 
     sealed class NavigationAction {
@@ -67,24 +67,25 @@ class AuthorViewModel @Inject constructor(
                 started = defaultSharingStarted
             )
 
-    private val authorUiStateManager = UiStateManager<Author, UiError>(
+    private val _authorUiStateManager = UiStateManager<Author, UiError>(
         coroutineScope = viewModelScope + dispatchers.Default,
         sourceDataFlow = savedStateHandle.getLiveData<Author>(AUTHOR_KEY).asFlow()
     )
-    val authorState: StateFlow<AuthorUiState> = authorUiStateManager.stateFlow
+    val authorState: StateFlow<AuthorUiState> = _authorUiStateManager.stateFlow
 
     init {
-        if (savedStateHandle.get<Author>(AUTHOR_KEY) == null) {
-            updateAuthor()
-        }
         startSyncingSavedStateHandleWithRepo()
     }
 
     fun updateAuthor() {
-        authorUiStateManager.updateData(
+        _authorUiStateManager.updateData(
             requestFunc = { authorsRepository.updateAuthor(authorSlug) },
-            errorTransformer = { UiError.IOError }
+            errorTransformer = { UiError.IOError() }
         )
+    }
+
+    fun consumeError(error: UiError) {
+        _authorUiStateManager.errorFlow.value = null
     }
 
     fun onTagClick(tag: String) {
@@ -100,7 +101,9 @@ class AuthorViewModel @Inject constructor(
     }
 
     private fun startSyncingSavedStateHandleWithRepo() {
-        authorsRepository.getAuthorFlow(authorSlug)
+        authorsRepository
+            .getAuthorFlow(authorSlug)
+            .onEach { author -> if (author == null) updateAuthor() }
             .onEach { savedStateHandle[AUTHOR_KEY] = it }
             .launchIn(viewModelScope)
     }

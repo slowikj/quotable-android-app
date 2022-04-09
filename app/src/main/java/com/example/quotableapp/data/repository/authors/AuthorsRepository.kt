@@ -60,7 +60,7 @@ class DefaultAuthorsRepository @Inject constructor(
     override fun getAuthorFlow(slug: String): Flow<Author?> = authorsLocalDataSource
         .getAuthorFlow(slug)
         .map { it?.toDomain() }
-        .flowOn(coroutineDispatchers.IO)
+        .flowOn(coroutineDispatchers.Default)
 
     override fun fetchAllAuthors(): Flow<PagingData<Author>> {
         val remoteMediator = authorsRemoteMediatorFactory.create(

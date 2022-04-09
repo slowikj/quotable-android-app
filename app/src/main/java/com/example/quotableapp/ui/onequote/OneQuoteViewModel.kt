@@ -12,11 +12,8 @@ import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.extensions.defaultSharingStarted
 import com.example.quotableapp.ui.common.formatters.formatToClipboard
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -83,7 +80,7 @@ class OneQuoteViewModel @Inject constructor(
         .flowOn(coroutineDispatchers.Default)
         .stateIn(
             initialValue = null,
-            scope = viewModelScope,
+            scope = viewModelScope + coroutineDispatchers.Default,
             started = defaultSharingStarted
         )
 
@@ -149,7 +146,7 @@ class OneQuoteViewModel @Inject constructor(
 
     private suspend fun updateSavedStateHandle(quote: Quote) {
         withContext(coroutineDispatchers.Main) {
-            savedStateHandle.set(QUOTE_TAG, quote)
+            savedStateHandle[QUOTE_TAG] = quote
         }
     }
 
