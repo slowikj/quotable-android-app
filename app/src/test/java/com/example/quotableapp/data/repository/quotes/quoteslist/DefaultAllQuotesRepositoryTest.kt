@@ -11,16 +11,14 @@ import com.example.quotableapp.data.getTestCoroutineDispatchers
 import com.example.quotableapp.data.getTestPagingConfig
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
-import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.network.services.QuotesRemoteService
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediatorFactory
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
 import org.junit.Test
@@ -30,7 +28,6 @@ import retrofit2.Response
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
-@ExperimentalCoroutinesApi
 @ExperimentalPagingApi
 class DefaultAllQuotesRepositoryTest {
 
@@ -62,7 +59,7 @@ class DefaultAllQuotesRepositoryTest {
     }
 
     @Test
-    fun given_NoAPIConnection_when_updateExemplaryQuotes_then_ReturnFailure() = runBlockingTest {
+    fun given_NoAPIConnection_when_updateExemplaryQuotes_then_ReturnFailure() = runBlocking {
         // given
         whenever(
             dependencyManager.remoteService.fetchQuotes(
@@ -81,8 +78,8 @@ class DefaultAllQuotesRepositoryTest {
     }
 
     @Test
-    fun given_WorkingAPIConnection_when_updateExemplaryQuotes_then_ReturnSuccess() =
-        runBlockingTest {
+    fun given_WorkingAPIConnection_when_updateExemplaryQuotes_then_ReturnSuccess(): Unit =
+        runBlocking {
             // given
             val quotesResponseDTO = QuotesFactory.getResponseDTO(size = 10)
             whenever(
@@ -105,7 +102,7 @@ class DefaultAllQuotesRepositoryTest {
 
     @Test
     fun given_LocalDataAvailable_when_GetExemplaryQuotes_then_ReturnFlowWithQuotes() =
-        runBlockingTest {
+        runBlocking {
             // given
             val quotesEntities = QuotesFactory.getEntities(size = 10)
             val quotes = quotesEntities.map { Quote(id = it.id) }
@@ -128,7 +125,7 @@ class DefaultAllQuotesRepositoryTest {
         }
 
     @Test
-    fun given_NoLocalDataAvailable_when_GetExemplaryData_then_NoFlowEmission() = runBlockingTest {
+    fun given_NoLocalDataAvailable_when_GetExemplaryData_then_NoFlowEmission() = runBlocking {
         // given
         whenever(dependencyManager.localDataSource.getFirstQuotesSortedById(any(), anyInt()))
             .thenReturn(flowOf(emptyList()))

@@ -12,11 +12,10 @@ import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.services.TagsRemoteService
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
 import org.junit.Test
@@ -24,7 +23,6 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyLong
 import retrofit2.Response
 
-@ExperimentalCoroutinesApi
 class DefaultTagRepositoryTest {
 
     class DependencyManager(
@@ -50,7 +48,7 @@ class DefaultTagRepositoryTest {
     }
 
     @Test
-    fun given_NoAPIConnection_when_updateExemplaryTags_then_ReturnFailure() = runBlockingTest {
+    fun given_NoAPIConnection_when_updateExemplaryTags_then_ReturnFailure() = runBlocking {
         // given
         whenever(
             dependencyManager.remoteService.fetchTags()
@@ -64,8 +62,8 @@ class DefaultTagRepositoryTest {
     }
 
     @Test
-    fun given_WorkingAPIConnection_when_updateExemplaryTags_then_ReturnSuccess() =
-        runBlockingTest {
+    fun given_WorkingAPIConnection_when_updateExemplaryTags_then_ReturnSuccess() {
+        runBlocking {
             // given
             whenever(
                 dependencyManager.remoteService.fetchTags()
@@ -79,9 +77,10 @@ class DefaultTagRepositoryTest {
             verify(dependencyManager.localDataSource, times(1))
                 .refresh(any(), any(), anyLong())
         }
+    }
 
     @Test
-    fun given_NoAPIConnection_when_updateAllTags_then_ReturnFailure() = runBlockingTest {
+    fun given_NoAPIConnection_when_updateAllTags_then_ReturnFailure() = runBlocking {
         // given
         whenever(
             dependencyManager.remoteService.fetchTags()
@@ -95,8 +94,8 @@ class DefaultTagRepositoryTest {
     }
 
     @Test
-    fun given_WorkingAPIConnection_when_updateAllTags_then_ReturnSuccess() =
-        runBlockingTest {
+    fun given_WorkingAPIConnection_when_updateAllTags_then_ReturnSuccess() {
+        runBlocking {
             // given
             whenever(
                 dependencyManager.remoteService.fetchTags()
@@ -110,10 +109,11 @@ class DefaultTagRepositoryTest {
             verify(dependencyManager.localDataSource, times(1))
                 .refresh(any(), any(), anyLong())
         }
+    }
 
     @Test
     fun given_LocalDataAvailable_when_GetExemplaryTags_then_ReturnFlowWithTags() =
-        runBlockingTest {
+        runBlocking {
             // given
             val tagEntities = TagsFactory.getEntities(size = 10)
             whenever(
@@ -136,7 +136,7 @@ class DefaultTagRepositoryTest {
 
     @Test
     fun given_NoLocalDataAvailable_when_GetExemplaryData_then_ReturnFlowWithEmptyList() =
-        runBlockingTest {
+        runBlocking {
             // given
             whenever(
                 dependencyManager.localDataSource.getTagsSortedByName(
@@ -154,7 +154,7 @@ class DefaultTagRepositoryTest {
 
     @Test
     fun given_LocalDataAvailable_when_GetAllTags_then_ReturnFlowWithTags() =
-        runBlockingTest {
+        runBlocking {
             // given
             val tagEntities = TagsFactory.getEntities(size = 10)
             whenever(
@@ -177,7 +177,7 @@ class DefaultTagRepositoryTest {
 
     @Test
     fun given_NoLocalDataAvailable_when_GetAllData_then_ReturnFlowWithEmptyList() =
-        runBlockingTest {
+        runBlocking {
             // given
             whenever(
                 dependencyManager.localDataSource.getTagsSortedByName(

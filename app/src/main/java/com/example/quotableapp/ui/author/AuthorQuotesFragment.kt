@@ -12,9 +12,11 @@ import com.example.quotableapp.databinding.RefreshableRecyclerviewBinding
 import com.example.quotableapp.ui.common.quoteslist.QuotesListFragment
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlin.time.ExperimentalTime
 
+@ExperimentalCoroutinesApi
 @FlowPreview
 @ExperimentalPagingApi
 @ExperimentalTime

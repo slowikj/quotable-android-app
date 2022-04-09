@@ -14,11 +14,10 @@ import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.network.services.QuotesRemoteService
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
 import org.junit.Test
@@ -27,7 +26,6 @@ import retrofit2.Response
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
-@ExperimentalCoroutinesApi
 class DefaultOneQuoteRepositoryTest {
 
     class DependencyManager(
@@ -53,7 +51,7 @@ class DefaultOneQuoteRepositoryTest {
     }
 
     @Test
-    fun given_NoAPIConnection_when_UpdateRandomQuote_then_ReturnResultFailure() = runBlockingTest {
+    fun given_NoAPIConnection_when_UpdateRandomQuote_then_ReturnResultFailure() = runBlocking {
         // given
         whenever(dependencyManager.remoteService.fetchRandomQuote()).thenReturn(
             Response.error(404, "".toResponseBody())
@@ -67,8 +65,8 @@ class DefaultOneQuoteRepositoryTest {
     }
 
     @Test
-    fun given_WorkingAPIConnection_when_UpdateRandomQuote_then_ReturnResultSuccess() =
-        runBlockingTest {
+    fun given_WorkingAPIConnection_when_UpdateRandomQuote_then_ReturnResultSuccess(): Unit =
+        runBlocking {
             // given
             val randomQuote = QuoteDTO(
                 id = "1", content = "random content"
@@ -92,7 +90,7 @@ class DefaultOneQuoteRepositoryTest {
         }
 
     @Test
-    fun given_NoAPIConnection_when_updateQuote_then_ReturnFailure() = runBlockingTest {
+    fun given_NoAPIConnection_when_updateQuote_then_ReturnFailure() = runBlocking {
         // given
         val quoteId = "1"
         whenever(dependencyManager.remoteService.fetchQuote(quoteId)).thenReturn(
@@ -110,7 +108,7 @@ class DefaultOneQuoteRepositoryTest {
     }
 
     @Test
-    fun given_WorkingAPIConnection_when_UpdateQuote_then_ReturnSuccess() = runBlockingTest {
+    fun given_WorkingAPIConnection_when_UpdateQuote_then_ReturnSuccess() = runBlocking {
         // given
         val quoteId = "1"
         val quoteDTO = QuoteDTO(id = quoteId, content = "abc")
@@ -130,7 +128,7 @@ class DefaultOneQuoteRepositoryTest {
     }
 
     @Test
-    fun given_LocalDataAvailable_when_GetRandomQuote_then_ReturnFlowWithQuote() = runBlockingTest {
+    fun given_LocalDataAvailable_when_GetRandomQuote_then_ReturnFlowWithQuote() = runBlocking {
         // given
         val quoteEntity = QuoteEntity(id = "1", content = "content")
         whenever(
@@ -148,7 +146,7 @@ class DefaultOneQuoteRepositoryTest {
     }
 
     @Test
-    fun given_NoLocalDataAvailable_when_GetRandomQuote_then_ReturnFlowWithNull() = runBlockingTest {
+    fun given_NoLocalDataAvailable_when_GetRandomQuote_then_ReturnFlowWithNull() = runBlocking {
         // given
         whenever(
             dependencyManager.localDataSource.getFirstQuotesSortedById(
@@ -165,7 +163,7 @@ class DefaultOneQuoteRepositoryTest {
     }
 
     @Test
-    fun given_LocalDataAvailable_when_GetQuote_then_ReturnFlowWithQuote() = runBlockingTest {
+    fun given_LocalDataAvailable_when_GetQuote_then_ReturnFlowWithQuote() = runBlocking {
         // given
         val quoteId = "1"
         val quoteEntity = QuoteEntity(id = quoteId, content = "content")
@@ -181,7 +179,7 @@ class DefaultOneQuoteRepositoryTest {
     }
 
     @Test
-    fun given_NoLocalDataAvailable_when_GetQuote_thenReturnFlowWithNull() = runBlockingTest {
+    fun given_NoLocalDataAvailable_when_GetQuote_thenReturnFlowWithNull() = runBlocking {
         // given
         val quoteId = "1"
         whenever(dependencyManager.localDataSource.getQuoteFlow(quoteId))
@@ -195,7 +193,7 @@ class DefaultOneQuoteRepositoryTest {
     }
 
     @Test
-    fun given_RemoteAPIWorking_when_getRandomQuote_then_ReturnValidQuote() = runBlockingTest {
+    fun given_RemoteAPIWorking_when_getRandomQuote_then_ReturnValidQuote() = runBlocking {
         // given
         val quoteDTO = QuotesFactory.getDTOs(1).first()
 
@@ -212,7 +210,7 @@ class DefaultOneQuoteRepositoryTest {
     }
 
     @Test
-    fun given_RemoteAPINotWorking_when_getRandomQuote_then_ReturnFailure() = runBlockingTest {
+    fun given_RemoteAPINotWorking_when_getRandomQuote_then_ReturnFailure() = runBlocking {
         // given
         whenever(dependencyManager.remoteService.fetchRandomQuote())
             .thenReturn(Response.error(500, "".toResponseBody()))
