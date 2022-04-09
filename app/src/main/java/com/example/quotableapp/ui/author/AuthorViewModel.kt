@@ -14,7 +14,6 @@ import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.UiStateManager
-import com.example.quotableapp.ui.common.extensions.defaultSharingStarted
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -58,15 +57,10 @@ class AuthorViewModel @Inject constructor(
     private val authorSlug: String
         get() = savedStateHandle[AUTHOR_SLUG_KEY]!!
 
-    override val quotes: Flow<PagingData<Quote>?> =
+    override val quotes: Flow<PagingData<Quote>> =
         quotesRepository
             .fetchQuotesOfAuthor(authorSlug)
             .cachedIn(viewModelScope)
-            .stateIn(
-                initialValue = null,
-                scope = viewModelScope,
-                started = defaultSharingStarted
-            )
 
     private val _authorUiStateManager = UiStateManager<Author, UiError>(
         coroutineScope = viewModelScope + dispatchers.Default,

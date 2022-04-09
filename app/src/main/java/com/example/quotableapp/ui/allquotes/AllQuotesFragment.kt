@@ -109,7 +109,8 @@ class AllQuotesFragment : QuotesListFragment() {
 
     private fun observeOnSearchQueryChanged(searchView: SearchView) {
         viewLifecycleOwner.lifecycleScope.launch {
-            searchView.getQueryTextChangedStateFlow()
+            searchView
+                .getQueryTextChangedStateFlow()
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .collectLatest {
                     viewModel.onSearchQueryChanged(it)
