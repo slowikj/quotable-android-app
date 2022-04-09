@@ -59,7 +59,8 @@ class AuthorViewModel @Inject constructor(
         get() = savedStateHandle[AUTHOR_SLUG_KEY]!!
 
     override val quotes: Flow<PagingData<Quote>?> =
-        quotesRepository.fetchQuotesOfAuthor(authorSlug)
+        quotesRepository
+            .fetchQuotesOfAuthor(authorSlug)
             .cachedIn(viewModelScope)
             .stateIn(
                 initialValue = null,

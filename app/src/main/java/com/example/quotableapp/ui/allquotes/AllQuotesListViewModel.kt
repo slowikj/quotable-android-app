@@ -47,6 +47,7 @@ class AllQuotesListViewModel @Inject constructor(
             .debounce(SEARCH_VIEW_DEBOUNCE_TIME_MILLIS)
             .distinctUntilChanged()
             .flatMapLatest { quotesRepository.fetchAllQuotes(it) }
+            .flowOn(dispatchers.Default)
             .cachedIn(viewModelScope)
             .stateIn(
                 initialValue = null,
@@ -55,7 +56,7 @@ class AllQuotesListViewModel @Inject constructor(
             )
 
     fun onSearchQueryChanged(query: String) {
-        savedStateHandle.set(SEARCH_QUERY_TAG, query)
+        savedStateHandle[SEARCH_QUERY_TAG] = query
         _lastSearchQuery.value = query
     }
 
