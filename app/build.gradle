@@ -75,9 +75,9 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.8.1'
 
     //Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.2.1"
-    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.2.1"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
     //Paging Library
     implementation 'androidx.paging:paging-runtime-ktx:3.1.1'

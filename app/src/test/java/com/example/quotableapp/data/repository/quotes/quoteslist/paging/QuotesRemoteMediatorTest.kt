@@ -1,6 +1,7 @@
 package com.example.quotableapp.data.repository.quotes.quoteslist.paging
 
 import androidx.paging.*
+import com.example.quotableapp.MainCoroutineDispatcherRule
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.QuotesFactory
 import com.example.quotableapp.data.converters.Converter
@@ -12,14 +13,20 @@ import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import retrofit2.Response
 import java.io.IOException
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalPagingApi
 class QuotesRemoteMediatorTest {
+
+    @get:Rule
+    val mainCoroutineDispatcherRule =  MainCoroutineDispatcherRule()
 
     class DependencyManager(
         val persistenceManager: QuotesListPersistenceManager = mock(),
@@ -49,7 +56,7 @@ class QuotesRemoteMediatorTest {
 
     @Test
     fun given_WorkingRemoteAPIWithNewDataAndNoPreviousPageKey_when_loadRefresh_then_ReturnSuccessWithNoEndReached() =
-        runBlocking {
+        runTest {
             runTestWorkingAPIWithDataFor(
                 loadType = LoadType.REFRESH,
                 pageKey = null,
@@ -60,7 +67,7 @@ class QuotesRemoteMediatorTest {
 
     @Test
     fun given_WorkingRemoteAPIWithNewDataAndExistingPreviousPageKey_when_loadAppend_then_ReturnSuccessWithNoEndReached() =
-        runBlocking {
+        runTest {
             val previousPageKey = 1
             runTestWorkingAPIWithDataFor(
                 loadType = LoadType.APPEND,
@@ -75,7 +82,7 @@ class QuotesRemoteMediatorTest {
 
     @Test
     fun given_WorkingRemoteAPIWithNoDataNoPreviousPageKey_when_loadRefresh_then_ReturnSuccessWithEndReached() =
-        runBlocking {
+        runTest {
             runTestWorkingAPIWithNoDataFor(
                 loadType = LoadType.REFRESH,
                 pageKey = null,
@@ -85,7 +92,7 @@ class QuotesRemoteMediatorTest {
 
     @Test
     fun given_WorkingRemoteAPIWithNoDataAndExistingPreviousPageKey_when_loadAppend_then_ReturnSuccessWithEndReached() =
-        runBlocking {
+        runTest {
             val previousPageKey = 1
             runTestWorkingAPIWithNoDataFor(
                 loadType = LoadType.APPEND,
@@ -96,12 +103,12 @@ class QuotesRemoteMediatorTest {
 
     @Test
     fun given_NotWorkingRemoteAPIAndExistingPreviousPageKey_when_loadRefresh_then_ReturnFailure() =
-        runBlocking {
+        runTest {
             runTestForNotWorkingAPI(loadType = LoadType.REFRESH, pageKey = 1, lastUpdated = 123)
         }
 
     @Test
-    fun given_NotWorkingRemoteAPI_when_loadAppend_then_ReturnFailure() = runBlocking {
+    fun given_NotWorkingRemoteAPI_when_loadAppend_then_ReturnFailure() = runTest {
         runTestForNotWorkingAPI(loadType = LoadType.APPEND, pageKey = 1, lastUpdated = 123)
     }
 

@@ -2,6 +2,7 @@ package com.example.quotableapp.data.repository.authors
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
+import com.example.quotableapp.MainCoroutineDispatcherRule
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.AuthorsFactory
 import com.example.quotableapp.data.converters.toDb
@@ -17,16 +18,22 @@ import com.example.quotableapp.data.network.services.AuthorsRemoteService
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyLong
 import retrofit2.Response
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalPagingApi
 class DefaultAuthorsRepositoryTest {
+
+    @get:Rule
+    val mainCoroutineDispatcherRule = MainCoroutineDispatcherRule()
 
     class DependencyManager(
         val remoteService: AuthorsRemoteService = mock(),
@@ -56,7 +63,7 @@ class DefaultAuthorsRepositoryTest {
     }
 
     @Test
-    fun given_WorkingAPIConnection_when_updateAuthor_then_ReturnSuccess() = runBlocking {
+    fun given_WorkingAPIConnection_when_updateAuthor_then_ReturnSuccess() = runTest {
         // given
         val authorSlug = "1"
         val authorResponseDTO = AuthorsFactory.getResponseDTO(size = 1)
@@ -73,7 +80,7 @@ class DefaultAuthorsRepositoryTest {
     }
 
     @Test
-    fun given_NoAPIConnection_when_updateAuthor_then_ReturnFailure() = runBlocking {
+    fun given_NoAPIConnection_when_updateAuthor_then_ReturnFailure() = runTest {
         // given
         val authorSlug = "1"
         whenever(dependencyManager.remoteService.fetchAuthor(authorSlug = authorSlug))
@@ -89,7 +96,7 @@ class DefaultAuthorsRepositoryTest {
     }
 
     @Test
-    fun given_AvailableLocalData_when_getAuthorFlow_then_ReturnFlowWithAuthor() = runBlocking {
+    fun given_AvailableLocalData_when_getAuthorFlow_then_ReturnFlowWithAuthor() = runTest {
         // given
         val authorSlug = "1"
         val authorEntity = AuthorEntity(slug = authorSlug, quoteCount = 123)
@@ -106,7 +113,7 @@ class DefaultAuthorsRepositoryTest {
     }
 
     @Test
-    fun given_NoLocalData_when_getAuthorFlow_then_ReturnFlowWithNull() = runBlocking {
+    fun given_NoLocalData_when_getAuthorFlow_then_ReturnFlowWithNull() = runTest {
         // given
         val authorSlug = "1"
         whenever(dependencyManager.localDataSource.getAuthorFlow(slug = authorSlug))
@@ -121,7 +128,7 @@ class DefaultAuthorsRepositoryTest {
 
     @Test
     fun given_WorkingAPIConnection_when_updateExemplaryAuthors_then_ReturnSuccess(): Unit =
-        runBlocking {
+        runTest {
             // given
             val authorResponseSize = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_LIMIT
             val authorResponseDTO = AuthorsFactory.getResponseDTO(size = authorResponseSize)
@@ -147,7 +154,7 @@ class DefaultAuthorsRepositoryTest {
         }
 
     @Test
-    fun given_NoAPIConnection_when_updateExemplaryAuthors_then_ReturnFailure() = runBlocking {
+    fun given_NoAPIConnection_when_updateExemplaryAuthors_then_ReturnFailure() = runTest {
         // given
         val authorResponseSize = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_LIMIT
         whenever(
@@ -170,7 +177,7 @@ class DefaultAuthorsRepositoryTest {
 
     @Test
     fun given_AvailableLocalData_when_getExemplaryAuthorsFlow_then_returnFlowWithData() =
-        runBlocking {
+        runTest {
             // given
             val originParams = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_ORIGIN_PARAMS
             val entitiesSize = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_LIMIT
@@ -195,7 +202,7 @@ class DefaultAuthorsRepositoryTest {
 
     @Test
     fun given_NoLocalData_when_getExemplaryAuthorsFlow_then_returnFlowWithNoEmission() =
-        runBlocking {
+        runTest {
             // given
             val originParams = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_ORIGIN_PARAMS
             val entitiesSize = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_LIMIT
