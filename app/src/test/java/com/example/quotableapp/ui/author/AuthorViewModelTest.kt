@@ -15,8 +15,9 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.google.common.truth.Truth.assertThat
-import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.stub
 import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -26,6 +27,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
+import java.io.IOException
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
@@ -39,16 +41,16 @@ class AuthorViewModelTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
+    private val authorSlug: String = "authorSlug"
+
+    private val author: Author = Author(slug = authorSlug, name = "name", quoteCount = 12)
+
     class DependencyManager(
         val savedStateHandle: SavedStateHandle = mock(),
         val quotesRepository: QuotesRepository = mock(),
         val authorsRepository: AuthorsRepository = mock(),
         val dispatchers: CoroutineDispatchers = getTestCoroutineDispatchers()
     ) {
-
-        val authorSlug: String = "authorSlug"
-
-        val author: Author = Author(slug = authorSlug, name = "name", quoteCount = 12)
 
         val viewModel: AuthorViewModel
             get() = AuthorViewModel(
@@ -58,39 +60,45 @@ class AuthorViewModelTest {
                 dispatchers = dispatchers
             )
 
-        fun setAuthorSlugAvailableInSavedStateHandle() {
+        fun setAuthorSlugAvailableInSavedStateHandle(authorSlug: String) {
             setInSavedStateHandle(key = AuthorViewModel.AUTHOR_SLUG_KEY, value = authorSlug)
         }
 
-        fun setAuthorAvailableInSavedStateHandle() {
+        fun setAuthorAvailableInSavedStateHandle(author: Author) {
             setInSavedStateHandle(key = AuthorViewModel.AUTHOR_KEY, value = author)
         }
 
-        suspend fun setWorkingRemoteAPIs() {
-            whenever(authorsRepository.updateAuthor(anyString()))
-                .thenReturn(Result.success(Unit))
-
-            whenever(quotesRepository.updateQuote(anyString()))
-                .thenReturn(Result.success(Unit))
+        fun setNotWorkingRemoteAPIs(result: Result<Unit> = Result.failure(IOException())) {
+            setRemoteAPIs(result)
         }
 
-        fun setNoLocalDataInRepositories() {
-            setLocalDataForAuthors(null)
-            setLocalDataForQuotes(emptyList())
+        fun setWorkingRemoteAPIs() {
+            setRemoteAPIs(Result.success(Unit))
         }
 
-        fun setLocalDataForAuthors(author: Author?) {
+        fun setNoLocalDataInRepositories(authorSlug: String) {
+            setLocalDataForAuthors(authorSlug = authorSlug, author = null)
+            setLocalDataForQuotes(authorSlug = authorSlug, quotes = emptyList())
+        }
+
+        fun setLocalDataForAuthors(authorSlug: String, author: Author?) {
             whenever(authorsRepository.getAuthorFlow(authorSlug))
                 .thenReturn(flowOf(author))
         }
 
-        fun setLocalDataForQuotes(quotes: List<Quote>) {
+        fun setLocalDataForQuotes(authorSlug: String, quotes: List<Quote>) {
             whenever(quotesRepository.fetchQuotesOfAuthor(authorSlug))
                 .thenReturn(flowOf(PagingData.from(quotes)))
         }
 
         fun setNoAvailableAuthorModelInSavedStateHandle() {
             setInSavedStateHandle(key = AuthorViewModel.AUTHOR_KEY, value = null)
+        }
+
+        private fun setRemoteAPIs(result: Result<Unit>) {
+            authorsRepository.stub {
+                onBlocking { updateAuthor(anyString()) }.doReturn(result)
+            }
         }
 
         private fun <V> setInSavedStateHandle(key: String, value: V?) {
@@ -114,8 +122,8 @@ class AuthorViewModelTest {
     fun given_NoLocalData_when_onTagClick_then_ReturnTagNavigationAction(): Unit = runTest {
         val tag = "tagName"
         dependencyManager.apply {
-            setAuthorSlugAvailableInSavedStateHandle()
-            setNoLocalDataInRepositories()
+            setAuthorSlugAvailableInSavedStateHandle(authorSlug)
+            setNoLocalDataInRepositories(authorSlug)
             setNoAvailableAuthorModelInSavedStateHandle()
         }
 
@@ -137,9 +145,9 @@ class AuthorViewModelTest {
     fun given_NoLocalData_when_onQuoteClick_then_ReturnQuoteNavigationAction(): Unit = runTest {
         val quote = QuotesFactory.getQuotes(1).first()
         dependencyManager.apply {
-            setAuthorSlugAvailableInSavedStateHandle()
+            setAuthorSlugAvailableInSavedStateHandle(authorSlug)
             setNoAvailableAuthorModelInSavedStateHandle()
-            setNoLocalDataInRepositories()
+            setNoLocalDataInRepositories(authorSlug)
         }
 
         val job = launch {
@@ -161,15 +169,15 @@ class AuthorViewModelTest {
         runTest {
             dependencyManager.apply {
                 setWorkingRemoteAPIs()
-                setAuthorSlugAvailableInSavedStateHandle()
-                setAuthorAvailableInSavedStateHandle()
-                setLocalDataForAuthors(dependencyManager.author)
-                setLocalDataForQuotes(emptyList())
+                setAuthorSlugAvailableInSavedStateHandle(authorSlug)
+                setAuthorAvailableInSavedStateHandle(author)
+                setLocalDataForAuthors(authorSlug = authorSlug, author = author)
+                setLocalDataForQuotes(authorSlug = authorSlug, quotes = emptyList())
             }
 
             val expectedStates = listOf(
                 AuthorUiState(),
-                AuthorUiState(data = dependencyManager.author, isLoading = false, error = null)
+                AuthorUiState(data = author, isLoading = false, error = null)
             )
 
             dependencyManager.viewModel.authorState.test {
@@ -178,6 +186,40 @@ class AuthorViewModelTest {
                 }
                 cancelAndConsumeRemainingEvents()
             }
+        }
+
+    @Test
+    fun given_AvailableLocalDataAndModelInSavedStateAndNoAPIConnection_when_updateAuthor_then_ReturnStateWithError(): Unit =
+        runTest {
+            dependencyManager.apply {
+                setAuthorSlugAvailableInSavedStateHandle(authorSlug)
+                setLocalDataForAuthors(authorSlug = authorSlug, author = author)
+                setLocalDataForQuotes(authorSlug = authorSlug, quotes = emptyList())
+                setAuthorAvailableInSavedStateHandle(author)
+                setNotWorkingRemoteAPIs()
+            }
+
+            val expectedStates = listOf(
+                AuthorUiState(),
+                AuthorUiState(data = author),
+                AuthorUiState(
+                    data = author,
+                    error = AuthorViewModel.UiError.IOError()
+                ),
+            )
+
+            val job = launch {
+                dependencyManager.viewModel.authorState.test {
+                    expectedStates.forEach {
+                        assertThat(awaitItem()).isEqualTo(it)
+                    }
+                    cancelAndConsumeRemainingEvents()
+                }
+            }
+
+            dependencyManager.viewModel.updateAuthor()
+
+            job.join()
         }
 
 }
