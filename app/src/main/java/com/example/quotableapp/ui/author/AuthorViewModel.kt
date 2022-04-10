@@ -20,6 +20,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import java.lang.NullPointerException
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
@@ -51,11 +52,12 @@ class AuthorViewModel @Inject constructor(
         data class ToOneQuote(val quote: Quote) : NavigationAction()
     }
 
-    private val _navigationActions = MutableSharedFlow<NavigationAction>()
-    val navigationActions = _navigationActions.asSharedFlow()
-
     private val authorSlug: String
         get() = savedStateHandle[AUTHOR_SLUG_KEY]!!
+
+    private val _navigationActions = MutableSharedFlow<NavigationAction>()
+
+    val navigationActions = _navigationActions.asSharedFlow()
 
     override val quotes: Flow<PagingData<Quote>> =
         quotesRepository
@@ -64,7 +66,7 @@ class AuthorViewModel @Inject constructor(
 
     private val _authorUiStateManager = UiStateManager<Author, UiError>(
         coroutineScope = viewModelScope + dispatchers.Default,
-        sourceDataFlow = savedStateHandle.getLiveData<Author>(AUTHOR_KEY).asFlow()
+        sourceDataFlow = savedStateHandle.getLiveData<Author?>(AUTHOR_KEY).asFlow()
     )
     val authorState: StateFlow<AuthorUiState> = _authorUiStateManager.stateFlow
 
@@ -99,6 +101,7 @@ class AuthorViewModel @Inject constructor(
         authorsRepository
             .getAuthorFlow(authorSlug)
             .onEach { author -> if (author == null) updateAuthor() }
+            .filterNotNull()
             .onEach { savedStateHandle[AUTHOR_KEY] = it }
             .launchIn(viewModelScope)
     }
