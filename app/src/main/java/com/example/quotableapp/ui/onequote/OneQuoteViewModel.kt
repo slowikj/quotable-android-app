@@ -1,9 +1,6 @@
 package com.example.quotableapp.ui.onequote
 
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asFlow
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
@@ -58,9 +55,10 @@ class OneQuoteViewModel @Inject constructor(
         const val AUTHOR_PHOTO_REQUEST_SIZE: Int = 200
     }
 
-    private val _quoteFlow: Flow<Quote> = savedStateHandle
+    private val _quoteSavedStateHandleLiveData: LiveData<Quote> = savedStateHandle
         .getLiveData<Quote>(QUOTE_TAG)
-        .asFlow()
+
+    private val _quoteFlow: Flow<Quote> = _quoteSavedStateHandleLiveData.asFlow()
 
     private val _quoteIsLoadingFlow = MutableStateFlow<Boolean>(false)
     private val _quoteErrorFlow = MutableStateFlow<UiError?>(null)
@@ -101,12 +99,12 @@ class OneQuoteViewModel @Inject constructor(
     private var quoteRepoSyncJob: Job? = null
 
     init {
-        val quoteId = savedStateHandle.get<Quote>(QUOTE_TAG)!!.id
+        val quoteId = _quoteSavedStateHandleLiveData.value!!.id
         startSyncingQuoteChangesFromRepository(quoteId)
     }
 
     fun updateQuoteUi() {
-        val quoteId = quoteUiState.value.data?.quoteId ?: return
+        val quoteId = _quoteSavedStateHandleLiveData.value!!.id
         viewModelScope.launch(coroutineDispatchers.Default) {
             _quoteIsLoadingFlow.value = true
             val response = oneQuoteRepository.updateQuote(quoteId)
@@ -138,7 +136,8 @@ class OneQuoteViewModel @Inject constructor(
 
     private fun startSyncingQuoteChangesFromRepository(quoteId: String) {
         quoteRepoSyncJob?.cancel()
-        quoteRepoSyncJob = oneQuoteRepository.getQuoteFlow(quoteId)
+        quoteRepoSyncJob = oneQuoteRepository
+            .getQuoteFlow(quoteId)
             .filterNotNull()
             .onEach { quote -> updateSavedStateHandle(quote) }
             .launchIn(viewModelScope)
