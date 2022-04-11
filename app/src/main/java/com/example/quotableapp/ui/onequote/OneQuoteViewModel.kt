@@ -86,7 +86,8 @@ class OneQuoteViewModel @Inject constructor(
         _quoteFlow, _quoteIsLoadingFlow, _quoteErrorFlow, _authorPhotoUrlFlow
     ) { quote, quoteIsLoading, quoteError, authorPhotoUrl ->
         QuoteUiState(
-            isLoading = quoteIsLoading, error = quoteError,
+            isLoading = quoteIsLoading,
+            error = quoteError,
             data = QuoteUi(quote = quote, authorPhotoUrl = authorPhotoUrl)
         )
     }.flowOn(coroutineDispatchers.Default)
