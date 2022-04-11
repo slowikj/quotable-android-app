@@ -1,11 +1,10 @@
-package com.example.quotableapp.data.db.di
+package com.example.quotableapp.data.db
 
 import android.content.Context
 import android.util.Log
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.quotableapp.data.db.QuotableDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -7,12 +7,14 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object TagsRepositoryModule {
 
     @Provides
+    @Singleton
     fun provideTagsDao(database: QuotableDatabase): TagsDao = database.tagsDao()
 
     @Module
@@ -20,6 +22,7 @@ object TagsRepositoryModule {
     interface Declarations {
 
         @Binds
+        @Singleton
         fun bindTagsRepository(repository: DefaultTagRepository): TagsRepository
     }
 }

@@ -13,6 +13,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -28,21 +29,26 @@ object QuotesRepositoryModule {
     interface Declarations {
 
         @Binds
+        @Singleton
         fun bindQuotesRepository(repository: DefaultQuotesRepository): QuotesRepository
 
         @ExperimentalPagingApi
         @Binds
+        @Singleton
         fun bindAllQuotesRepository(repository: DefaultAllQuotesRepository): AllQuotesRepository
 
         @ExperimentalPagingApi
         @Binds
+        @Singleton
         fun bindQuotesOfAuthorRepository(repository: DefaultQuotesOfAuthorRepository): QuotesOfAuthorRepository
 
         @ExperimentalPagingApi
         @Binds
+        @Singleton
         fun bindQuotesOfTagRepository(repository: DefaultQuotesOfTagRepository): QuotesOfTagRepository
 
         @Binds
+        @Singleton
         fun bindOneQuoteRepository(repository: DefaultOneQuoteRepository): OneQuoteRepository
     }
 

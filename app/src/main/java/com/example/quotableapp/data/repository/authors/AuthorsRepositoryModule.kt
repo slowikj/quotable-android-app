@@ -12,6 +12,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -23,6 +24,7 @@ object AuthorsRepositoryModule {
     }
 
     @Provides
+    @Singleton
     fun provideAuthorsDao(quotableDatabase: QuotableDatabase): AuthorsDao =
         quotableDatabase.authorsDao()
 
@@ -32,6 +34,7 @@ object AuthorsRepositoryModule {
 
         @ExperimentalPagingApi
         @Binds
+        @Singleton
         fun bindAuthorsRepository(repository: DefaultAuthorsRepository): AuthorsRepository
     }
 }

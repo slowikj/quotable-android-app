@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.network.di
+package com.example.quotableapp.data.network
 
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.network.services.AuthorsRemoteService
@@ -16,6 +16,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
+import javax.inject.Singleton
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -32,19 +33,23 @@ object NetworkModule {
     private const val BASE_URL = "https://api.quotable.io"
 
     @Provides
+    @Singleton
     fun getQuotesService(@DefaultRetrofitClient retrofitClient: Retrofit): QuotesRemoteService =
         retrofitClient.create(QuotesRemoteService::class.java)
 
     @Provides
+    @Singleton
     fun getAuthorsService(@DefaultRetrofitClient retrofitClient: Retrofit): AuthorsRemoteService =
         retrofitClient.create(AuthorsRemoteService::class.java)
 
     @Provides
+    @Singleton
     fun getTagsService(@DefaultRetrofitClient retrofitClient: Retrofit): TagsRemoteService =
         retrofitClient.create(TagsRemoteService::class.java)
 
     @Provides
     @DefaultRetrofitClient
+    @Singleton
     fun getRetrofitClient(@DefaultOkHttpClient okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -54,6 +59,7 @@ object NetworkModule {
 
     @Provides
     @DefaultOkHttpClient
+    @Singleton
     fun createOkHttpClient(): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply { setLevel(HttpLoggingInterceptor.Level.BODY) })

@@ -12,6 +12,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
+import javax.inject.Singleton
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -22,6 +23,7 @@ annotation class CacheTimeout
 object RepositoryModule {
 
     @Provides
+    @Singleton
     fun provideQuotesDao(database: QuotableDatabase): QuotesDao = database.quotesDao()
 
     @Provides
