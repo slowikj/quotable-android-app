@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
-class DefaultCoroutineDispatchers @Inject constructor() : CoroutineDispatchers {
+class DefaultDispatchersProvider @Inject constructor() : DispatchersProvider {
     override val Main: CoroutineDispatcher
         get() = Dispatchers.Main
     override val Unconfined: CoroutineDispatcher

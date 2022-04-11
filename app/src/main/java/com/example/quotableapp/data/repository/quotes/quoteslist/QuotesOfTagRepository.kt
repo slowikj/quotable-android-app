@@ -4,7 +4,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.common.mapInnerElements
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
@@ -27,7 +27,7 @@ class DefaultQuotesOfTagRepository @Inject constructor(
     private val remoteMediatorFactory: QuotesRemoteMediatorFactory,
     private val quotesRemoteService: QuotesRemoteService,
     private val pagingConfig: PagingConfig,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val dispatchersProvider: DispatchersProvider
 ) : QuotesOfTagRepository {
 
     override fun fetchQuotesOfTag(tag: String): Flow<PagingData<Quote>> {
@@ -38,7 +38,7 @@ class DefaultQuotesOfTagRepository @Inject constructor(
             pagingSourceFactory = { remoteMediator.persistenceManager.getPagingSource() }
         ).flow
             .mapInnerElements { quoteDTO -> quoteDTO.toDomain() }
-            .flowOn(coroutineDispatchers.IO)
+            .flowOn(dispatchersProvider.IO)
     }
 
     private fun createQuotesOfTagRemoteMediator(tag: String): QuotesRemoteMediator {

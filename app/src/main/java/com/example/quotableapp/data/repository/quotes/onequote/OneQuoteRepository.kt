@@ -1,6 +1,6 @@
 package com.example.quotableapp.data.repository.quotes.onequote
 
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
@@ -29,7 +29,7 @@ interface OneQuoteRepository {
 }
 
 class DefaultOneQuoteRepository @Inject constructor(
-    private val coroutineDispatchers: CoroutineDispatchers,
+    private val dispatchersProvider: DispatchersProvider,
     private val quotesRemoteService: QuotesRemoteService,
     private val quotesLocalDataSource: QuotesLocalDataSource,
     private val apiResponseInterpreter: ApiResponseInterpreter
@@ -47,9 +47,9 @@ class DefaultOneQuoteRepository @Inject constructor(
         )
         .map { it.firstOrNull() }
         .map { it?.toDomain() }
-        .flowOn(coroutineDispatchers.Default)
+        .flowOn(dispatchersProvider.Default)
 
-    override suspend fun getRandomQuote(): Result<Quote> = withContext(coroutineDispatchers.IO) {
+    override suspend fun getRandomQuote(): Result<Quote> = withContext(dispatchersProvider.IO) {
         apiResponseInterpreter { quotesRemoteService.fetchRandomQuote() }
             .mapCatching { quoteDTO ->
                 insertQuoteToDb(quoteDTO)
@@ -58,7 +58,7 @@ class DefaultOneQuoteRepository @Inject constructor(
     }
 
     override suspend fun updateQuote(id: String): Result<Unit> {
-        return withContext(coroutineDispatchers.IO) {
+        return withContext(dispatchersProvider.IO) {
             apiResponseInterpreter { quotesRemoteService.fetchQuote(id) }
                 .mapCatching { quoteDTO -> insertQuoteToDb(quoteDTO) }
         }
@@ -67,23 +67,23 @@ class DefaultOneQuoteRepository @Inject constructor(
     override fun getQuoteFlow(id: String): Flow<Quote?> = quotesLocalDataSource
         .getQuoteFlow(id)
         .map { it?.toDomain() }
-        .flowOn(coroutineDispatchers.Default)
+        .flowOn(dispatchersProvider.Default)
 
     override suspend fun updateRandomQuote(): Result<Unit> {
-        return withContext(coroutineDispatchers.IO) {
+        return withContext(dispatchersProvider.IO) {
             apiResponseInterpreter { quotesRemoteService.fetchRandomQuote() }
                 .mapCatching { updateDatabaseWithRandomQuote(it) }
         }
     }
 
     private suspend fun insertQuoteToDb(quoteDTO: QuoteDTO): Unit {
-        withContext(coroutineDispatchers.IO) {
+        withContext(dispatchersProvider.IO) {
             quotesLocalDataSource.insert(listOf(quoteDTO.toDb()))
         }
     }
 
     private suspend fun updateDatabaseWithRandomQuote(quoteDTO: QuoteDTO): Unit =
-        withContext(coroutineDispatchers.IO) {
+        withContext(dispatchersProvider.IO) {
             quotesLocalDataSource.refresh(
                 entities = listOf(quoteDTO.toDb()),
                 originParams = randomQuoteOriginParams

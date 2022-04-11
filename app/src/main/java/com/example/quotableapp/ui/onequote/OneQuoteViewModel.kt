@@ -1,7 +1,7 @@
 package com.example.quotableapp.ui.onequote
 
 import androidx.lifecycle.*
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.onequote.OneQuoteRepository
@@ -40,7 +40,7 @@ data class QuoteUi(
 @HiltViewModel
 class OneQuoteViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val coroutineDispatchers: CoroutineDispatchers,
+    private val dispatchersProvider: DispatchersProvider,
     private val oneQuoteRepository: OneQuoteRepository,
     private val authorsRepository: AuthorsRepository
 ) : ViewModel() {
@@ -75,10 +75,10 @@ class OneQuoteViewModel @Inject constructor(
             }
         }
         .map { authorWithSlug -> authorWithSlug.first?.getPhotoUrl(AUTHOR_PHOTO_REQUEST_SIZE) }
-        .flowOn(coroutineDispatchers.Default)
+        .flowOn(dispatchersProvider.Default)
         .stateIn(
             initialValue = null,
-            scope = viewModelScope + coroutineDispatchers.Default,
+            scope = viewModelScope + dispatchersProvider.Default,
             started = defaultSharingStarted
         )
 
@@ -90,7 +90,7 @@ class OneQuoteViewModel @Inject constructor(
             error = quoteError,
             data = QuoteUi(quote = quote, authorPhotoUrl = authorPhotoUrl)
         )
-    }.flowOn(coroutineDispatchers.Default)
+    }.flowOn(dispatchersProvider.Default)
         .stateIn(
             initialValue = QuoteUiState(),
             scope = viewModelScope,
@@ -106,7 +106,7 @@ class OneQuoteViewModel @Inject constructor(
 
     fun updateQuoteUi() {
         val quoteId = _quoteSavedStateHandleLiveData.value!!.id
-        viewModelScope.launch(coroutineDispatchers.Default) {
+        viewModelScope.launch(dispatchersProvider.Default) {
             _quoteIsLoadingFlow.value = true
             val response = oneQuoteRepository.updateQuote(quoteId)
             _quoteErrorFlow.value = response.exceptionOrNull()?.let { UiError.IOError() }
@@ -115,7 +115,7 @@ class OneQuoteViewModel @Inject constructor(
     }
 
     fun randomizeQuote() {
-        viewModelScope.launch(coroutineDispatchers.Default) {
+        viewModelScope.launch(dispatchersProvider.Default) {
             _quoteIsLoadingFlow.value = true
             val response = oneQuoteRepository.getRandomQuote()
             response.fold(
@@ -145,7 +145,7 @@ class OneQuoteViewModel @Inject constructor(
     }
 
     private suspend fun updateSavedStateHandle(quote: Quote) {
-        withContext(coroutineDispatchers.Main) {
+        withContext(dispatchersProvider.Main) {
             savedStateHandle[QUOTE_TAG] = quote
         }
     }

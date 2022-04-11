@@ -1,7 +1,7 @@
 package com.example.quotableapp.data.network.common
 
 import com.example.quotableapp.MainCoroutineDispatcherRule
-import com.example.quotableapp.data.getTestCoroutineDispatchers
+import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.network.model.QuoteDTO
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.CancellationException
@@ -62,7 +62,7 @@ class DefaultQuotableApiResponseInterpreterTest(
     fun test() = runTest {
         // given
         val apiResponseInterpreter = DefaultQuotableApiResponseInterpreter(
-            getTestCoroutineDispatchers()
+            getTestdispatchersProvider()
         )
 
         // when

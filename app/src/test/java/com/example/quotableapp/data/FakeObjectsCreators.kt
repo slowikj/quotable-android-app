@@ -1,7 +1,7 @@
 package com.example.quotableapp.data
 
 import androidx.paging.PagingConfig
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,8 +21,8 @@ fun getFakeApiResponseInterpreter(): ApiResponseInterpreter {
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun getTestCoroutineDispatchers(testDispatcher: TestDispatcher = StandardTestDispatcher()): CoroutineDispatchers {
-    return object : CoroutineDispatchers {
+fun getTestdispatchersProvider(testDispatcher: TestDispatcher = StandardTestDispatcher()): DispatchersProvider {
+    return object : DispatchersProvider {
         override val Main: CoroutineDispatcher
             get() = testDispatcher
         override val Unconfined: CoroutineDispatcher

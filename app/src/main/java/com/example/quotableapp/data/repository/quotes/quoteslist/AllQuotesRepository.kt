@@ -4,7 +4,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.common.mapInnerElements
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
@@ -39,7 +39,7 @@ class DefaultAllQuotesRepository @Inject constructor(
     private val pagingConfig: PagingConfig,
     private val apiResponseInterpreter: ApiResponseInterpreter,
     private val quotesRemoteService: QuotesRemoteService,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val dispatchersProvider: DispatchersProvider
 ) : AllQuotesRepository {
 
     companion object {
@@ -58,7 +58,7 @@ class DefaultAllQuotesRepository @Inject constructor(
             pagingSourceFactory = { remoteMediator.persistenceManager.getPagingSource() }
         ).flow
             .mapInnerElements { quoteDTO -> quoteDTO.toDomain() }
-            .flowOn(coroutineDispatchers.IO)
+            .flowOn(dispatchersProvider.IO)
     }
 
     override val exemplaryQuotes: Flow<List<Quote>> = quotesLocalDataSource
@@ -68,10 +68,10 @@ class DefaultAllQuotesRepository @Inject constructor(
         )
         .filterNot { it.isEmpty() }
         .map { quotes -> quotes.map { it.toDomain() } }
-        .flowOn(coroutineDispatchers.IO)
+        .flowOn(dispatchersProvider.IO)
 
     override suspend fun updateExemplaryQuotes(): Result<Unit> =
-        withContext(coroutineDispatchers.IO) {
+        withContext(dispatchersProvider.IO) {
             apiResponseInterpreter {
                 quotesRemoteService.fetchQuotes(
                     page = 1,
@@ -102,7 +102,7 @@ class DefaultAllQuotesRepository @Inject constructor(
     }
 
     private suspend fun updateDatabaseWithExemplaryQuotes(dto: QuotesResponseDTO): Unit =
-        withContext(coroutineDispatchers.IO) {
+        withContext(dispatchersProvider.IO) {
             quotesLocalDataSource.refresh(
                 entities = dto.results.map { it.toDb() },
                 originParams = EXEMPLARY_QUOTES_PARAMS

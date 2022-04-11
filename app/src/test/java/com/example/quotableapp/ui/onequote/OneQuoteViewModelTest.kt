@@ -6,10 +6,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import app.cash.turbine.test
 import com.example.quotableapp.MainCoroutineDispatcherRule
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.AuthorsFactory
 import com.example.quotableapp.data.QuotesFactory
-import com.example.quotableapp.data.getTestCoroutineDispatchers
+import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
@@ -44,7 +44,7 @@ class OneQuoteViewModelTest {
 
     class DependencyManager(
         val savedStateHandle: SavedStateHandle = mock(),
-        val coroutineDispatchers: CoroutineDispatchers = getTestCoroutineDispatchers(),
+        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
         val oneQuoteRepository: OneQuoteRepository = mock(),
         val authorsRepository: AuthorsRepository = mock()
     ) {
@@ -52,7 +52,7 @@ class OneQuoteViewModelTest {
         val viewModel: OneQuoteViewModel
             get() = OneQuoteViewModel(
                 savedStateHandle = savedStateHandle,
-                coroutineDispatchers = coroutineDispatchers,
+                dispatchersProvider = dispatchersProvider,
                 oneQuoteRepository = oneQuoteRepository,
                 authorsRepository = authorsRepository
             )

@@ -1,7 +1,7 @@
 package com.example.quotableapp.data.repository.quotes.quoteslist.paging
 
 import androidx.paging.ExperimentalPagingApi
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.converters.Converter
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
@@ -49,13 +49,13 @@ class QuotesRemoteMediator @AssistedInject constructor(
     @Assisted remoteService: IntPagedRemoteService<QuotesResponseDTO>,
     apiResultInterpreter: ApiResponseInterpreter,
     dtoToEntityConverter: Converter<QuotesResponseDTO, List<QuoteEntity>>,
-    coroutineDispatchers: CoroutineDispatchers
+    dispatchersProvider: DispatchersProvider
 ) : IntPageKeyRemoteMediator<QuoteEntity, QuotesResponseDTO>(
     persistenceManager,
     cacheTimeoutMilliseconds,
     remoteService,
     apiResultInterpreter,
     dtoToEntityConverter,
-    coroutineDispatchers
+    dispatchersProvider
 ) {
 }

@@ -4,10 +4,9 @@ import androidx.lifecycle.*
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
-import com.example.quotableapp.ui.common.extensions.defaultSharingStarted
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,7 +21,7 @@ import javax.inject.Inject
 class AllQuotesListViewModel @Inject constructor(
     private val quotesRepository: QuotesRepository,
     private val savedStateHandle: SavedStateHandle,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchersProvider: DispatchersProvider
 ) : ViewModel(), QuotesProvider {
 
     companion object {
@@ -47,7 +46,7 @@ class AllQuotesListViewModel @Inject constructor(
             .debounce(SEARCH_VIEW_DEBOUNCE_TIME_MILLIS)
             .distinctUntilChanged()
             .flatMapLatest { quotesRepository.fetchAllQuotes(it) }
-            .flowOn(dispatchers.Default)
+            .flowOn(dispatchersProvider.Default)
             .cachedIn(viewModelScope)
 
     fun onSearchQueryChanged(query: String) {

@@ -3,12 +3,12 @@ package com.example.quotableapp.data.repository.quotes.quoteslist
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
 import com.example.quotableapp.MainCoroutineDispatcherRule
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.QuotesFactory
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
-import com.example.quotableapp.data.getTestCoroutineDispatchers
+import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.getTestPagingConfig
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
@@ -44,7 +44,7 @@ class DefaultAllQuotesRepositoryTest {
         val pagingConfig: PagingConfig = getTestPagingConfig(),
         val apiResponseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter(),
         val remoteService: QuotesRemoteService = mock(),
-        val coroutineDispatchers: CoroutineDispatchers = getTestCoroutineDispatchers(),
+        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
     ) {
         val repository: DefaultAllQuotesRepository by lazy {
             DefaultAllQuotesRepository(
@@ -53,7 +53,7 @@ class DefaultAllQuotesRepositoryTest {
                 pagingConfig = pagingConfig,
                 apiResponseInterpreter = apiResponseInterpreter,
                 quotesRemoteService = remoteService,
-                coroutineDispatchers = coroutineDispatchers
+                dispatchersProvider = dispatchersProvider
             )
         }
     }

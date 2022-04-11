@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
@@ -20,7 +20,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import java.lang.NullPointerException
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
@@ -33,7 +32,7 @@ class AuthorViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val quotesRepository: QuotesRepository,
     private val authorsRepository: AuthorsRepository,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchersProvider: DispatchersProvider
 ) : ViewModel(), QuotesProvider {
 
     companion object {
@@ -65,7 +64,7 @@ class AuthorViewModel @Inject constructor(
             .cachedIn(viewModelScope)
 
     private val _authorUiStateManager = UiStateManager<Author, UiError>(
-        coroutineScope = viewModelScope + dispatchers.Default,
+        coroutineScope = viewModelScope + dispatchersProvider.Default,
         sourceDataFlow = savedStateHandle.getLiveData<Author?>(AUTHOR_KEY).asFlow()
     )
     val authorState: StateFlow<AuthorUiState> = _authorUiStateManager.stateFlow

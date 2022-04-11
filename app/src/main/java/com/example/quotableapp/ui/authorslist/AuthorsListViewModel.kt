@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +19,7 @@ class AuthorsListViewModel
 @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val authorsRepository: AuthorsRepository,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchersProvider: DispatchersProvider
 ) : ViewModel() {
 
     val authors: Flow<PagingData<Author>> =

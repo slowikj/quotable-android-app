@@ -2,7 +2,7 @@ package com.example.quotableapp.common
 
 import kotlinx.coroutines.CoroutineDispatcher
 
-interface CoroutineDispatchers {
+interface DispatchersProvider {
 
     val Main: CoroutineDispatcher
     val Unconfined: CoroutineDispatcher

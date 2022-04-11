@@ -3,7 +3,7 @@ package com.example.quotableapp.ui.dashboard
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.model.Tag
@@ -31,7 +31,7 @@ class DashboardViewModel @Inject constructor(
     private val authorsRepository: AuthorsRepository,
     private val quotesRepository: QuotesRepository,
     private val tagsRepository: TagsRepository,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val dispatchersProvider: DispatchersProvider
 ) : ViewModel() {
 
     sealed class UiError : Throwable() {
@@ -39,25 +39,25 @@ class DashboardViewModel @Inject constructor(
     }
 
     private val exemplaryAuthorsUiStateManager = UiStateManager<List<Author>, UiError>(
-        coroutineScope = viewModelScope + coroutineDispatchers.Default,
+        coroutineScope = viewModelScope + dispatchersProvider.Default,
         sourceDataFlow = authorsRepository.exemplaryAuthorsFlow
     )
     val exemplaryAuthorsState: StateFlow<AuthorListState> = exemplaryAuthorsUiStateManager.stateFlow
 
     private val exemplaryQuotesUiStateManager = UiStateManager<List<Quote>, UiError>(
-        coroutineScope = viewModelScope + coroutineDispatchers.Default,
+        coroutineScope = viewModelScope + dispatchersProvider.Default,
         sourceDataFlow = quotesRepository.exemplaryQuotes
     )
     val exemplaryQuotesState: StateFlow<QuotesListState> = exemplaryQuotesUiStateManager.stateFlow
 
     private val exemplaryTagsUiStateManager = UiStateManager<List<Tag>, UiError>(
-        coroutineScope = viewModelScope + coroutineDispatchers.Default,
+        coroutineScope = viewModelScope + dispatchersProvider.Default,
         sourceDataFlow = tagsRepository.exemplaryTags
     )
     val exemplaryTagsState: StateFlow<TagsListState> = exemplaryTagsUiStateManager.stateFlow
 
     private val randomQuoteUiStateManager = UiStateManager<Quote, UiError>(
-        coroutineScope = viewModelScope + coroutineDispatchers.Default,
+        coroutineScope = viewModelScope + dispatchersProvider.Default,
         sourceDataFlow = quotesRepository.randomQuote
     )
     val randomQuote: StateFlow<RandomQuoteState> = randomQuoteUiStateManager.stateFlow

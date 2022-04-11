@@ -1,6 +1,6 @@
 package com.example.quotableapp.data.repository.tags
 
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.TagsLocalDataSource
@@ -10,7 +10,6 @@ import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.TagsResponseDTO
 import com.example.quotableapp.data.network.services.TagsRemoteService
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -31,7 +30,7 @@ class DefaultTagRepository @Inject constructor(
     private val tagsRemoteService: TagsRemoteService,
     private val tagsLocalDataSource: TagsLocalDataSource,
     private val responseInterpreter: ApiResponseInterpreter,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val dispatchersProvider: DispatchersProvider
 ) : TagsRepository {
 
     companion object {
@@ -44,7 +43,7 @@ class DefaultTagRepository @Inject constructor(
     }
 
     override suspend fun updateAllTags(): Result<Unit> {
-        return withContext(coroutineDispatchers.IO) {
+        return withContext(dispatchersProvider.IO) {
             fetchTagsDTO()
                 .mapCatching { tagsDTO ->
                     refreshEntitiesInLocal(
@@ -58,10 +57,10 @@ class DefaultTagRepository @Inject constructor(
     override val allTagsFlow: Flow<List<Tag>> = tagsLocalDataSource
         .getTagsSortedByName(originParams = TAG_ORIGIN_PARAMS_ALL)
         .map { list -> list.map { it.toDomain() } }
-        .flowOn(coroutineDispatchers.IO)
+        .flowOn(dispatchersProvider.IO)
 
     override suspend fun updateExemplaryTags(): Result<Unit> {
-        return withContext(coroutineDispatchers.IO) {
+        return withContext(dispatchersProvider.IO) {
             fetchTagsDTO()
                 .map { it.take(TAGS_EXEMPLARY_LIMIT) }
                 .mapCatching { tagsDTO ->
@@ -79,10 +78,10 @@ class DefaultTagRepository @Inject constructor(
             limit = TAGS_EXEMPLARY_LIMIT
         )
         .map { list -> list.map { it.toDomain() } }
-        .flowOn(coroutineDispatchers.IO)
+        .flowOn(dispatchersProvider.IO)
 
     private suspend fun fetchTagsDTO(): Result<TagsResponseDTO> {
-        return withContext(coroutineDispatchers.IO) {
+        return withContext(dispatchersProvider.IO) {
             responseInterpreter { tagsRemoteService.fetchTags() }
         }
     }
@@ -90,7 +89,7 @@ class DefaultTagRepository @Inject constructor(
     private suspend fun refreshEntitiesInLocal(
         tagOriginParams: TagOriginParams,
         tagsDTO: TagsResponseDTO
-    ): Unit = withContext(coroutineDispatchers.IO) {
+    ): Unit = withContext(dispatchersProvider.IO) {
         tagsLocalDataSource.refresh(
             originParams = tagOriginParams,
             entities = tagsDTO.map { it.toDb() }

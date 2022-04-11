@@ -7,9 +7,9 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
 import app.cash.turbine.test
 import com.example.quotableapp.MainCoroutineDispatcherRule
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.QuotesFactory
-import com.example.quotableapp.data.getTestCoroutineDispatchers
+import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
@@ -49,7 +49,7 @@ class AuthorViewModelTest {
         val savedStateHandle: SavedStateHandle = mock(),
         val quotesRepository: QuotesRepository = mock(),
         val authorsRepository: AuthorsRepository = mock(),
-        val dispatchers: CoroutineDispatchers = getTestCoroutineDispatchers()
+        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider()
     ) {
 
         val viewModel: AuthorViewModel
@@ -57,7 +57,7 @@ class AuthorViewModelTest {
                 savedStateHandle = savedStateHandle,
                 quotesRepository = quotesRepository,
                 authorsRepository = authorsRepository,
-                dispatchers = dispatchers
+                dispatchersProvider = dispatchersProvider
             )
 
         fun setAuthorSlugAvailableInSavedStateHandle(authorSlug: String) {

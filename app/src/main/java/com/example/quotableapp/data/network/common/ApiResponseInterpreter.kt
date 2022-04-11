@@ -1,6 +1,6 @@
 package com.example.quotableapp.data.network.common
 
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import retrofit2.Response
@@ -13,11 +13,11 @@ interface ApiResponseInterpreter {
     suspend operator fun <DTO> invoke(apiCall: suspend () -> Response<DTO>): Result<DTO>
 }
 
-class DefaultQuotableApiResponseInterpreter @Inject constructor(private val coroutineDispatchers: CoroutineDispatchers) :
+class DefaultQuotableApiResponseInterpreter @Inject constructor(private val dispatchersProvider: DispatchersProvider) :
     ApiResponseInterpreter {
 
     override suspend fun <DTO> invoke(apiCall: suspend () -> Response<DTO>): Result<DTO> =
-        withContext(coroutineDispatchers.Default) {
+        withContext(dispatchersProvider.Default) {
             try {
                 getInterpretedApiResult(apiCall())
             } catch (e: IOException) {

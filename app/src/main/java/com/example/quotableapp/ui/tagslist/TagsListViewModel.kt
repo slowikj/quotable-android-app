@@ -2,7 +2,7 @@ package com.example.quotableapp.ui.tagslist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
@@ -20,7 +20,7 @@ typealias TagsListState = UiState<List<Tag>, TagsListViewModel.UiError>
 @HiltViewModel
 class TagsListViewModel @Inject constructor(
     private val tagsRepository: TagsRepository,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val dispatchersProvider: DispatchersProvider
 ) : ViewModel() {
 
     sealed class UiError : Throwable() {
@@ -28,7 +28,7 @@ class TagsListViewModel @Inject constructor(
     }
 
     private val _tagsUiStateManager = UiStateManager<List<Tag>, UiError>(
-        coroutineScope = viewModelScope + coroutineDispatchers.Default,
+        coroutineScope = viewModelScope + dispatchersProvider.Default,
         sourceDataFlow = tagsRepository
             .allTagsFlow
             .map { tags -> tags.ifEmpty { null } }
@@ -51,7 +51,7 @@ class TagsListViewModel @Inject constructor(
     }
 
     private fun updateTagsIfNoData() {
-        viewModelScope.launch(coroutineDispatchers.Default) {
+        viewModelScope.launch(dispatchersProvider.Default) {
             if (tagsRepository.allTagsFlow.first().isEmpty()) {
                 updateTags()
             }

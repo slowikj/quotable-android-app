@@ -1,7 +1,7 @@
 package com.example.quotableapp.data.repository.quotes.onequote
 
 import com.example.quotableapp.MainCoroutineDispatcherRule
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.QuotesFactory
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
@@ -9,7 +9,7 @@ import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
-import com.example.quotableapp.data.getTestCoroutineDispatchers
+import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.network.services.QuotesRemoteService
@@ -36,14 +36,14 @@ class DefaultOneQuoteRepositoryTest {
     val mainCoroutineDispatcherRule = MainCoroutineDispatcherRule()
 
     class DependencyManager(
-        val coroutineDispatchers: CoroutineDispatchers = getTestCoroutineDispatchers(),
+        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
         val remoteService: QuotesRemoteService = mock(),
         val localDataSource: QuotesLocalDataSource = mock(),
         val apiResponseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter()
     ) {
         val repository: DefaultOneQuoteRepository
             get() = DefaultOneQuoteRepository(
-                coroutineDispatchers = coroutineDispatchers,
+                dispatchersProvider = dispatchersProvider,
                 quotesRemoteService = remoteService,
                 quotesLocalDataSource = localDataSource,
                 apiResponseInterpreter = apiResponseInterpreter

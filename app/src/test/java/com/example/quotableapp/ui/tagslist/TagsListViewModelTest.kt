@@ -4,9 +4,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.viewModelScope
 import app.cash.turbine.test
 import com.example.quotableapp.MainCoroutineDispatcherRule
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.TagsFactory
-import com.example.quotableapp.data.getTestCoroutineDispatchers
+import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.google.common.truth.Truth.assertThat
@@ -36,12 +36,12 @@ class TagsListViewModelTest {
 
     class DependencyManager constructor(
         val tagsRepository: TagsRepository = mock(),
-        val coroutineDispatchers: CoroutineDispatchers = getTestCoroutineDispatchers()
+        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider()
     ) {
         val viewModel: TagsListViewModel
             get() = TagsListViewModel(
                 tagsRepository = tagsRepository,
-                coroutineDispatchers = coroutineDispatchers
+                dispatchersProvider = dispatchersProvider
             )
 
         fun setTagsLocalData(tags: List<Tag>) {

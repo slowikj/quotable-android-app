@@ -1,8 +1,8 @@
 package com.example.quotableapp.data.repository
 
 import androidx.paging.PagingConfig
-import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.common.DefaultCoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
+import com.example.quotableapp.common.DefaultDispatchersProvider
 import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.dao.QuotesDao
 import dagger.Binds
@@ -43,7 +43,7 @@ object RepositoryModule {
     interface Declarations {
 
         @Binds
-        fun bindCoroutineDispatchers(dispatchers: DefaultCoroutineDispatchers): CoroutineDispatchers
+        fun bindCoroutineDispatchers(dispatchers: DefaultDispatchersProvider): DispatchersProvider
 
     }
 

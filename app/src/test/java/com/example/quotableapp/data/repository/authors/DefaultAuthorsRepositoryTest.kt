@@ -3,14 +3,14 @@ package com.example.quotableapp.data.repository.authors
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
 import com.example.quotableapp.MainCoroutineDispatcherRule
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.AuthorsFactory
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
-import com.example.quotableapp.data.getTestCoroutineDispatchers
+import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.getTestPagingConfig
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
@@ -39,7 +39,7 @@ class DefaultAuthorsRepositoryTest {
         val remoteService: AuthorsRemoteService = mock(),
         val localDataSource: AuthorsLocalDataSource = mock(),
         val remoteMediatorFactory: AuthorsRemoteMediatorFactory = mock(),
-        val coroutineDispatchers: CoroutineDispatchers = getTestCoroutineDispatchers(),
+        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
         val pagingConfig: PagingConfig = getTestPagingConfig(),
         val apiResponseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter()
     ) {
@@ -49,7 +49,7 @@ class DefaultAuthorsRepositoryTest {
                 authorsRemoteService = remoteService,
                 authorsLocalDataSource = localDataSource,
                 authorsRemoteMediatorFactory = remoteMediatorFactory,
-                coroutineDispatchers = coroutineDispatchers,
+                dispatchersProvider = dispatchersProvider,
                 pagingConfig = pagingConfig,
                 apiResponseInterpreter = apiResponseInterpreter
             )

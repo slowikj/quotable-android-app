@@ -1,13 +1,13 @@
 package com.example.quotableapp.data.repository.tags
 
 import com.example.quotableapp.MainCoroutineDispatcherRule
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.TagsFactory
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.TagsLocalDataSource
 import com.example.quotableapp.data.db.entities.tag.TagOriginParams
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
-import com.example.quotableapp.data.getTestCoroutineDispatchers
+import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.services.TagsRemoteService
@@ -36,14 +36,14 @@ class DefaultTagRepositoryTest {
         val remoteService: TagsRemoteService = mock(),
         val localDataSource: TagsLocalDataSource = mock(),
         val responseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter(),
-        val coroutineDispatchers: CoroutineDispatchers = getTestCoroutineDispatchers(),
+        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
     ) {
         val repository: DefaultTagRepository
             get() = DefaultTagRepository(
                 tagsRemoteService = remoteService,
                 tagsLocalDataSource = localDataSource,
                 responseInterpreter = responseInterpreter,
-                coroutineDispatchers = coroutineDispatchers,
+                dispatchersProvider = dispatchersProvider,
             )
     }
 

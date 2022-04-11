@@ -2,12 +2,12 @@ package com.example.quotableapp.data.repository.quotes.quoteslist.paging
 
 import androidx.paging.*
 import com.example.quotableapp.MainCoroutineDispatcherRule
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.QuotesFactory
 import com.example.quotableapp.data.converters.Converter
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
-import com.example.quotableapp.data.getTestCoroutineDispatchers
+import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.common.IntPagedRemoteService
@@ -34,7 +34,7 @@ class QuotesRemoteMediatorTest {
         var remoteService: IntPagedRemoteService<QuotesResponseDTO>? = null,
         val apiResultInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter(),
         val dtoToEntityConverter: Converter<QuotesResponseDTO, List<QuoteEntity>> = mock(),
-        val coroutineDispatchers: CoroutineDispatchers = getTestCoroutineDispatchers()
+        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider()
     ) {
         val mediator: QuotesRemoteMediator
             get() = QuotesRemoteMediator(
@@ -43,7 +43,7 @@ class QuotesRemoteMediatorTest {
                 remoteService = remoteService!!,
                 apiResultInterpreter = apiResultInterpreter,
                 dtoToEntityConverter = dtoToEntityConverter,
-                coroutineDispatchers = coroutineDispatchers
+                dispatchersProvider = dispatchersProvider
             )
     }
 

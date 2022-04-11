@@ -6,15 +6,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.quotableapp.common.CoroutineDispatchers
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
-import com.example.quotableapp.ui.common.extensions.defaultSharingStarted
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @ExperimentalPagingApi
@@ -22,7 +19,7 @@ import javax.inject.Inject
 class TagQuotesListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val quotesRepository: QuotesRepository,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchersProvider: DispatchersProvider
 ) : ViewModel(), QuotesProvider {
 
     companion object {
