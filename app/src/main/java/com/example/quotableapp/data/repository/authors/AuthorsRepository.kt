@@ -2,7 +2,8 @@ package com.example.quotableapp.data.repository.authors
 
 import androidx.paging.*
 import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.data.converters.author.AuthorConverters
+import com.example.quotableapp.data.converters.toDb
+import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
@@ -17,7 +18,7 @@ import javax.inject.Inject
 interface AuthorsRepository {
     suspend fun updateAuthor(slug: String): Result<Unit>
 
-    fun getAuthorFlow(slug: String): Flow<Author>
+    fun getAuthorFlow(slug: String): Flow<Author?>
 
     fun fetchAllAuthors(): Flow<PagingData<Author>>
 
@@ -32,7 +33,6 @@ class DefaultAuthorsRepository @Inject constructor(
     private val authorsLocalDataSource: AuthorsLocalDataSource,
     private val authorsRemoteMediatorFactory: AuthorsRemoteMediatorFactory,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val authorConverters: AuthorConverters,
     private val pagingConfig: PagingConfig,
     private val apiResponseInterpreter: ApiResponseInterpreter
 ) : AuthorsRepository {
@@ -52,16 +52,15 @@ class DefaultAuthorsRepository @Inject constructor(
             apiResponseInterpreter { authorsRemoteService.fetchAuthor(slug) }
                 .mapCatching { it.results.first() }
                 .mapCatching { authorDTO ->
-                    authorsLocalDataSource.insert(entities = listOf(authorConverters.toDb(authorDTO)))
+                    authorsLocalDataSource.insert(entities = listOf(authorDTO.toDb()))
                 }
         }
     }
 
-    override fun getAuthorFlow(slug: String): Flow<Author> = authorsLocalDataSource
+    override fun getAuthorFlow(slug: String): Flow<Author?> = authorsLocalDataSource
         .getAuthorFlow(slug)
-        .filterNotNull()
-        .map(authorConverters::toDomain)
-        .flowOn(coroutineDispatchers.IO)
+        .map { it?.toDomain() }
+        .flowOn(coroutineDispatchers.Default)
 
     override fun fetchAllAuthors(): Flow<PagingData<Author>> {
         val remoteMediator = authorsRemoteMediatorFactory.create(
@@ -78,7 +77,7 @@ class DefaultAuthorsRepository @Inject constructor(
             pagingSourceFactory = { remoteMediator.persistenceManager.getPagingSource() }
         ).flow
             .map { pagingData ->
-                pagingData.map { authorConverters.toDomain(it) }
+                pagingData.map { it.toDomain() }
             }
     }
 
@@ -103,13 +102,13 @@ class DefaultAuthorsRepository @Inject constructor(
             limit = EXEMPLARY_AUTHORS_LIMIT
         )
         .filterNot { it.isEmpty() }
-        .map { list -> list.map(authorConverters::toDomain) }
+        .map { list -> list.map { it.toDomain() } }
         .flowOn(coroutineDispatchers.IO)
 
     private suspend fun refreshExemplaryQuotesToDatabase(responseDTO: AuthorsResponseDTO): Unit =
         withContext(coroutineDispatchers.IO) {
             authorsLocalDataSource.refresh(
-                entities = responseDTO.results.map(authorConverters::toDb),
+                entities = responseDTO.results.map { it.toDb() },
                 originParams = EXEMPLARY_AUTHORS_ORIGIN_PARAMS
             )
         }

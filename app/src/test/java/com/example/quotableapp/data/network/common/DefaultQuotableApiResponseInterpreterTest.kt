@@ -1,25 +1,30 @@
 package com.example.quotableapp.data.network.common
 
+import com.example.quotableapp.MainCoroutineDispatcherRule
 import com.example.quotableapp.data.getTestCoroutineDispatchers
 import com.example.quotableapp.data.network.model.QuoteDTO
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import retrofit2.Response
 import java.io.IOException
 
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(Parameterized::class)
 class DefaultQuotableApiResponseInterpreterTest(
     private val apiCall: suspend () -> Response<QuoteDTO>,
     private val expectedRes: List<Result<QuoteDTO>>,
     private val testDescription: String
 ) {
+
+    @get:Rule
+    val mainCoroutineDispatcherRule = MainCoroutineDispatcherRule()
 
     companion object {
         @JvmStatic
@@ -54,7 +59,7 @@ class DefaultQuotableApiResponseInterpreterTest(
     }
 
     @Test
-    fun test() = runBlockingTest {
+    fun test() = runTest {
         // given
         val apiResponseInterpreter = DefaultQuotableApiResponseInterpreter(
             getTestCoroutineDispatchers()

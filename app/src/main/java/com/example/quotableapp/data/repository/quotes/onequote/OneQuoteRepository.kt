@@ -1,31 +1,36 @@
 package com.example.quotableapp.data.repository.quotes.onequote
 
 import com.example.quotableapp.common.CoroutineDispatchers
-import com.example.quotableapp.data.converters.quote.QuoteConverters
+import com.example.quotableapp.data.converters.toDb
+import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.services.QuotesRemoteService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuoteDTO
-import kotlinx.coroutines.flow.*
+import com.example.quotableapp.data.network.services.QuotesRemoteService
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 interface OneQuoteRepository {
+
+    suspend fun getRandomQuote(): Result<Quote>
+
     suspend fun updateQuote(id: String): Result<Unit>
 
-    fun getQuoteFlow(id: String): Flow<Quote>
+    fun getQuoteFlow(id: String): Flow<Quote?>
 
     suspend fun updateRandomQuote(): Result<Unit>
 
-    val randomQuote: Flow<Quote>
+    val randomQuote: Flow<Quote?>
 }
 
 class DefaultOneQuoteRepository @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val quotesRemoteService: QuotesRemoteService,
-    private val quoteConverters: QuoteConverters,
     private val quotesLocalDataSource: QuotesLocalDataSource,
     private val apiResponseInterpreter: ApiResponseInterpreter
 ) : OneQuoteRepository {
@@ -35,30 +40,34 @@ class DefaultOneQuoteRepository @Inject constructor(
             QuoteOriginParams(type = QuoteOriginParams.Type.RANDOM)
     }
 
-    override val randomQuote: Flow<Quote> = quotesLocalDataSource
+    override val randomQuote: Flow<Quote?> = quotesLocalDataSource
         .getFirstQuotesSortedById(
             originParams = randomQuoteOriginParams,
             limit = 1
         )
-        .filterNot { it.isEmpty() }
-        .map { it.first() }
-        .map(quoteConverters::toDomain)
-        .flowOn(coroutineDispatchers.IO)
+        .map { it.firstOrNull() }
+        .map { it?.toDomain() }
+        .flowOn(coroutineDispatchers.Default)
+
+    override suspend fun getRandomQuote(): Result<Quote> = withContext(coroutineDispatchers.IO) {
+        apiResponseInterpreter { quotesRemoteService.fetchRandomQuote() }
+            .mapCatching { quoteDTO ->
+                insertQuoteToDb(quoteDTO)
+                quoteDTO.toDomain()
+            }
+    }
 
     override suspend fun updateQuote(id: String): Result<Unit> {
         return withContext(coroutineDispatchers.IO) {
             apiResponseInterpreter { quotesRemoteService.fetchQuote(id) }
-                .mapCatching { quoteDTO ->
-                    quotesLocalDataSource.insert(listOf(quoteConverters.toDb(quoteDTO)))
-                }
+                .mapCatching { quoteDTO -> insertQuoteToDb(quoteDTO) }
         }
     }
 
-    override fun getQuoteFlow(id: String): Flow<Quote> = quotesLocalDataSource
+    override fun getQuoteFlow(id: String): Flow<Quote?> = quotesLocalDataSource
         .getQuoteFlow(id)
-        .filterNotNull()
-        .map(quoteConverters::toDomain)
-        .flowOn(coroutineDispatchers.IO)
+        .map { it?.toDomain() }
+        .flowOn(coroutineDispatchers.Default)
 
     override suspend fun updateRandomQuote(): Result<Unit> {
         return withContext(coroutineDispatchers.IO) {
@@ -67,10 +76,16 @@ class DefaultOneQuoteRepository @Inject constructor(
         }
     }
 
+    private suspend fun insertQuoteToDb(quoteDTO: QuoteDTO): Unit {
+        withContext(coroutineDispatchers.IO) {
+            quotesLocalDataSource.insert(listOf(quoteDTO.toDb()))
+        }
+    }
+
     private suspend fun updateDatabaseWithRandomQuote(quoteDTO: QuoteDTO): Unit =
         withContext(coroutineDispatchers.IO) {
             quotesLocalDataSource.refresh(
-                entities = listOf(quoteConverters.toDb(quoteDTO)),
+                entities = listOf(quoteDTO.toDb()),
                 originParams = randomQuoteOriginParams
             )
         }

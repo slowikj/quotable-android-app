@@ -3,12 +3,14 @@ package com.example.quotableapp.ui.author
 import androidx.fragment.app.Fragment
 import androidx.paging.ExperimentalPagingApi
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlin.time.ExperimentalTime
 
 @FlowPreview
 @ExperimentalTime
 @ExperimentalPagingApi
+@ExperimentalCoroutinesApi
 class AuthorViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
     companion object {

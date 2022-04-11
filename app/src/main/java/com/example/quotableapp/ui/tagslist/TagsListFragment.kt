@@ -16,6 +16,7 @@ import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.databinding.FragmentTagsListBinding
 import com.example.quotableapp.ui.common.extensions.handle
 import com.example.quotableapp.ui.common.extensions.isLandscapeMode
+import com.example.quotableapp.ui.common.extensions.showErrorToast
 import dagger.hilt.android.AndroidEntryPoint
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.coroutines.flow.collectLatest
@@ -49,6 +50,10 @@ class TagsListFragment : Fragment() {
                 if (requireContext().isLandscapeMode) ITEMS_SPAN_LANDSCAPE else ITEMS_SPAN_PORTRAIT
             )
             dataLoadHandler.btnRetry.setOnClickListener { viewModel.updateTags() }
+            swipeToRefresh.setOnRefreshListener {
+                viewModel.updateTags()
+                swipeToRefresh.isRefreshing = false
+            }
         }
         return binding.root
     }
@@ -73,6 +78,10 @@ class TagsListFragment : Fragment() {
             with(binding) {
                 binding.dataLoadHandler.handle(state)
                 rvTags.isVisible = state.data?.isNotEmpty() ?: false
+            }
+            if(state.data != null && state.error != null) {
+                showErrorToast()
+                viewModel.consumeError(state.error)
             }
         }
     }

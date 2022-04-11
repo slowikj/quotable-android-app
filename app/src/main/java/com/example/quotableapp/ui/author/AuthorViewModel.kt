@@ -2,6 +2,7 @@ package com.example.quotableapp.ui.author
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
@@ -13,16 +14,19 @@ import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.UiStateManager
-import com.example.quotableapp.ui.common.extensions.defaultSharingStarted
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
+import java.lang.NullPointerException
 import javax.inject.Inject
 
-@OptIn(ExperimentalPagingApi::class)
+@OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
 typealias AuthorUiState = UiState<Author, AuthorViewModel.UiError>
 
+@ExperimentalCoroutinesApi
 @ExperimentalPagingApi
 @HiltViewModel
 class AuthorViewModel @Inject constructor(
@@ -33,49 +37,52 @@ class AuthorViewModel @Inject constructor(
 ) : ViewModel(), QuotesProvider {
 
     companion object {
-        const val AUTHOR_KEY = "authorSlug"
+        const val AUTHOR_SLUG_KEY = "authorSlug"
+
+        const val AUTHOR_KEY = "author"
     }
 
     sealed class UiError : Throwable() {
-        object IOError : UiError()
+        data class IOError(val messageId: Int? = null) : UiError()
     }
 
     sealed class NavigationAction {
         data class ToQuotesOfTag(val tag: String) : NavigationAction()
 
-        data class ToOneQuote(val quoteId: String) : NavigationAction()
+        data class ToOneQuote(val quote: Quote) : NavigationAction()
     }
 
+    private val authorSlug: String
+        get() = savedStateHandle[AUTHOR_SLUG_KEY]!!
+
     private val _navigationActions = MutableSharedFlow<NavigationAction>()
+
     val navigationActions = _navigationActions.asSharedFlow()
 
-    private val authorSlug: String
-        get() = savedStateHandle[AUTHOR_KEY]!!
-
-    override val quotes: Flow<PagingData<Quote>?> =
-        quotesRepository.fetchQuotesOfAuthor(authorSlug)
+    override val quotes: Flow<PagingData<Quote>> =
+        quotesRepository
+            .fetchQuotesOfAuthor(authorSlug)
             .cachedIn(viewModelScope)
-            .stateIn(
-                initialValue = null,
-                scope = viewModelScope,
-                started = defaultSharingStarted
-            )
 
-    private val authorUiStateManager = UiStateManager<Author, UiError>(
-        coroutineScope = viewModelScope,
-        sourceDataFlow = authorsRepository.getAuthorFlow(authorSlug)
+    private val _authorUiStateManager = UiStateManager<Author, UiError>(
+        coroutineScope = viewModelScope + dispatchers.Default,
+        sourceDataFlow = savedStateHandle.getLiveData<Author?>(AUTHOR_KEY).asFlow()
     )
-    val authorState: StateFlow<AuthorUiState> = authorUiStateManager.stateFlow
+    val authorState: StateFlow<AuthorUiState> = _authorUiStateManager.stateFlow
 
     init {
-        updateAuthor()
+        startSyncingSavedStateHandleWithRepo()
     }
 
     fun updateAuthor() {
-        authorUiStateManager.updateData(
+        _authorUiStateManager.updateData(
             requestFunc = { authorsRepository.updateAuthor(authorSlug) },
-            errorTransformer = { UiError.IOError }
+            errorTransformer = { UiError.IOError() }
         )
+    }
+
+    fun consumeError(error: UiError) {
+        _authorUiStateManager.errorFlow.value = null
     }
 
     fun onTagClick(tag: String) {
@@ -86,8 +93,17 @@ class AuthorViewModel @Inject constructor(
 
     fun onQuoteClick(quote: Quote) {
         viewModelScope.launch {
-            _navigationActions.emit(NavigationAction.ToOneQuote(quote.id))
+            _navigationActions.emit(NavigationAction.ToOneQuote(quote))
         }
+    }
+
+    private fun startSyncingSavedStateHandleWithRepo() {
+        authorsRepository
+            .getAuthorFlow(authorSlug)
+            .onEach { author -> if (author == null) updateAuthor() }
+            .filterNotNull()
+            .onEach { savedStateHandle[AUTHOR_KEY] = it }
+            .launchIn(viewModelScope)
     }
 
 }

@@ -1,39 +1,42 @@
 package com.example.quotableapp.data.repository.tags
 
+import com.example.quotableapp.MainCoroutineDispatcherRule
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.TagsFactory
-import com.example.quotableapp.data.converters.tag.TagConverters
+import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.TagsLocalDataSource
 import com.example.quotableapp.data.db.entities.tag.TagOriginParams
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
 import com.example.quotableapp.data.getTestCoroutineDispatchers
 import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
-import com.example.quotableapp.data.network.model.TagDTO
 import com.example.quotableapp.data.network.services.TagsRemoteService
-import com.google.common.truth.Truth
+import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyLong
 import retrofit2.Response
 
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalCoroutinesApi::class)
 class DefaultTagRepositoryTest {
+
+    @get:Rule
+    val mainCoroutineDispatcherRule = MainCoroutineDispatcherRule()
 
     class DependencyManager(
         val remoteService: TagsRemoteService = mock(),
         val localDataSource: TagsLocalDataSource = mock(),
         val responseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter(),
         val coroutineDispatchers: CoroutineDispatchers = getTestCoroutineDispatchers(),
-        val converters: TagConverters = mock()
     ) {
         val repository: DefaultTagRepository
             get() = DefaultTagRepository(
@@ -41,7 +44,6 @@ class DefaultTagRepositoryTest {
                 tagsLocalDataSource = localDataSource,
                 responseInterpreter = responseInterpreter,
                 coroutineDispatchers = coroutineDispatchers,
-                tagConverters = converters
             )
     }
 
@@ -53,7 +55,7 @@ class DefaultTagRepositoryTest {
     }
 
     @Test
-    fun given_NoAPIConnection_when_updateExemplaryTags_then_ReturnFailure() = runBlockingTest {
+    fun given_NoAPIConnection_when_updateExemplaryTags_then_ReturnFailure() = runTest {
         // given
         whenever(
             dependencyManager.remoteService.fetchTags()
@@ -63,31 +65,29 @@ class DefaultTagRepositoryTest {
         val res = dependencyManager.repository.updateExemplaryTags()
 
         // then
-        Truth.assertThat(res.isFailure).isTrue()
+        assertThat(res.isFailure).isTrue()
     }
 
     @Test
-    fun given_WorkingAPIConnection_when_updateExemplaryTags_then_ReturnSuccess() =
-        runBlockingTest {
+    fun given_WorkingAPIConnection_when_updateExemplaryTags_then_ReturnSuccess() {
+        runTest {
             // given
             whenever(
                 dependencyManager.remoteService.fetchTags()
             ).thenReturn(Response.success(TagsFactory.getResponseDTO(size = 10)))
 
-            whenever(dependencyManager.converters.toModel(any<TagDTO>()))
-                .thenReturn(Tag(name = "xxxx"))
-
             // when
             val res = dependencyManager.repository.updateExemplaryTags()
 
             // then
-            Truth.assertThat(res.isSuccess).isTrue()
+            assertThat(res.isSuccess).isTrue()
             verify(dependencyManager.localDataSource, times(1))
                 .refresh(any(), any(), anyLong())
         }
+    }
 
     @Test
-    fun given_NoAPIConnection_when_updateAllTags_then_ReturnFailure() = runBlockingTest {
+    fun given_NoAPIConnection_when_updateAllTags_then_ReturnFailure() = runTest {
         // given
         whenever(
             dependencyManager.remoteService.fetchTags()
@@ -97,35 +97,32 @@ class DefaultTagRepositoryTest {
         val res = dependencyManager.repository.updateAllTags()
 
         // then
-        Truth.assertThat(res.isFailure).isTrue()
+        assertThat(res.isFailure).isTrue()
     }
 
     @Test
-    fun given_WorkingAPIConnection_when_updateAllTags_then_ReturnSuccess() =
-        runBlockingTest {
+    fun given_WorkingAPIConnection_when_updateAllTags_then_ReturnSuccess() {
+        runTest {
             // given
             whenever(
                 dependencyManager.remoteService.fetchTags()
             ).thenReturn(Response.success(TagsFactory.getResponseDTO(size = 10)))
 
-            whenever(dependencyManager.converters.toModel(any<TagDTO>()))
-                .thenReturn(Tag(name = "xxxx"))
-
             // when
             val res = dependencyManager.repository.updateAllTags()
 
             // then
-            Truth.assertThat(res.isSuccess).isTrue()
+            assertThat(res.isSuccess).isTrue()
             verify(dependencyManager.localDataSource, times(1))
                 .refresh(any(), any(), anyLong())
         }
+    }
 
     @Test
     fun given_LocalDataAvailable_when_GetExemplaryTags_then_ReturnFlowWithTags() =
-        runBlockingTest {
+        runTest {
             // given
             val tagEntities = TagsFactory.getEntities(size = 10)
-            val tags = tagEntities.map { Tag(name = it.name) }
             whenever(
                 dependencyManager.localDataSource.getTagsSortedByName(
                     originParams = eq(
@@ -137,41 +134,36 @@ class DefaultTagRepositoryTest {
                 )
             ).thenReturn(flowOf(tagEntities))
 
-            for (entity in tagEntities) {
-                whenever(dependencyManager.converters.toModel(entity))
-                    .thenReturn(Tag(name = entity.name))
-            }
+            // when
+            val resFlow = dependencyManager.repository.exemplaryTags
+
+            // then
+            assertThat(resFlow.single()).isEqualTo(tagEntities.map { it.toDomain() })
+        }
+
+    @Test
+    fun given_NoLocalDataAvailable_when_GetExemplaryData_then_ReturnFlowWithEmptyList() =
+        runTest {
+            // given
+            whenever(
+                dependencyManager.localDataSource.getTagsSortedByName(
+                    any(),
+                    ArgumentMatchers.anyInt()
+                )
+            ).thenReturn(flowOf(emptyList()))
 
             // when
             val resFlow = dependencyManager.repository.exemplaryTags
 
             // then
-            Truth.assertThat(resFlow.single()).isEqualTo(tags)
+            assertThat(resFlow.toList()).isEqualTo(listOf(emptyList<Tag>()))
         }
 
     @Test
-    fun given_NoLocalDataAvailable_when_GetExemplaryData_then_NoFlowEmission() = runBlockingTest {
-        // given
-        whenever(
-            dependencyManager.localDataSource.getTagsSortedByName(
-                any(),
-                ArgumentMatchers.anyInt()
-            )
-        ).thenReturn(flowOf(emptyList()))
-
-        // when
-        val resFlow = dependencyManager.repository.exemplaryTags
-
-        // then
-        Truth.assertThat(resFlow.count()).isEqualTo(0)
-    }
-
-    @Test
     fun given_LocalDataAvailable_when_GetAllTags_then_ReturnFlowWithTags() =
-        runBlockingTest {
+        runTest {
             // given
             val tagEntities = TagsFactory.getEntities(size = 10)
-            val tags = tagEntities.map { Tag(name = it.name) }
             whenever(
                 dependencyManager.localDataSource.getTagsSortedByName(
                     originParams = eq(
@@ -183,33 +175,29 @@ class DefaultTagRepositoryTest {
                 )
             ).thenReturn(flowOf(tagEntities))
 
-            for (entity in tagEntities) {
-                whenever(dependencyManager.converters.toModel(entity))
-                    .thenReturn(Tag(name = entity.name))
-            }
+            // when
+            val resFlow = dependencyManager.repository.allTagsFlow
+
+            // then
+            assertThat(resFlow.single()).isEqualTo(tagEntities.map { it.toDomain() })
+        }
+
+    @Test
+    fun given_NoLocalDataAvailable_when_GetAllData_then_ReturnFlowWithEmptyList() =
+        runTest {
+            // given
+            whenever(
+                dependencyManager.localDataSource.getTagsSortedByName(
+                    any(),
+                    ArgumentMatchers.anyInt()
+                )
+            ).thenReturn(flowOf(emptyList()))
 
             // when
             val resFlow = dependencyManager.repository.allTagsFlow
 
             // then
-            Truth.assertThat(resFlow.single()).isEqualTo(tags)
+            assertThat(resFlow.toList()).isEqualTo(listOf(emptyList<Tag>()))
         }
-
-    @Test
-    fun given_NoLocalDataAvailable_when_GetAllData_then_NoFlowEmission() = runBlockingTest {
-        // given
-        whenever(
-            dependencyManager.localDataSource.getTagsSortedByName(
-                any(),
-                ArgumentMatchers.anyInt()
-            )
-        ).thenReturn(flowOf(emptyList()))
-
-        // when
-        val resFlow = dependencyManager.repository.allTagsFlow
-
-        // then
-        Truth.assertThat(resFlow.count()).isEqualTo(0)
-    }
 
 }

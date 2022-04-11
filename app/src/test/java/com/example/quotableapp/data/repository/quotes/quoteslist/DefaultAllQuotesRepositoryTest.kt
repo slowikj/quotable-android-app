@@ -2,9 +2,9 @@ package com.example.quotableapp.data.repository.quotes.quoteslist
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
+import com.example.quotableapp.MainCoroutineDispatcherRule
 import com.example.quotableapp.common.CoroutineDispatchers
 import com.example.quotableapp.data.QuotesFactory
-import com.example.quotableapp.data.converters.quote.QuoteConverters
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
@@ -12,7 +12,6 @@ import com.example.quotableapp.data.getTestCoroutineDispatchers
 import com.example.quotableapp.data.getTestPagingConfig
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
-import com.example.quotableapp.data.network.model.QuoteDTO
 import com.example.quotableapp.data.network.services.QuotesRemoteService
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediatorFactory
 import com.google.common.truth.Truth.assertThat
@@ -21,25 +20,28 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
 import retrofit2.Response
 import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalTime
-@ExperimentalCoroutinesApi
 @ExperimentalPagingApi
 class DefaultAllQuotesRepositoryTest {
+
+    @get:Rule
+    val mainCoroutineDispatcherRule = MainCoroutineDispatcherRule()
 
     class DependencyManager(
         val remoteMediatorFactory: QuotesRemoteMediatorFactory = mock(),
         val localDataSource: QuotesLocalDataSource = mock(),
         val pagingConfig: PagingConfig = getTestPagingConfig(),
-        val converters: QuoteConverters = mock(),
         val apiResponseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter(),
         val remoteService: QuotesRemoteService = mock(),
         val coroutineDispatchers: CoroutineDispatchers = getTestCoroutineDispatchers(),
@@ -49,7 +51,6 @@ class DefaultAllQuotesRepositoryTest {
                 quotesRemoteMediatorFactory = remoteMediatorFactory,
                 quotesLocalDataSource = localDataSource,
                 pagingConfig = pagingConfig,
-                quotesConverters = converters,
                 apiResponseInterpreter = apiResponseInterpreter,
                 quotesRemoteService = remoteService,
                 coroutineDispatchers = coroutineDispatchers
@@ -65,7 +66,7 @@ class DefaultAllQuotesRepositoryTest {
     }
 
     @Test
-    fun given_NoAPIConnection_when_updateExemplaryQuotes_then_ReturnFailure() = runBlockingTest {
+    fun given_NoAPIConnection_when_updateExemplaryQuotes_then_ReturnFailure() = runTest {
         // given
         whenever(
             dependencyManager.remoteService.fetchQuotes(
@@ -84,8 +85,8 @@ class DefaultAllQuotesRepositoryTest {
     }
 
     @Test
-    fun given_WorkingAPIConnection_when_updateExemplaryQuotes_then_ReturnSuccess() =
-        runBlockingTest {
+    fun given_WorkingAPIConnection_when_updateExemplaryQuotes_then_ReturnSuccess(): Unit =
+        runTest {
             // given
             val quotesResponseDTO = QuotesFactory.getResponseDTO(size = 10)
             whenever(
@@ -96,9 +97,6 @@ class DefaultAllQuotesRepositoryTest {
                     order = any()
                 )
             ).thenReturn(Response.success(quotesResponseDTO))
-
-            whenever(dependencyManager.converters.toDomain(any<QuoteDTO>()))
-                .thenReturn(Quote(id = "xxxx"))
 
             // when
             val res = dependencyManager.repository.updateExemplaryQuotes()
@@ -111,7 +109,7 @@ class DefaultAllQuotesRepositoryTest {
 
     @Test
     fun given_LocalDataAvailable_when_GetExemplaryQuotes_then_ReturnFlowWithQuotes() =
-        runBlockingTest {
+        runTest {
             // given
             val quotesEntities = QuotesFactory.getEntities(size = 10)
             val quotes = quotesEntities.map { Quote(id = it.id) }
@@ -126,11 +124,6 @@ class DefaultAllQuotesRepositoryTest {
                 )
             ).thenReturn(flowOf(quotesEntities))
 
-            for (entity in quotesEntities) {
-                whenever(dependencyManager.converters.toDomain(entity))
-                    .thenReturn(Quote(id = entity.id))
-            }
-
             // when
             val resFlow = dependencyManager.repository.exemplaryQuotes
 
@@ -139,7 +132,7 @@ class DefaultAllQuotesRepositoryTest {
         }
 
     @Test
-    fun given_NoLocalDataAvailable_when_GetExemplaryData_then_NoFlowEmission() = runBlockingTest {
+    fun given_NoLocalDataAvailable_when_GetExemplaryData_then_NoFlowEmission() = runTest {
         // given
         whenever(dependencyManager.localDataSource.getFirstQuotesSortedById(any(), anyInt()))
             .thenReturn(flowOf(emptyList()))

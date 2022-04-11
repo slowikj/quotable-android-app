@@ -50,7 +50,7 @@ class TagQuotesFragment : QuotesListFragment() {
     }
 
     override fun showQuote(quote: Quote) {
-        val action = TagQuotesFragmentDirections.showOneQuote(quote.id)
+        val action = TagQuotesFragmentDirections.showOneQuote(quote)
         findNavController().navigate(action)
     }
 

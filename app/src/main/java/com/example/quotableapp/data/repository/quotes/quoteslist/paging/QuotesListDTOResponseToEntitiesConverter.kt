@@ -1,15 +1,13 @@
 package com.example.quotableapp.data.repository.quotes.quoteslist.paging
 
 import com.example.quotableapp.data.converters.Converter
-import com.example.quotableapp.data.converters.quote.QuoteConverters
+import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
-import javax.inject.Inject
 
-class QuotesListDTOResponseToEntitiesConverter @Inject constructor(private val quoteConverters: QuoteConverters) :
-    Converter<QuotesResponseDTO, List<QuoteEntity>> {
+class QuotesListDTOResponseToEntitiesConverter : Converter<QuotesResponseDTO, List<QuoteEntity>> {
 
     override fun invoke(source: QuotesResponseDTO): List<QuoteEntity> {
-        return source.results.map { quoteConverters.toDb(it) }
+        return source.results.map { it.toDb() }
     }
 }

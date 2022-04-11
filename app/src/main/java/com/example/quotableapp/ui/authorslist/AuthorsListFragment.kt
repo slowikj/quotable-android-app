@@ -111,7 +111,9 @@ class AuthorsListFragment : Fragment() {
     }
 
     private fun showAuthorFragment(author: Author) {
-        val action = AuthorsListFragmentDirections.showAuthor(author.slug)
+        val action = AuthorsListFragmentDirections.showAuthor(author.slug).apply {
+            this.author = author
+        }
         findNavController().navigate(action)
     }
 

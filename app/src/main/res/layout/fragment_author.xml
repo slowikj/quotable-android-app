@@ -62,7 +62,7 @@
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/iv_author"
-                        loadImageWithPersonPlaceholder="@{viewModel.authorState.data.photoUrl}"
+                        loadImageWithPersonPlaceholder="@{viewModel.authorState.data.getPhotoUrl(200)}"
                         android:layout_width="@dimen/fragment_author_img_dim"
                         android:layout_height="@dimen/fragment_author_img_dim"
                         android:layout_margin="@dimen/larger_space"

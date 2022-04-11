@@ -13,9 +13,11 @@ import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.databinding.FragmentAuthorDetailsBinding
 import com.example.quotableapp.ui.common.extensions.handle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@ExperimentalCoroutinesApi
 @ExperimentalPagingApi
 @AndroidEntryPoint
 class AuthorDetailsFragment : Fragment() {
@@ -38,15 +40,23 @@ class AuthorDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.dataLoadHandler.btnRetry.setOnClickListener {
-            viewModel.updateAuthor()
-        }
+        setupListeners()
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.authorState.collectLatest {
                     binding.dataLoadHandler.handle(it)
                 }
             }
+        }
+    }
+
+    private fun setupListeners() {
+        binding.dataLoadHandler.btnRetry.setOnClickListener {
+            viewModel.updateAuthor()
+        }
+        binding.swipeToRefresh.setOnRefreshListener {
+            binding.swipeToRefresh.isRefreshing = false
+            viewModel.updateAuthor()
         }
     }
 }
