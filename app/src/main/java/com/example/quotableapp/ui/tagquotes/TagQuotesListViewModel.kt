@@ -32,13 +32,8 @@ class TagQuotesListViewModel @Inject constructor(
     val tagName: String
         get() = savedStateHandle[TAG_ID]!!
 
-    override val quotes: Flow<PagingData<Quote>?> =
+    override val quotes: Flow<PagingData<Quote>> =
         quotesRepository
             .fetchQuotesOfTag(tagName)
             .cachedIn(viewModelScope)
-            .stateIn(
-                initialValue = null,
-                scope = viewModelScope,
-                started = defaultSharingStarted
-            )
 }
