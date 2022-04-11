@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface QuotesProvider {
 
-    val quotes: Flow<PagingData<Quote>?>
+    val quotes: Flow<PagingData<Quote>>
 }

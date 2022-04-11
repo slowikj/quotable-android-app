@@ -10,6 +10,4 @@ sealed class HttpApiError : Throwable() {
 
     data class OtherError(val exception: Throwable? = null) : HttpApiError()
 
-    object CancelledRequest : HttpApiError()
-
 }

@@ -2,6 +2,7 @@ package com.example.quotableapp.data.repository.authors
 
 import androidx.paging.*
 import com.example.quotableapp.common.DispatchersProvider
+import com.example.quotableapp.common.mapSafeCatching
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
@@ -50,8 +51,8 @@ class DefaultAuthorsRepository @Inject constructor(
     override suspend fun updateAuthor(slug: String): Result<Unit> {
         return withContext(dispatchersProvider.IO) {
             apiResponseInterpreter { authorsRemoteService.fetchAuthor(slug) }
-                .mapCatching { it.results.first() }
-                .mapCatching { authorDTO ->
+                .mapSafeCatching { it.results.first() }
+                .mapSafeCatching { authorDTO ->
                     authorsLocalDataSource.insert(entities = listOf(authorDTO.toDb()))
                 }
         }
@@ -90,7 +91,7 @@ class DefaultAuthorsRepository @Inject constructor(
                     sortBy = AuthorsRemoteService.SortByType.QuoteCount,
                     orderType = AuthorsRemoteService.OrderType.Desc
                 )
-            }.mapCatching { authorsResponseDTO ->
+            }.mapSafeCatching { authorsResponseDTO ->
                 refreshExemplaryQuotesToDatabase(authorsResponseDTO)
             }
         }

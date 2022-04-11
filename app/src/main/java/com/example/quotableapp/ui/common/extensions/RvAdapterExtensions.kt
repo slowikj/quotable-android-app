@@ -7,7 +7,6 @@ import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.quotableapp.data.network.common.HttpApiError
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -40,7 +39,7 @@ fun <T : PagingDataAdapter<*, *>> T.setupWith(
             .map { it.refresh }
             .collectLatest { refreshState ->
                 recyclerViewComposite.updateVisibilities(refreshState, pagingAdapter)
-                if (refreshState.isMeaningfulError() && pagingAdapter.itemCount != 0) {
+                if (refreshState.isError() && pagingAdapter.itemCount != 0) {
                     onError?.invoke((refreshState as LoadState.Error).error)
                 }
             }
@@ -93,7 +92,7 @@ private fun isErrorLayoutVisible(
     refreshState: LoadState,
     pagingAdapter: PagingDataAdapter<*, *>
 ): Boolean {
-    return refreshState.isMeaningfulError()
+    return refreshState.isError()
             && pagingAdapter.itemCount == 0
 }
 
@@ -112,6 +111,4 @@ private fun isLoadingLayoutVisible(
             && pagingAdapter.itemCount == 0
 }
 
-private fun LoadState.isMeaningfulError() =
-    (this is LoadState.Error
-            && this.error !is HttpApiError.CancelledRequest)
+private fun LoadState.isError() = this is LoadState.Error

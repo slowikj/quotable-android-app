@@ -1,6 +1,7 @@
 package com.example.quotableapp.data.network.common
 
 import com.example.quotableapp.common.DispatchersProvider
+import com.example.quotableapp.common.resultOf
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import retrofit2.Response
@@ -25,7 +26,7 @@ class DefaultQuotableApiResponseInterpreter @Inject constructor(private val disp
             } catch (e: HttpException) {
                 interpretErrorCode(e.code())
             } catch (e: CancellationException) {
-                Result.failure(HttpApiError.CancelledRequest)
+                throw e
             } catch (e: Throwable) {
                 Result.failure(HttpApiError.OtherError(e))
             }
@@ -45,7 +46,7 @@ class DefaultQuotableApiResponseInterpreter @Inject constructor(private val disp
         }
 
     private fun <DTO> getInterpretedApiResult(body: DTO?): Result<DTO> =
-        runCatching { Result.success(body!!) }
+        resultOf { Result.success(body!!) }
             .getOrElse { exception -> Result.failure(HttpApiError.OtherError(exception)) }
 
 }

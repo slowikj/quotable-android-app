@@ -6,6 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.common.mapInnerElements
+import com.example.quotableapp.common.mapSafeCatching
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
@@ -77,7 +78,7 @@ class DefaultAllQuotesRepository @Inject constructor(
                     page = 1,
                     limit = EXEMPLARY_QUOTES_LIMIT
                 )
-            }.mapCatching { quotesDTO -> updateDatabaseWithExemplaryQuotes(quotesDTO) }
+            }.mapSafeCatching { quotesDTO -> updateDatabaseWithExemplaryQuotes(quotesDTO) }
         }
 
     private fun createAllQuotesRemoteMediator(searchPhrase: String?): QuotesRemoteMediator {

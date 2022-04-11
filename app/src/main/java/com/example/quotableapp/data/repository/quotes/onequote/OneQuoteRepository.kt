@@ -1,6 +1,7 @@
 package com.example.quotableapp.data.repository.quotes.onequote
 
 import com.example.quotableapp.common.DispatchersProvider
+import com.example.quotableapp.common.mapSafeCatching
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
@@ -51,7 +52,7 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     override suspend fun getRandomQuote(): Result<Quote> = withContext(dispatchersProvider.IO) {
         apiResponseInterpreter { quotesRemoteService.fetchRandomQuote() }
-            .mapCatching { quoteDTO ->
+            .mapSafeCatching { quoteDTO ->
                 insertQuoteToDb(quoteDTO)
                 quoteDTO.toDomain()
             }
@@ -60,7 +61,7 @@ class DefaultOneQuoteRepository @Inject constructor(
     override suspend fun updateQuote(id: String): Result<Unit> {
         return withContext(dispatchersProvider.IO) {
             apiResponseInterpreter { quotesRemoteService.fetchQuote(id) }
-                .mapCatching { quoteDTO -> insertQuoteToDb(quoteDTO) }
+                .mapSafeCatching { quoteDTO -> insertQuoteToDb(quoteDTO) }
         }
     }
 
@@ -72,7 +73,7 @@ class DefaultOneQuoteRepository @Inject constructor(
     override suspend fun updateRandomQuote(): Result<Unit> {
         return withContext(dispatchersProvider.IO) {
             apiResponseInterpreter { quotesRemoteService.fetchRandomQuote() }
-                .mapCatching { updateDatabaseWithRandomQuote(it) }
+                .mapSafeCatching { updateDatabaseWithRandomQuote(it) }
         }
     }
 

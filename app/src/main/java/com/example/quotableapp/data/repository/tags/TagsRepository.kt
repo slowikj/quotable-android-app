@@ -1,6 +1,7 @@
 package com.example.quotableapp.data.repository.tags
 
 import com.example.quotableapp.common.DispatchersProvider
+import com.example.quotableapp.common.mapSafeCatching
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.TagsLocalDataSource
@@ -45,7 +46,7 @@ class DefaultTagRepository @Inject constructor(
     override suspend fun updateAllTags(): Result<Unit> {
         return withContext(dispatchersProvider.IO) {
             fetchTagsDTO()
-                .mapCatching { tagsDTO ->
+                .mapSafeCatching { tagsDTO ->
                     refreshEntitiesInLocal(
                         tagOriginParams = TAG_ORIGIN_PARAMS_ALL,
                         tagsDTO = tagsDTO
@@ -63,7 +64,7 @@ class DefaultTagRepository @Inject constructor(
         return withContext(dispatchersProvider.IO) {
             fetchTagsDTO()
                 .map { it.take(TAGS_EXEMPLARY_LIMIT) }
-                .mapCatching { tagsDTO ->
+                .mapSafeCatching { tagsDTO ->
                     refreshEntitiesInLocal(
                         tagOriginParams = TAG_ORIGIN_PARAMS_EXEMPLARY,
                         tagsDTO = tagsDTO
