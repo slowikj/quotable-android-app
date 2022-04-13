@@ -33,7 +33,7 @@ class DashboardTagsAdapter(private val onClick: (Tag) -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(tag: Tag) {
             binding.name = tag.name
-            binding.btnName.setOnClickListener { onClick(tag) }
+            binding.card.setOnClickListener { onClick(tag) }
         }
     }
 }

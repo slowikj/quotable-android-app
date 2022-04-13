@@ -2,21 +2,21 @@
     <!-- Base application theme. -->
     <style name="Theme.QuotableApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/pacific_blue</item>
-        <item name="colorPrimaryVariant">@color/deep_celurean</item>
-        <item name="colorOnPrimary">@color/baby_blue</item>
+        <item name="colorPrimary">@color/white_rock</item>
+        <item name="colorPrimaryVariant">@color/hillary</item>
+        <item name="colorOnPrimary">@color/tana</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/yellow_sea</item>
-        <item name="colorSecondaryVariant">@color/flush_orange</item>
-        <item name="colorOnSecondary">@color/baby_blue</item>
+        <item name="colorSecondary">@color/sycamore</item>
+        <item name="colorSecondaryVariant">@color/crete</item>
+        <item name="colorOnSecondary">@color/cod_gray</item>
         <!-- Error -->
         <item name="colorError">@color/cinnabar</item>
         <!-- Surface. -->
-        <item name="colorSurface">@color/white</item>
-        <item name="colorOnSurface">@color/charcoal</item>
+        <item name="colorSurface">@color/ecru_white</item>
+        <item name="colorOnSurface">@color/cod_gray</item>
         <!-- Background. -->
-        <item name="backgroundColor">@color/baby_blue</item>
-        <item name="colorOnBackground">@color/charcoal</item>
+        <item name="backgroundColor">@color/quarter_pearl_lusta</item>
+        <item name="colorOnBackground">@color/fern_frond</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
 
@@ -42,13 +42,18 @@
     </style>
 
     <style name="ThemeOverlay.QuotableApp.RandomQuote" parent="">
-        <item name="colorSurface">@color/pacific_blue</item>
-        <item name="colorOnSurface">@color/white</item>
+        <item name="colorSurface">@color/primrose</item>
+        <item name="colorOnSurface">@color/cod_gray</item>
     </style>
 
     <style name="ThemeOverlay.QuotableApp.AuthorToolbar" parent="">
-        <item name="colorPrimary">@color/deep_celurean</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimary">@color/primrose</item>
+        <item name="colorOnPrimary">@color/cod_gray</item>
+    </style>
+
+    <style name="ThemeOverlay.QuotableApp.DashboardTag" parent="">
+        <item name="colorSurface">@color/primrose</item>
+        <item name="colorOnSurface">@color/cod_gray</item>
     </style>
 
 </resources>

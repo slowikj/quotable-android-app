@@ -23,7 +23,7 @@
             android:background="?attr/selectableItemBackground"
             android:text="@{tagName}"
             android:textAppearance="?attr/textAppearanceOverline"
-            android:textColor="?attr/colorSecondary"
+            android:textColor="?attr/colorSecondaryVariant"
             tools:text="wisdom" />
 
     </LinearLayout>

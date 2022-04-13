@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -10,22 +9,25 @@
             type="String" />
     </data>
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/small_space">
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="@dimen/small_space"
+        android:background="?attr/colorSurface"
+        android:theme="@style/ThemeOverlay.QuotableApp.DashboardTag"
+        app:shapeAppearance="?attr/shapeAppearanceSmallComponent">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{name}"
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:alpha="?attr/secondaryContentAlpha"
+            android:padding="@dimen/small_space"
+            android:text="@{name}"
             android:textAppearance="?attr/textAppearanceSubtitle1"
             android:textColor="?attr/colorOnSurface"
-            app:backgroundTint="?attr/colorSurface"
-            app:shapeAppearance="?attr/shapeAppearanceSmallComponent"
-            tools:text="tagName" />
-    </androidx.appcompat.widget.LinearLayoutCompat>
+            app:shapeAppearance="?attr/shapeAppearanceSmallComponent"/>
+
+    </com.google.android.material.card.MaterialCardView>
 
 </layout>

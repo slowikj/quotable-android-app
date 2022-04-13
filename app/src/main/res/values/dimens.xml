@@ -2,6 +2,7 @@
 <resources>
     <dimen name="small_space">8dp</dimen>
     <dimen name="larger_space">16dp</dimen>
+    <dimen name="default_horizontal_margin">24dp</dimen>
 
     <dimen name="large_quote_img_dim">54dp</dimen>
     <dimen name="icon_button_dim">40dp</dimen>

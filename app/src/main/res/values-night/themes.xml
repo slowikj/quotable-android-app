@@ -6,8 +6,8 @@
         <item name="colorPrimaryVariant">@color/black</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/yellow_sea</item>
-        <item name="colorSecondaryVariant">@color/flush_orange</item>
+        <item name="colorSecondary">@color/sycamore</item>
+        <item name="colorSecondaryVariant">@color/crete</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Error -->
         <item name="colorError">@color/chestnut_rose</item>
@@ -46,5 +46,10 @@
     <style name="ThemeOverlay.QuotableApp.AuthorToolbar" parent="">
         <item name="colorPrimary">@color/black</item>
         <item name="colorOnPrimary">@color/white</item>
+    </style>
+
+    <style name="ThemeOverlay.QuotableApp.DashboardTag" parent="">
+        <item name="colorSurface">@color/grey_3</item>
+        <item name="colorOnSurface">@color/white</item>
     </style>
 </resources>

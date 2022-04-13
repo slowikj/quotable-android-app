@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="tundora">#454545</color>
+    <color name="fern_frond">#56601D</color>
+    <color name="quarter_pearl_lusta">#FFFCF5</color>
+    <color name="ecru_white">#F6F4E8</color>
+    <color name="cod_gray">#191919</color>
+    <color name="primrose">#DCEB9F</color>
+    <color name="white_rock">#F1EFE2</color>
+    <color name="hillary">#C5BF97</color>
+    <color name="tana">#ddd8b9</color>
+    <color name="sycamore">#798843</color>
+    <color name="crete">#5d6d29</color>
+
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
 
     <color name="charcoal">#1f1e24</color>
-    <color name="prussian_blue">#003249</color>
-    <color name="deep_celurean">#0077B6</color>
-    <color name="pacific_blue">#0096C7</color>
-    <color name="humming_bird">#CAF0F8</color>
-    <color name="baby_blue">#f0f9f9</color>
 
     <color name="cinnabar">#ee4537</color>
     <color name="chestnut_rose">#CF6679</color>
-
-    <color name="yellow_sea">#FFAE00</color>
-    <color name="flush_orange">#FF8400</color>
 
     <color name="grey_1">#121212</color>
     <color name="grey_2">#212121</color>
