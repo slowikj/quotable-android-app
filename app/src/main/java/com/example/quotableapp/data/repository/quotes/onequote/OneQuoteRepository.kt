@@ -7,9 +7,9 @@ import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.common.ApiResponseInterpreter
+import com.example.quotableapp.data.network.datasources.FetchQuoteParams
+import com.example.quotableapp.data.network.datasources.QuotesRemoteDataSource
 import com.example.quotableapp.data.network.model.QuoteDTO
-import com.example.quotableapp.data.network.services.QuotesRemoteService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -31,9 +31,8 @@ interface OneQuoteRepository {
 
 class DefaultOneQuoteRepository @Inject constructor(
     private val dispatchersProvider: DispatchersProvider,
-    private val quotesRemoteService: QuotesRemoteService,
+    private val quotesRemoteDataSource: QuotesRemoteDataSource,
     private val quotesLocalDataSource: QuotesLocalDataSource,
-    private val apiResponseInterpreter: ApiResponseInterpreter
 ) : OneQuoteRepository {
 
     companion object {
@@ -51,8 +50,9 @@ class DefaultOneQuoteRepository @Inject constructor(
         .flowOn(dispatchersProvider.Default)
 
     override suspend fun getRandomQuote(): Result<Quote> = withContext(dispatchersProvider.IO) {
-        apiResponseInterpreter { quotesRemoteService.fetchRandomQuote() }
-            .mapSafeCatching { quoteDTO ->
+        val r = quotesRemoteDataSource.fetchRandom()
+        println("get random quote $r")
+        r.mapSafeCatching { quoteDTO ->
                 insertQuoteToDb(quoteDTO)
                 quoteDTO.toDomain()
             }
@@ -60,7 +60,7 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     override suspend fun updateQuote(id: String): Result<Unit> {
         return withContext(dispatchersProvider.IO) {
-            apiResponseInterpreter { quotesRemoteService.fetchQuote(id) }
+            quotesRemoteDataSource.fetch(FetchQuoteParams(id = id))
                 .mapSafeCatching { quoteDTO -> insertQuoteToDb(quoteDTO) }
         }
     }
@@ -72,7 +72,7 @@ class DefaultOneQuoteRepository @Inject constructor(
 
     override suspend fun updateRandomQuote(): Result<Unit> {
         return withContext(dispatchersProvider.IO) {
-            apiResponseInterpreter { quotesRemoteService.fetchRandomQuote() }
+            quotesRemoteDataSource.fetchRandom()
                 .mapSafeCatching { updateDatabaseWithRandomQuote(it) }
         }
     }

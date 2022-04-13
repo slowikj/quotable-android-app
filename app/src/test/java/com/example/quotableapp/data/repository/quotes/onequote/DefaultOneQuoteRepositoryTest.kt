@@ -8,11 +8,10 @@ import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
-import com.example.quotableapp.data.getFakeApiResponseInterpreter
 import com.example.quotableapp.data.getTestdispatchersProvider
-import com.example.quotableapp.data.network.common.ApiResponseInterpreter
+import com.example.quotableapp.data.network.datasources.FetchQuoteParams
+import com.example.quotableapp.data.network.datasources.QuotesRemoteDataSource
 import com.example.quotableapp.data.network.model.QuoteDTO
-import com.example.quotableapp.data.network.services.QuotesRemoteService
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,12 +19,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyLong
-import retrofit2.Response
+import java.io.IOException
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -37,16 +35,14 @@ class DefaultOneQuoteRepositoryTest {
 
     class DependencyManager(
         val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
-        val remoteService: QuotesRemoteService = mock(),
+        val remoteService: QuotesRemoteDataSource = mock(),
         val localDataSource: QuotesLocalDataSource = mock(),
-        val apiResponseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter()
     ) {
         val repository: DefaultOneQuoteRepository
             get() = DefaultOneQuoteRepository(
                 dispatchersProvider = dispatchersProvider,
-                quotesRemoteService = remoteService,
+                quotesRemoteDataSource = remoteService,
                 quotesLocalDataSource = localDataSource,
-                apiResponseInterpreter = apiResponseInterpreter
             )
     }
 
@@ -60,8 +56,8 @@ class DefaultOneQuoteRepositoryTest {
     @Test
     fun given_NoAPIConnection_when_UpdateRandomQuote_then_ReturnResultFailure() = runTest {
         // given
-        whenever(dependencyManager.remoteService.fetchRandomQuote()).thenReturn(
-            Response.error(404, "".toResponseBody())
+        whenever(dependencyManager.remoteService.fetchRandom()).thenReturn(
+            Result.failure(IOException())
         )
 
         // when
@@ -78,8 +74,8 @@ class DefaultOneQuoteRepositoryTest {
             val randomQuote = QuoteDTO(
                 id = "1", content = "random content"
             )
-            whenever(dependencyManager.remoteService.fetchRandomQuote()).thenReturn(
-                Response.success(randomQuote)
+            whenever(dependencyManager.remoteService.fetchRandom()).thenReturn(
+                Result.success(randomQuote)
             )
 
             // when
@@ -100,11 +96,8 @@ class DefaultOneQuoteRepositoryTest {
     fun given_NoAPIConnection_when_updateQuote_then_ReturnFailure() = runTest {
         // given
         val quoteId = "1"
-        whenever(dependencyManager.remoteService.fetchQuote(quoteId)).thenReturn(
-            Response.error(
-                404,
-                "".toResponseBody()
-            )
+        whenever(dependencyManager.remoteService.fetch(FetchQuoteParams(id = quoteId))).thenReturn(
+            Result.failure(IOException())
         )
 
         // when
@@ -119,8 +112,8 @@ class DefaultOneQuoteRepositoryTest {
         // given
         val quoteId = "1"
         val quoteDTO = QuoteDTO(id = quoteId, content = "abc")
-        whenever(dependencyManager.remoteService.fetchQuote(quoteDTO.id)).thenReturn(
-            Response.success(quoteDTO)
+        whenever(dependencyManager.remoteService.fetch(FetchQuoteParams(id = quoteId))).thenReturn(
+            Result.success(quoteDTO)
         )
 
         // when
@@ -204,8 +197,8 @@ class DefaultOneQuoteRepositoryTest {
         // given
         val quoteDTO = QuotesFactory.getDTOs(1).first()
 
-        whenever(dependencyManager.remoteService.fetchRandomQuote())
-            .thenReturn(Response.success(quoteDTO))
+        whenever(dependencyManager.remoteService.fetchRandom())
+            .thenReturn(Result.success(quoteDTO))
 
         // when
         val response = dependencyManager.repository.getRandomQuote()
@@ -219,8 +212,8 @@ class DefaultOneQuoteRepositoryTest {
     @Test
     fun given_RemoteAPINotWorking_when_getRandomQuote_then_ReturnFailure() = runTest {
         // given
-        whenever(dependencyManager.remoteService.fetchRandomQuote())
-            .thenReturn(Response.error(500, "".toResponseBody()))
+        whenever(dependencyManager.remoteService.fetchRandom())
+            .thenReturn(Result.failure(IOException()))
 
         // when
         val response = dependencyManager.repository.getRandomQuote()

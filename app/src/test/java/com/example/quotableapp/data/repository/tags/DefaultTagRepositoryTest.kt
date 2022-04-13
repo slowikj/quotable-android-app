@@ -6,11 +6,9 @@ import com.example.quotableapp.data.TagsFactory
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.TagsLocalDataSource
 import com.example.quotableapp.data.db.entities.tag.TagOriginParams
-import com.example.quotableapp.data.getFakeApiResponseInterpreter
 import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.data.network.common.ApiResponseInterpreter
-import com.example.quotableapp.data.network.services.TagsRemoteService
+import com.example.quotableapp.data.network.datasources.TagsRemoteDataSource
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +23,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyLong
 import retrofit2.Response
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DefaultTagRepositoryTest {
@@ -33,16 +32,14 @@ class DefaultTagRepositoryTest {
     val mainCoroutineDispatcherRule = MainCoroutineDispatcherRule()
 
     class DependencyManager(
-        val remoteService: TagsRemoteService = mock(),
+        val remoteService: TagsRemoteDataSource = mock(),
         val localDataSource: TagsLocalDataSource = mock(),
-        val responseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter(),
         val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
     ) {
         val repository: DefaultTagRepository
             get() = DefaultTagRepository(
-                tagsRemoteService = remoteService,
+                tagsRemoteDataSource = remoteService,
                 tagsLocalDataSource = localDataSource,
-                responseInterpreter = responseInterpreter,
                 dispatchersProvider = dispatchersProvider,
             )
     }
@@ -58,8 +55,8 @@ class DefaultTagRepositoryTest {
     fun given_NoAPIConnection_when_updateExemplaryTags_then_ReturnFailure() = runTest {
         // given
         whenever(
-            dependencyManager.remoteService.fetchTags()
-        ).thenReturn(Response.error(500, "".toResponseBody()))
+            dependencyManager.remoteService.fetchAll()
+        ).thenReturn(Result.failure(IOException()))
 
         // when
         val res = dependencyManager.repository.updateExemplaryTags()
@@ -73,8 +70,8 @@ class DefaultTagRepositoryTest {
         runTest {
             // given
             whenever(
-                dependencyManager.remoteService.fetchTags()
-            ).thenReturn(Response.success(TagsFactory.getResponseDTO(size = 10)))
+                dependencyManager.remoteService.fetchAll()
+            ).thenReturn(Result.success(TagsFactory.getResponseDTO(size = 10)))
 
             // when
             val res = dependencyManager.repository.updateExemplaryTags()
@@ -90,8 +87,8 @@ class DefaultTagRepositoryTest {
     fun given_NoAPIConnection_when_updateAllTags_then_ReturnFailure() = runTest {
         // given
         whenever(
-            dependencyManager.remoteService.fetchTags()
-        ).thenReturn(Response.error(500, "".toResponseBody()))
+            dependencyManager.remoteService.fetchAll()
+        ).thenReturn(Result.failure(IOException()))
 
         // when
         val res = dependencyManager.repository.updateAllTags()
@@ -105,8 +102,8 @@ class DefaultTagRepositoryTest {
         runTest {
             // given
             whenever(
-                dependencyManager.remoteService.fetchTags()
-            ).thenReturn(Response.success(TagsFactory.getResponseDTO(size = 10)))
+                dependencyManager.remoteService.fetchAll()
+            ).thenReturn(Result.success(TagsFactory.getResponseDTO(size = 10)))
 
             // when
             val res = dependencyManager.repository.updateAllTags()

@@ -7,9 +7,8 @@ import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.TagsLocalDataSource
 import com.example.quotableapp.data.db.entities.tag.TagOriginParams
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.data.network.common.ApiResponseInterpreter
+import com.example.quotableapp.data.network.datasources.TagsRemoteDataSource
 import com.example.quotableapp.data.network.model.TagsResponseDTO
-import com.example.quotableapp.data.network.services.TagsRemoteService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -28,9 +27,8 @@ interface TagsRepository {
 }
 
 class DefaultTagRepository @Inject constructor(
-    private val tagsRemoteService: TagsRemoteService,
+    private val tagsRemoteDataSource: TagsRemoteDataSource,
     private val tagsLocalDataSource: TagsLocalDataSource,
-    private val responseInterpreter: ApiResponseInterpreter,
     private val dispatchersProvider: DispatchersProvider
 ) : TagsRepository {
 
@@ -83,7 +81,7 @@ class DefaultTagRepository @Inject constructor(
 
     private suspend fun fetchTagsDTO(): Result<TagsResponseDTO> {
         return withContext(dispatchersProvider.IO) {
-            responseInterpreter { tagsRemoteService.fetchTags() }
+            tagsRemoteDataSource.fetchAll()
         }
     }
 

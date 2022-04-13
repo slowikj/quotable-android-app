@@ -6,11 +6,9 @@ import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.QuotesFactory
 import com.example.quotableapp.data.converters.Converter
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
-import com.example.quotableapp.data.getFakeApiResponseInterpreter
 import com.example.quotableapp.data.getTestdispatchersProvider
-import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
-import com.example.quotableapp.data.repository.common.IntPagedRemoteService
+import com.example.quotableapp.data.repository.common.IntPagedRemoteDataSource
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,7 +16,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import retrofit2.Response
 import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -31,8 +28,7 @@ class QuotesRemoteMediatorTest {
     class DependencyManager(
         val persistenceManager: QuotesListPersistenceManager = mock(),
         val cacheTimeoutMillis: Long = 100,
-        var remoteService: IntPagedRemoteService<QuotesResponseDTO>? = null,
-        val apiResultInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter(),
+        var remoteDataSource: IntPagedRemoteDataSource<QuotesResponseDTO>? = null,
         val dtoToEntityConverter: Converter<QuotesResponseDTO, List<QuoteEntity>> = mock(),
         val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider()
     ) {
@@ -40,8 +36,7 @@ class QuotesRemoteMediatorTest {
             get() = QuotesRemoteMediator(
                 persistenceManager = persistenceManager,
                 cacheTimeoutMilliseconds = cacheTimeoutMillis,
-                remoteService = remoteService!!,
-                apiResultInterpreter = apiResultInterpreter,
+                remoteDataSource = remoteDataSource!!,
                 dtoToEntityConverter = dtoToEntityConverter,
                 dispatchersProvider = dispatchersProvider
             )
@@ -122,8 +117,8 @@ class QuotesRemoteMediatorTest {
     private fun mockSuccessfulAPIWithDataAndProperConverters(dataSize: Int) {
         val responseDTO = QuotesFactory.getResponseDTO(size = dataSize)
 
-        dependencyManager.remoteService = { page: Int, limit: Int ->
-            Response.success(responseDTO)
+        dependencyManager.remoteDataSource = { page: Int, limit: Int ->
+            Result.success(responseDTO)
         }
 
         val quoteEntities = responseDTO.results.map { QuoteEntity(id = it.id) }
@@ -196,7 +191,7 @@ class QuotesRemoteMediatorTest {
     }
 
     private suspend fun mockUnsuccessfulAPI() {
-        dependencyManager.remoteService = { page: Int, limit: Int ->
+        dependencyManager.remoteDataSource = { page: Int, limit: Int ->
             throw IOException()
         }
     }

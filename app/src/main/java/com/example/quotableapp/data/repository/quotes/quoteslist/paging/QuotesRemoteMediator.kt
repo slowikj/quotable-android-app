@@ -9,7 +9,7 @@ import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.CacheTimeout
 import com.example.quotableapp.data.repository.common.IntPageKeyRemoteMediator
-import com.example.quotableapp.data.repository.common.IntPagedRemoteService
+import com.example.quotableapp.data.repository.common.IntPagedRemoteDataSource
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -23,7 +23,7 @@ class QuotesRemoteMediatorFactory @Inject constructor(
 
     fun create(
         originParams: QuoteOriginParams,
-        remoteService: IntPagedRemoteService<QuotesResponseDTO>
+        remoteService: IntPagedRemoteDataSource<QuotesResponseDTO>
     ): QuotesRemoteMediator {
         return assistedQuotesRemoteMediatorFactory.create(
             persistenceManager = persistenceManagerFactory.create(originParams),
@@ -37,7 +37,7 @@ class QuotesRemoteMediatorFactory @Inject constructor(
 interface AssistedQuotesRemoteMediatorFactory {
     fun create(
         persistenceManager: QuotesListPersistenceManager,
-        remoteService: IntPagedRemoteService<QuotesResponseDTO>
+        remoteService: IntPagedRemoteDataSource<QuotesResponseDTO>
     ): QuotesRemoteMediator
 
 }
@@ -46,16 +46,14 @@ interface AssistedQuotesRemoteMediatorFactory {
 class QuotesRemoteMediator @AssistedInject constructor(
     @Assisted persistenceManager: QuotesListPersistenceManager,
     @CacheTimeout cacheTimeoutMilliseconds: Long,
-    @Assisted remoteService: IntPagedRemoteService<QuotesResponseDTO>,
-    apiResultInterpreter: ApiResponseInterpreter,
+    @Assisted remoteDataSource: IntPagedRemoteDataSource<QuotesResponseDTO>,
     dtoToEntityConverter: Converter<QuotesResponseDTO, List<QuoteEntity>>,
     dispatchersProvider: DispatchersProvider
 ) : IntPageKeyRemoteMediator<QuoteEntity, QuotesResponseDTO>(
-    persistenceManager,
-    cacheTimeoutMilliseconds,
-    remoteService,
-    apiResultInterpreter,
-    dtoToEntityConverter,
-    dispatchersProvider
+    persistenceManager = persistenceManager,
+    cacheTimeoutMilliseconds = cacheTimeoutMilliseconds,
+    remoteDataSource = remoteDataSource,
+    dtoToEntitiesConverter = dtoToEntityConverter,
+    dispatchersProvider = dispatchersProvider
 ) {
 }

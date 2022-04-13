@@ -6,6 +6,9 @@ import com.example.quotableapp.data.network.services.QuotesRemoteService
 import com.example.quotableapp.data.network.services.TagsRemoteService
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import com.example.quotableapp.data.network.common.DefaultQuotableApiResponseInterpreter
+import com.example.quotableapp.data.network.datasources.DefaultQuotesRemoteDataSource
+import com.example.quotableapp.data.network.datasources.QuotesRemoteDataSource
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -69,5 +72,14 @@ object NetworkModule {
     @Provides
     fun provideHttpResultInterpreter(dispatchersProvider: DispatchersProvider): ApiResponseInterpreter =
         DefaultQuotableApiResponseInterpreter(dispatchersProvider)
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    interface Bindings {
+
+        @Binds
+        fun bindQuotesRemoteDataSource(quotesRemoteDataSource: DefaultQuotesRemoteDataSource): QuotesRemoteDataSource
+
+    }
 }
 

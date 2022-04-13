@@ -7,12 +7,11 @@ import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.QuotesFactory
 import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
-import com.example.quotableapp.data.getFakeApiResponseInterpreter
-import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.getTestPagingConfig
+import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.common.ApiResponseInterpreter
-import com.example.quotableapp.data.network.services.QuotesRemoteService
+import com.example.quotableapp.data.network.datasources.FetchQuotesListParams
+import com.example.quotableapp.data.network.datasources.QuotesRemoteDataSource
 import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediatorFactory
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
@@ -21,13 +20,12 @@ import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.test.runTest
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
-import retrofit2.Response
+import java.io.IOException
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -42,8 +40,7 @@ class DefaultAllQuotesRepositoryTest {
         val remoteMediatorFactory: QuotesRemoteMediatorFactory = mock(),
         val localDataSource: QuotesLocalDataSource = mock(),
         val pagingConfig: PagingConfig = getTestPagingConfig(),
-        val apiResponseInterpreter: ApiResponseInterpreter = getFakeApiResponseInterpreter(),
-        val remoteService: QuotesRemoteService = mock(),
+        val remoteDataSource: QuotesRemoteDataSource = mock(),
         val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
     ) {
         val repository: DefaultAllQuotesRepository by lazy {
@@ -51,8 +48,7 @@ class DefaultAllQuotesRepositoryTest {
                 quotesRemoteMediatorFactory = remoteMediatorFactory,
                 quotesLocalDataSource = localDataSource,
                 pagingConfig = pagingConfig,
-                apiResponseInterpreter = apiResponseInterpreter,
-                quotesRemoteService = remoteService,
+                quotesRemoteDataSource = remoteDataSource,
                 dispatchersProvider = dispatchersProvider
             )
         }
@@ -69,13 +65,8 @@ class DefaultAllQuotesRepositoryTest {
     fun given_NoAPIConnection_when_updateExemplaryQuotes_then_ReturnFailure() = runTest {
         // given
         whenever(
-            dependencyManager.remoteService.fetchQuotes(
-                page = anyInt(),
-                limit = anyInt(),
-                sortBy = any(),
-                order = any()
-            )
-        ).thenReturn(Response.error(500, "".toResponseBody()))
+            dependencyManager.remoteDataSource.fetch(any<FetchQuotesListParams>())
+        ).thenReturn(Result.failure(IOException()))
 
         // when
         val res = dependencyManager.repository.updateExemplaryQuotes()
@@ -90,13 +81,8 @@ class DefaultAllQuotesRepositoryTest {
             // given
             val quotesResponseDTO = QuotesFactory.getResponseDTO(size = 10)
             whenever(
-                dependencyManager.remoteService.fetchQuotes(
-                    page = anyInt(),
-                    limit = anyInt(),
-                    sortBy = any(),
-                    order = any()
-                )
-            ).thenReturn(Response.success(quotesResponseDTO))
+                dependencyManager.remoteDataSource.fetch(any<FetchQuotesListParams>())
+            ).thenReturn(Result.success(quotesResponseDTO))
 
             // when
             val res = dependencyManager.repository.updateExemplaryQuotes()

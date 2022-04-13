@@ -10,10 +10,13 @@ import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.getFakeApiResponseInterpreter
-import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.getTestPagingConfig
+import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.network.common.ApiResponseInterpreter
+import com.example.quotableapp.data.network.datasources.AuthorsRemoteDataSource
+import com.example.quotableapp.data.network.datasources.FetchAuthorParams
+import com.example.quotableapp.data.network.datasources.FetchAuthorsListParams
 import com.example.quotableapp.data.network.services.AuthorsRemoteService
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
 import com.google.common.truth.Truth.assertThat
@@ -21,12 +24,11 @@ import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.runTest
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyLong
-import retrofit2.Response
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalPagingApi
@@ -36,7 +38,7 @@ class DefaultAuthorsRepositoryTest {
     val mainCoroutineDispatcherRule = MainCoroutineDispatcherRule()
 
     class DependencyManager(
-        val remoteService: AuthorsRemoteService = mock(),
+        val remoteDataSource: AuthorsRemoteDataSource = mock(),
         val localDataSource: AuthorsLocalDataSource = mock(),
         val remoteMediatorFactory: AuthorsRemoteMediatorFactory = mock(),
         val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
@@ -46,12 +48,11 @@ class DefaultAuthorsRepositoryTest {
 
         val repository: DefaultAuthorsRepository
             get() = DefaultAuthorsRepository(
-                authorsRemoteService = remoteService,
+                authorsRemoteDataSource = remoteDataSource,
                 authorsLocalDataSource = localDataSource,
                 authorsRemoteMediatorFactory = remoteMediatorFactory,
                 dispatchersProvider = dispatchersProvider,
                 pagingConfig = pagingConfig,
-                apiResponseInterpreter = apiResponseInterpreter
             )
     }
 
@@ -67,8 +68,8 @@ class DefaultAuthorsRepositoryTest {
         // given
         val authorSlug = "1"
         val authorResponseDTO = AuthorsFactory.getResponseDTO(size = 1)
-        whenever(dependencyManager.remoteService.fetchAuthor(authorSlug = authorSlug))
-            .thenReturn(Response.success(authorResponseDTO))
+        whenever(dependencyManager.remoteDataSource.fetch(FetchAuthorParams(slug = authorSlug)))
+            .thenReturn(Result.success(authorResponseDTO))
 
         // when
         val res = dependencyManager.repository.updateAuthor(authorSlug)
@@ -83,8 +84,8 @@ class DefaultAuthorsRepositoryTest {
     fun given_NoAPIConnection_when_updateAuthor_then_ReturnFailure() = runTest {
         // given
         val authorSlug = "1"
-        whenever(dependencyManager.remoteService.fetchAuthor(authorSlug = authorSlug))
-            .thenReturn(Response.error(500, "".toResponseBody()))
+        whenever(dependencyManager.remoteDataSource.fetch(FetchAuthorParams(slug = authorSlug)))
+            .thenReturn(Result.failure(IOException()))
 
         // when
         val res = dependencyManager.repository.updateAuthor(authorSlug)
@@ -133,13 +134,15 @@ class DefaultAuthorsRepositoryTest {
             val authorResponseSize = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_LIMIT
             val authorResponseDTO = AuthorsFactory.getResponseDTO(size = authorResponseSize)
             whenever(
-                dependencyManager.remoteService.fetchAuthors(
-                    page = 1,
-                    limit = authorResponseSize,
-                    sortBy = AuthorsRemoteService.SortByType.QuoteCount,
-                    orderType = AuthorsRemoteService.OrderType.Desc
+                dependencyManager.remoteDataSource.fetch(
+                    FetchAuthorsListParams(
+                        page = 1,
+                        limit = authorResponseSize,
+                        sortBy = AuthorsRemoteService.SortByType.QuoteCount,
+                        orderType = AuthorsRemoteService.OrderType.Desc
+                    )
                 )
-            ).thenReturn(Response.success(authorResponseDTO))
+            ).thenReturn(Result.success(authorResponseDTO))
 
             val authorEntities =
                 authorResponseDTO.results.map { it.toDb() }
@@ -158,13 +161,14 @@ class DefaultAuthorsRepositoryTest {
         // given
         val authorResponseSize = DefaultAuthorsRepository.EXEMPLARY_AUTHORS_LIMIT
         whenever(
-            dependencyManager.remoteService.fetchAuthors(
+            dependencyManager.remoteDataSource.fetch(
+                FetchAuthorsListParams(
                 page = 1,
                 limit = authorResponseSize,
                 sortBy = AuthorsRemoteService.SortByType.QuoteCount,
                 orderType = AuthorsRemoteService.OrderType.Desc
-            )
-        ).thenReturn(Response.error(500, "".toResponseBody()))
+            ))
+        ).thenReturn(Result.failure(IOException()))
 
         // when
         val res = dependencyManager.repository.updateExemplaryAuthors()

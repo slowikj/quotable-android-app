@@ -7,15 +7,13 @@ import androidx.paging.RemoteMediator
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.converters.Converter
 import com.example.quotableapp.data.db.common.PersistenceManager
-import com.example.quotableapp.data.network.common.ApiResponseInterpreter
 import kotlinx.coroutines.withContext
 
 @ExperimentalPagingApi
 abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO>(
     val persistenceManager: PersistenceManager<ValueEntity, Int>,
     private val cacheTimeoutMilliseconds: Long,
-    private val remoteService: IntPagedRemoteService<ValueDTO>,
-    private val apiResultInterpreter: ApiResponseInterpreter,
+    private val remoteDataSource: IntPagedRemoteDataSource<ValueDTO>,
     private val dtoToEntitiesConverter: Converter<ValueDTO, List<ValueEntity>>,
     private val dispatchersProvider: DispatchersProvider
 ) : RemoteMediator<Int, ValueEntity>() {
@@ -56,7 +54,7 @@ abstract class IntPageKeyRemoteMediator<ValueEntity : Any, ValueDTO>(
         val newLoadKey: Int = (lastLoadKey ?: 0) + 1
         val pageSize = computePageSize(loadType, state)
 
-        return apiResultInterpreter { remoteService(newLoadKey, pageSize) }
+        return remoteDataSource(newLoadKey, pageSize)
             .fold(
                 onSuccess = { dto ->
                     val entities = dtoToEntitiesConverter(dto)

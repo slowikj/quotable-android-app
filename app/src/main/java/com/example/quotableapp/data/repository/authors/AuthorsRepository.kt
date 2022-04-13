@@ -8,11 +8,16 @@ import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.data.network.common.ApiResponseInterpreter
+import com.example.quotableapp.data.network.datasources.AuthorsRemoteDataSource
+import com.example.quotableapp.data.network.datasources.FetchAuthorParams
+import com.example.quotableapp.data.network.datasources.FetchAuthorsListParams
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.network.services.AuthorsRemoteService
 import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -30,12 +35,11 @@ interface AuthorsRepository {
 
 @ExperimentalPagingApi
 class DefaultAuthorsRepository @Inject constructor(
-    private val authorsRemoteService: AuthorsRemoteService,
+    private val authorsRemoteDataSource: AuthorsRemoteDataSource,
     private val authorsLocalDataSource: AuthorsLocalDataSource,
     private val authorsRemoteMediatorFactory: AuthorsRemoteMediatorFactory,
     private val dispatchersProvider: DispatchersProvider,
     private val pagingConfig: PagingConfig,
-    private val apiResponseInterpreter: ApiResponseInterpreter
 ) : AuthorsRepository {
 
     companion object {
@@ -50,7 +54,7 @@ class DefaultAuthorsRepository @Inject constructor(
 
     override suspend fun updateAuthor(slug: String): Result<Unit> {
         return withContext(dispatchersProvider.IO) {
-            apiResponseInterpreter { authorsRemoteService.fetchAuthor(slug) }
+            authorsRemoteDataSource.fetch(FetchAuthorParams(slug = slug))
                 .mapSafeCatching { it.results.first() }
                 .mapSafeCatching { authorDTO ->
                     authorsLocalDataSource.insert(entities = listOf(authorDTO.toDb()))
@@ -67,10 +71,7 @@ class DefaultAuthorsRepository @Inject constructor(
         val remoteMediator = authorsRemoteMediatorFactory.create(
             originParams = ALL_AUTHORS_ORIGIN_PARAMS
         ) { page: Int, limit: Int ->
-            authorsRemoteService.fetchAuthors(
-                page = page,
-                limit = limit
-            )
+            authorsRemoteDataSource.fetch(FetchAuthorsListParams(page = page, limit = limit))
         }
         return Pager(
             config = pagingConfig,
@@ -84,14 +85,14 @@ class DefaultAuthorsRepository @Inject constructor(
 
     override suspend fun updateExemplaryAuthors(): Result<Unit> {
         return withContext(dispatchersProvider.IO) {
-            apiResponseInterpreter {
-                authorsRemoteService.fetchAuthors(
+            authorsRemoteDataSource.fetch(
+                FetchAuthorsListParams(
                     page = 1,
                     limit = EXEMPLARY_AUTHORS_LIMIT,
                     sortBy = AuthorsRemoteService.SortByType.QuoteCount,
                     orderType = AuthorsRemoteService.OrderType.Desc
                 )
-            }.mapSafeCatching { authorsResponseDTO ->
+            ).mapSafeCatching { authorsResponseDTO ->
                 refreshExemplaryQuotesToDatabase(authorsResponseDTO)
             }
         }

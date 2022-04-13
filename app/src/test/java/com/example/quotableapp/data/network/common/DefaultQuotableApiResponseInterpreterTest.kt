@@ -41,11 +41,6 @@ class DefaultQuotableApiResponseInterpreterTest(
                 "test throwing IOException"
             ),
             arrayOf(
-                suspend { throw CancellationException() },
-                listOf(Result.failure<QuoteDTO>(HttpApiError.CancelledRequest)),
-                "test throwing CancellationException"
-            ),
-            arrayOf(
                 suspend { Response.error<QuoteDTO>(404, "".toResponseBody()) },
                 listOf(Result.failure<QuoteDTO>(HttpApiError.ClientError(404))),
                 "test Response error with HTTP404"

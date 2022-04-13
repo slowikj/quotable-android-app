@@ -1,8 +1,8 @@
 package com.example.quotableapp.data.repository
 
 import androidx.paging.PagingConfig
-import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.common.DefaultDispatchersProvider
+import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.db.QuotableDatabase
 import com.example.quotableapp.data.db.dao.QuotesDao
 import dagger.Binds
