@@ -1,9 +1,9 @@
 package com.example.quotableapp.data
 
-import com.example.quotableapp.data.db.entities.quote.QuoteEntity
+import com.example.quotableapp.data.local.entities.quote.QuoteEntity
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.model.QuoteDTO
-import com.example.quotableapp.data.network.model.QuotesResponseDTO
+import com.example.quotableapp.data.remote.model.QuoteDTO
+import com.example.quotableapp.data.remote.model.QuotesResponseDTO
 
 object QuotesFactory {
 

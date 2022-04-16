@@ -7,11 +7,11 @@ import androidx.paging.PagingData
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.common.mapInnerElements
 import com.example.quotableapp.data.converters.toDomain
-import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
+import com.example.quotableapp.data.local.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.datasources.FetchQuotesOfAuthorParams
-import com.example.quotableapp.data.network.datasources.QuotesRemoteDataSource
-import com.example.quotableapp.data.network.model.QuotesResponseDTO
+import com.example.quotableapp.data.remote.datasources.FetchQuotesOfAuthorParams
+import com.example.quotableapp.data.remote.datasources.QuotesRemoteDataSource
+import com.example.quotableapp.data.remote.model.QuotesResponseDTO
 import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediator
 import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediatorFactory
 import com.example.quotableapp.data.paging.common.IntPagedRemoteDataSource

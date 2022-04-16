@@ -4,10 +4,10 @@ import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.common.mapSafeCatching
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
-import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
+import com.example.quotableapp.data.local.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.data.network.datasources.AuthorsRemoteDataSource
-import com.example.quotableapp.data.network.datasources.FetchAuthorParams
+import com.example.quotableapp.data.remote.datasources.AuthorsRemoteDataSource
+import com.example.quotableapp.data.remote.datasources.FetchAuthorParams
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map

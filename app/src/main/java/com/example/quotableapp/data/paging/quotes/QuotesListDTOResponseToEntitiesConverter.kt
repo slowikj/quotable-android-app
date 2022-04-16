@@ -2,8 +2,8 @@ package com.example.quotableapp.data.paging.quotes
 
 import com.example.quotableapp.common.Converter
 import com.example.quotableapp.data.converters.toDb
-import com.example.quotableapp.data.db.entities.quote.QuoteEntity
-import com.example.quotableapp.data.network.model.QuotesResponseDTO
+import com.example.quotableapp.data.local.entities.quote.QuoteEntity
+import com.example.quotableapp.data.remote.model.QuotesResponseDTO
 
 class QuotesListDTOResponseToEntitiesConverter : Converter<QuotesResponseDTO, List<QuoteEntity>> {
 

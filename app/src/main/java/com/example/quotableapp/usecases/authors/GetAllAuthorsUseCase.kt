@@ -3,10 +3,10 @@ package com.example.quotableapp.usecases.authors
 import androidx.paging.*
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.converters.toDomain
-import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
+import com.example.quotableapp.data.local.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.data.network.datasources.AuthorsRemoteDataSource
-import com.example.quotableapp.data.network.datasources.FetchAuthorsListParams
+import com.example.quotableapp.data.remote.datasources.AuthorsRemoteDataSource
+import com.example.quotableapp.data.remote.datasources.FetchAuthorsListParams
 import com.example.quotableapp.data.paging.authors.AuthorsRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

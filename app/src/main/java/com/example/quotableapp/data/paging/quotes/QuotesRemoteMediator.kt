@@ -1,14 +1,14 @@
 package com.example.quotableapp.data.paging.quotes
 
 import androidx.paging.ExperimentalPagingApi
-import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.common.Converter
-import com.example.quotableapp.data.db.entities.quote.QuoteEntity
-import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
-import com.example.quotableapp.data.network.model.QuotesResponseDTO
-import com.example.quotableapp.data.repository.CacheTimeout
+import com.example.quotableapp.common.DispatchersProvider
+import com.example.quotableapp.data.local.entities.quote.QuoteEntity
+import com.example.quotableapp.data.local.entities.quote.QuoteOriginParams
+import com.example.quotableapp.data.remote.model.QuotesResponseDTO
 import com.example.quotableapp.data.paging.common.IntPageKeyRemoteMediator
 import com.example.quotableapp.data.paging.common.IntPagedRemoteDataSource
+import com.example.quotableapp.di.CacheTimeout
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

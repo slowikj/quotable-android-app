@@ -4,13 +4,14 @@ import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.common.mapSafeCatching
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
-import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
-import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
+import com.example.quotableapp.data.local.datasources.AuthorsLocalDataSource
+import com.example.quotableapp.data.local.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.data.network.datasources.AuthorsRemoteDataSource
-import com.example.quotableapp.data.network.datasources.FetchAuthorsListParams
-import com.example.quotableapp.data.network.model.AuthorsResponseDTO
-import com.example.quotableapp.data.network.services.AuthorsRemoteService
+import com.example.quotableapp.data.remote.datasources.AuthorsRemoteDataSource
+import com.example.quotableapp.data.remote.datasources.FetchAuthorsListParams
+import com.example.quotableapp.data.remote.model.AuthorsResponseDTO
+import com.example.quotableapp.data.remote.services.AuthorsRemoteService
+import com.example.quotableapp.di.ItemsLimit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flowOn
@@ -22,9 +23,9 @@ class GetExemplaryAuthorsUseCase @Inject constructor(
     private val localDataSource: AuthorsLocalDataSource,
     private val remoteDataSource: AuthorsRemoteDataSource,
     private val dispatchersProvider: DispatchersProvider,
+    @ItemsLimit private val itemsLimit: Int
 ) {
     companion object {
-        const val limit = 10
 
         val originParams =
             AuthorOriginParams(type = AuthorOriginParams.Type.DASHBOARD_EXEMPLARY)
@@ -33,7 +34,7 @@ class GetExemplaryAuthorsUseCase @Inject constructor(
     val flow: Flow<List<Author>> = localDataSource
         .getAuthorsSortedByQuoteCountDesc(
             originParams = originParams,
-            limit = limit
+            limit = itemsLimit
         )
         .filterNot { it.isEmpty() }
         .map { list -> list.map { it.toDomain() } }
@@ -44,7 +45,7 @@ class GetExemplaryAuthorsUseCase @Inject constructor(
             remoteDataSource.fetch(
                 FetchAuthorsListParams(
                     page = 1,
-                    limit = limit,
+                    limit = itemsLimit,
                     sortBy = AuthorsRemoteService.SortByType.QuoteCount,
                     orderType = AuthorsRemoteService.OrderType.Desc
                 )

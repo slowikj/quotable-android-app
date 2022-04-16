@@ -5,13 +5,13 @@ import androidx.paging.PagingConfig
 import com.example.quotableapp.MainCoroutineDispatcherRule
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.QuotesFactory
-import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
-import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
+import com.example.quotableapp.data.local.datasources.QuotesLocalDataSource
+import com.example.quotableapp.data.local.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.getTestPagingConfig
 import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.datasources.FetchQuotesListParams
-import com.example.quotableapp.data.network.datasources.QuotesRemoteDataSource
+import com.example.quotableapp.data.remote.datasources.FetchQuotesListParams
+import com.example.quotableapp.data.remote.datasources.QuotesRemoteDataSource
 import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediatorFactory
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*

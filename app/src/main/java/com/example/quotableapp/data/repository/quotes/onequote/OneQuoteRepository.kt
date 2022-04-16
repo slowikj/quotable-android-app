@@ -4,12 +4,12 @@ import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.common.mapSafeCatching
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
-import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
-import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
+import com.example.quotableapp.data.local.datasources.QuotesLocalDataSource
+import com.example.quotableapp.data.local.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.network.datasources.FetchQuoteParams
-import com.example.quotableapp.data.network.datasources.QuotesRemoteDataSource
-import com.example.quotableapp.data.network.model.QuoteDTO
+import com.example.quotableapp.data.remote.datasources.FetchQuoteParams
+import com.example.quotableapp.data.remote.datasources.QuotesRemoteDataSource
+import com.example.quotableapp.data.remote.model.QuoteDTO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map

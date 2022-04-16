@@ -1,10 +1,10 @@
 package com.example.quotableapp.data.paging.quotes
 
 import androidx.paging.PagingSource
-import com.example.quotableapp.data.db.common.PersistenceManager
-import com.example.quotableapp.data.db.datasources.QuotesLocalDataSource
-import com.example.quotableapp.data.db.entities.quote.QuoteEntity
-import com.example.quotableapp.data.db.entities.quote.QuoteOriginParams
+import com.example.quotableapp.data.local.datasources.QuotesLocalDataSource
+import com.example.quotableapp.data.local.entities.quote.QuoteEntity
+import com.example.quotableapp.data.local.entities.quote.QuoteOriginParams
+import com.example.quotableapp.data.paging.common.PersistenceManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

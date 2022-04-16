@@ -1,10 +1,10 @@
 package com.example.quotableapp.data.paging.authors
 
 import androidx.paging.PagingSource
-import com.example.quotableapp.data.db.common.PersistenceManager
-import com.example.quotableapp.data.db.datasources.AuthorsLocalDataSource
-import com.example.quotableapp.data.db.entities.author.AuthorEntity
-import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
+import com.example.quotableapp.data.local.datasources.AuthorsLocalDataSource
+import com.example.quotableapp.data.local.entities.author.AuthorEntity
+import com.example.quotableapp.data.local.entities.author.AuthorOriginParams
+import com.example.quotableapp.data.paging.common.PersistenceManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

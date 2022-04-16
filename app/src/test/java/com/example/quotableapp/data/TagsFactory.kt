@@ -1,9 +1,9 @@
 package com.example.quotableapp.data
 
-import com.example.quotableapp.data.db.entities.tag.TagEntity
+import com.example.quotableapp.data.local.entities.tag.TagEntity
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.data.network.model.TagDTO
-import com.example.quotableapp.data.network.model.TagsResponseDTO
+import com.example.quotableapp.data.remote.model.TagDTO
+import com.example.quotableapp.data.remote.model.TagsResponseDTO
 
 object TagsFactory {
 

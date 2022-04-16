@@ -1,8 +1,8 @@
 package com.example.quotableapp.data.converters
 
-import com.example.quotableapp.data.db.entities.tag.TagEntity
+import com.example.quotableapp.data.local.entities.tag.TagEntity
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.data.network.model.TagDTO
+import com.example.quotableapp.data.remote.model.TagDTO
 
 fun TagDTO.toDomain(): Tag =
     Tag(

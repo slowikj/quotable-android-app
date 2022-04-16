@@ -2,7 +2,7 @@ package com.example.quotableapp.data
 
 import androidx.paging.PagingConfig
 import com.example.quotableapp.common.DispatchersProvider
-import com.example.quotableapp.data.network.common.ApiResponseInterpreter
+import com.example.quotableapp.data.remote.common.ApiResponseInterpreter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

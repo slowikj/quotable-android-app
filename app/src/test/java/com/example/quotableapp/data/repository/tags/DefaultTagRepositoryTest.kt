@@ -4,11 +4,11 @@ import com.example.quotableapp.MainCoroutineDispatcherRule
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.TagsFactory
 import com.example.quotableapp.data.converters.toDomain
-import com.example.quotableapp.data.db.datasources.TagsLocalDataSource
-import com.example.quotableapp.data.db.entities.tag.TagOriginParams
+import com.example.quotableapp.data.local.datasources.TagsLocalDataSource
+import com.example.quotableapp.data.local.entities.tag.TagOriginParams
 import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.data.network.datasources.TagsRemoteDataSource
+import com.example.quotableapp.data.remote.datasources.TagsRemoteDataSource
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
