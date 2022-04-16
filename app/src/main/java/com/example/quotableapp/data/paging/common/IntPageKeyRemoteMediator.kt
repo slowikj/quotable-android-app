@@ -1,12 +1,11 @@
-package com.example.quotableapp.data.repository.common
+package com.example.quotableapp.data.paging.common
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.example.quotableapp.common.DispatchersProvider
-import com.example.quotableapp.data.converters.Converter
-import com.example.quotableapp.data.db.common.PersistenceManager
+import com.example.quotableapp.common.Converter
 import kotlinx.coroutines.withContext
 
 @ExperimentalPagingApi

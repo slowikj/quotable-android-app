@@ -1,14 +1,14 @@
-package com.example.quotableapp.data.repository.authors.paging
+package com.example.quotableapp.data.paging.authors
 
 import androidx.paging.ExperimentalPagingApi
 import com.example.quotableapp.common.DispatchersProvider
-import com.example.quotableapp.data.converters.Converter
+import com.example.quotableapp.common.Converter
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.db.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.repository.CacheTimeout
-import com.example.quotableapp.data.repository.common.IntPageKeyRemoteMediator
-import com.example.quotableapp.data.repository.common.IntPagedRemoteDataSource
+import com.example.quotableapp.data.paging.common.IntPageKeyRemoteMediator
+import com.example.quotableapp.data.paging.common.IntPagedRemoteDataSource
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.repository.quotes.quoteslist
+package com.example.quotableapp.usecases.quotes
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
@@ -12,27 +12,23 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.datasources.FetchQuotesOfAuthorParams
 import com.example.quotableapp.data.network.datasources.QuotesRemoteDataSource
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
-import com.example.quotableapp.data.paging.common.IntPagedRemoteDataSource
 import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediator
 import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediatorFactory
+import com.example.quotableapp.data.paging.common.IntPagedRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-interface QuotesOfAuthorRepository {
-    fun fetchQuotesOfAuthor(authorSlug: String): Flow<PagingData<Quote>>
-}
-
 @ExperimentalPagingApi
-class DefaultQuotesOfAuthorRepository @Inject constructor(
+class GetQuotesOfAuthorUseCase @Inject constructor(
     private val remoteMediatorFactory: QuotesRemoteMediatorFactory,
     private val quotesRemoteDataSource: QuotesRemoteDataSource,
     private val pagingConfig: PagingConfig,
     private val dispatchersProvider: DispatchersProvider
-) : QuotesOfAuthorRepository {
+) {
 
-    override fun fetchQuotesOfAuthor(authorSlug: String): Flow<PagingData<Quote>> {
-        val remoteMediator = createQuotesOfAuthorRemoteMediator(authorSlug)
+    fun getPagingFlow(authorSlug: String): Flow<PagingData<Quote>> {
+        val remoteMediator = createRemoteMediator(authorSlug)
         return Pager(
             config = pagingConfig,
             remoteMediator = remoteMediator,
@@ -42,7 +38,7 @@ class DefaultQuotesOfAuthorRepository @Inject constructor(
             .flowOn(dispatchersProvider.IO)
     }
 
-    private fun createQuotesOfAuthorRemoteMediator(authorSlug: String): QuotesRemoteMediator {
+    private fun createRemoteMediator(authorSlug: String): QuotesRemoteMediator {
         val service: IntPagedRemoteDataSource<QuotesResponseDTO> = { page: Int, limit: Int ->
             quotesRemoteDataSource.fetch(
                 FetchQuotesOfAuthorParams(

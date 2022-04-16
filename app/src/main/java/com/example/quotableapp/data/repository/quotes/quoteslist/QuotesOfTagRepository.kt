@@ -12,9 +12,9 @@ import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.datasources.FetchQuotesOfTagParams
 import com.example.quotableapp.data.network.datasources.QuotesRemoteDataSource
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
-import com.example.quotableapp.data.repository.common.IntPagedRemoteDataSource
-import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediator
-import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediatorFactory
+import com.example.quotableapp.data.paging.common.IntPagedRemoteDataSource
+import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediator
+import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject

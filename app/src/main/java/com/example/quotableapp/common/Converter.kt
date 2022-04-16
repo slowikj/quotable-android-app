@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.converters
+package com.example.quotableapp.common
 
 interface Converter<Source, Destination> {
     operator fun invoke(source: Source): Destination

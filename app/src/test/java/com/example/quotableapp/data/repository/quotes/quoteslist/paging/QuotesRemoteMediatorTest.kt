@@ -4,11 +4,13 @@ import androidx.paging.*
 import com.example.quotableapp.MainCoroutineDispatcherRule
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.QuotesFactory
-import com.example.quotableapp.data.converters.Converter
+import com.example.quotableapp.common.Converter
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
-import com.example.quotableapp.data.repository.common.IntPagedRemoteDataSource
+import com.example.quotableapp.data.paging.quotes.QuotesListPersistenceManager
+import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediator
+import com.example.quotableapp.data.paging.common.IntPagedRemoteDataSource
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi

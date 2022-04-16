@@ -1,13 +1,13 @@
 package com.example.quotableapp.data.repository.quotes
 
 import androidx.paging.ExperimentalPagingApi
-import com.example.quotableapp.data.converters.Converter
+import com.example.quotableapp.common.Converter
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.network.model.QuotesResponseDTO
 import com.example.quotableapp.data.repository.quotes.onequote.DefaultOneQuoteRepository
 import com.example.quotableapp.data.repository.quotes.onequote.OneQuoteRepository
 import com.example.quotableapp.data.repository.quotes.quoteslist.*
-import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesListDTOResponseToEntitiesConverter
+import com.example.quotableapp.data.paging.quotes.QuotesListDTOResponseToEntitiesConverter
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

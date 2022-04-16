@@ -1,6 +1,6 @@
-package com.example.quotableapp.data.repository.quotes.quoteslist.paging
+package com.example.quotableapp.data.paging.quotes
 
-import com.example.quotableapp.data.converters.Converter
+import com.example.quotableapp.common.Converter
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.db.entities.quote.QuoteEntity
 import com.example.quotableapp.data.network.model.QuotesResponseDTO

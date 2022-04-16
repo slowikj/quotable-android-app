@@ -13,7 +13,7 @@ import com.example.quotableapp.data.network.datasources.FetchAuthorParams
 import com.example.quotableapp.data.network.datasources.FetchAuthorsListParams
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO
 import com.example.quotableapp.data.network.services.AuthorsRemoteService
-import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
+import com.example.quotableapp.data.paging.authors.AuthorsRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flowOn

@@ -16,13 +16,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyLong
-import retrofit2.Response
 import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)

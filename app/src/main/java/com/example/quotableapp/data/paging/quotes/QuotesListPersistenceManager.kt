@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.repository.quotes.quoteslist.paging
+package com.example.quotableapp.data.paging.quotes
 
 import androidx.paging.PagingSource
 import com.example.quotableapp.data.db.common.PersistenceManager

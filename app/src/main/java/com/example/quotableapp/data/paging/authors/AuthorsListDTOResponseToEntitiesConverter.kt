@@ -1,6 +1,6 @@
-package com.example.quotableapp.data.repository.authors.paging
+package com.example.quotableapp.data.paging.authors
 
-import com.example.quotableapp.data.converters.Converter
+import com.example.quotableapp.common.Converter
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.db.entities.author.AuthorEntity
 import com.example.quotableapp.data.network.model.AuthorsResponseDTO

@@ -4,7 +4,6 @@ import com.example.quotableapp.MainCoroutineDispatcherRule
 import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.network.model.QuoteDTO
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -37,17 +36,17 @@ class DefaultQuotableApiResponseInterpreterTest(
             ),
             arrayOf(
                 suspend { throw IOException() },
-                listOf(Result.failure<QuoteDTO>(HttpApiError.ConnectionError)),
+                listOf(Result.failure<QuoteDTO>(HttpApiException.Connection)),
                 "test throwing IOException"
             ),
             arrayOf(
                 suspend { Response.error<QuoteDTO>(404, "".toResponseBody()) },
-                listOf(Result.failure<QuoteDTO>(HttpApiError.ClientError(404))),
+                listOf(Result.failure<QuoteDTO>(HttpApiException.Client(404))),
                 "test Response error with HTTP404"
             ),
             arrayOf(
                 suspend { Response.error<QuoteDTO>(502, "".toResponseBody()) },
-                listOf(Result.failure<QuoteDTO>(HttpApiError.ServerError(502))),
+                listOf(Result.failure<QuoteDTO>(HttpApiException.Server(502))),
                 "test Response error with HTTP502"
             )
         )

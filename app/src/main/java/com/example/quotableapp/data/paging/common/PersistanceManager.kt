@@ -1,4 +1,4 @@
-package com.example.quotableapp.data.db.common
+package com.example.quotableapp.data.paging.common
 
 import androidx.paging.PagingSource
 

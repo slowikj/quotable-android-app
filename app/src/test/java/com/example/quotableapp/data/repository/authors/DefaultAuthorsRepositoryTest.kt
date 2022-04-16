@@ -18,7 +18,7 @@ import com.example.quotableapp.data.network.datasources.AuthorsRemoteDataSource
 import com.example.quotableapp.data.network.datasources.FetchAuthorParams
 import com.example.quotableapp.data.network.datasources.FetchAuthorsListParams
 import com.example.quotableapp.data.network.services.AuthorsRemoteService
-import com.example.quotableapp.data.repository.authors.paging.AuthorsRemoteMediatorFactory
+import com.example.quotableapp.data.paging.authors.AuthorsRemoteMediatorFactory
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi

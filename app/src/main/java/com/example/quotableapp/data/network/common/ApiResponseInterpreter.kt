@@ -22,13 +22,13 @@ class DefaultQuotableApiResponseInterpreter @Inject constructor(private val disp
             try {
                 getInterpretedApiResult(apiCall())
             } catch (e: IOException) {
-                Result.failure(HttpApiError.ConnectionError)
+                Result.failure(HttpApiException.Connection)
             } catch (e: HttpException) {
                 interpretErrorCode(e.code())
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
-                Result.failure(HttpApiError.OtherError(e))
+                Result.failure(HttpApiException.Other(e))
             }
         }
 
@@ -40,13 +40,13 @@ class DefaultQuotableApiResponseInterpreter @Inject constructor(private val disp
 
     private fun <DTO> interpretErrorCode(code: Int): Result<DTO> =
         when (code) {
-            in 400..499 -> Result.failure(HttpApiError.ClientError(code))
-            in 500..599 -> Result.failure(HttpApiError.ServerError(code))
-            else -> Result.failure(HttpApiError.OtherError())
+            in 400..499 -> Result.failure(HttpApiException.Client(code))
+            in 500..599 -> Result.failure(HttpApiException.Server(code))
+            else -> Result.failure(HttpApiException.Other())
         }
 
     private fun <DTO> getInterpretedApiResult(body: DTO?): Result<DTO> =
         resultOf { Result.success(body!!) }
-            .getOrElse { exception -> Result.failure(HttpApiError.OtherError(exception)) }
+            .getOrElse { exception -> Result.failure(HttpApiException.Other(exception)) }
 
 }

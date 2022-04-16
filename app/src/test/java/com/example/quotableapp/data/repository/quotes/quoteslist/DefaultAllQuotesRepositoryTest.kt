@@ -12,7 +12,7 @@ import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.network.datasources.FetchQuotesListParams
 import com.example.quotableapp.data.network.datasources.QuotesRemoteDataSource
-import com.example.quotableapp.data.repository.quotes.quoteslist.paging.QuotesRemoteMediatorFactory
+import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediatorFactory
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
