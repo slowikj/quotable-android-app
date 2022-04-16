@@ -16,4 +16,4 @@
 | 🧪 Testing            | [JUnit](https://github.com/junit-team/junit4) + [Turbine](https://github.com/cashapp/turbine)   |
 | 📜 Paging              | [Jetpack Paging 3](https://developer.android.com/topic/libraries/architecture/paging/v3-overview) |
 | 🗄️ Local storage/offline support | [Room](https://developer.android.com/training/data-storage/room) |
-| 🎭 UI | [View/Data binding](https://developer.android.com/topic/libraries/data-binding) |
+| 🎭 UI | [View/Data binding](https://developer.android.com/topic/libraries/data-binding) + Dark/Light mode support |
