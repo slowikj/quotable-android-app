@@ -3,6 +3,8 @@ package com.example.quotableapp.di
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.remote.common.ApiResponseInterpreter
 import com.example.quotableapp.data.remote.common.DefaultQuotableApiResponseInterpreter
+import com.example.quotableapp.data.remote.datasources.AuthorsRemoteDataSource
+import com.example.quotableapp.data.remote.datasources.DefaultAuthorsRemoteDataSource
 import com.example.quotableapp.data.remote.datasources.DefaultQuotesRemoteDataSource
 import com.example.quotableapp.data.remote.datasources.QuotesRemoteDataSource
 import com.example.quotableapp.data.remote.services.AuthorsRemoteService
@@ -80,5 +82,7 @@ object NetworkModule {
         @Binds
         fun bindQuotesRemoteDataSource(quotesRemoteDataSource: DefaultQuotesRemoteDataSource): QuotesRemoteDataSource
 
+        @Binds
+        fun bindAuthorsRemoteDataSource(authorsRemoteDataSource: DefaultAuthorsRemoteDataSource): AuthorsRemoteDataSource
     }
 }

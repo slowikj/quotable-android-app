@@ -14,7 +14,8 @@ import org.junit.runners.Parameterized
 import retrofit2.Response
 import java.io.IOException
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalStdlibApi::class)
+@ExperimentalCoroutinesApi
 @RunWith(Parameterized::class)
 class DefaultQuotableApiResponseInterpreterTest(
     private val apiCall: suspend () -> Response<QuoteDTO>,

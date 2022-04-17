@@ -5,17 +5,23 @@ import com.example.quotableapp.data.remote.model.AuthorsResponseDTO
 import com.example.quotableapp.data.remote.services.AuthorsRemoteService
 import javax.inject.Inject
 
-class AuthorsRemoteDataSource @Inject constructor(
+interface AuthorsRemoteDataSource {
+    suspend fun fetch(params: FetchAuthorParams): Result<AuthorsResponseDTO>
+
+    suspend fun fetch(params: FetchAuthorsListParams): Result<AuthorsResponseDTO>
+}
+
+class DefaultAuthorsRemoteDataSource @Inject constructor(
     private val responseInterpreter: ApiResponseInterpreter,
     private val remoteService: AuthorsRemoteService,
-) {
+) : AuthorsRemoteDataSource {
 
-    suspend fun fetch(params: FetchAuthorParams): Result<AuthorsResponseDTO> =
+    override suspend fun fetch(params: FetchAuthorParams): Result<AuthorsResponseDTO> =
         responseInterpreter.invoke {
             remoteService.fetchAuthor(authorSlug = params.slug)
         }
 
-    suspend fun fetch(params: FetchAuthorsListParams): Result<AuthorsResponseDTO> =
+    override suspend fun fetch(params: FetchAuthorsListParams): Result<AuthorsResponseDTO> =
         responseInterpreter.invoke {
             remoteService.fetchAuthors(
                 page = params.page,

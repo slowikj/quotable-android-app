@@ -6,8 +6,7 @@ import com.example.quotableapp.data.getTestDispatchersProvider
 import com.example.quotableapp.data.local.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.local.entities.author.AuthorEntity
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.data.remote.datasources.AuthorsRemoteDataSource
-import com.example.quotableapp.data.remote.datasources.FetchAuthorParams
+import com.example.quotableapp.usecases.fakes.FakeAuthorsRemoteDataSource
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,22 +25,23 @@ class GetAuthorUseCaseTest {
 
     private lateinit var localDataSource: AuthorsLocalDataSource
 
-    private lateinit var remoteDataSource: AuthorsRemoteDataSource
+    private lateinit var remoteDataSource: FakeAuthorsRemoteDataSource
 
     @Before
     fun setUp() {
         localDataSource = mock()
-        remoteDataSource = mock()
+        remoteDataSource = FakeAuthorsRemoteDataSource()
     }
-
 
     @Test
     fun given_WorkingAPIConnection_when_updateAuthor_then_ReturnSuccess() = runTest {
         // given
         val authorSlug = "1"
         val authorResponseDTO = AuthorsFactory.getResponseDTO(size = 1)
-        whenever(remoteDataSource.fetch(FetchAuthorParams(slug = authorSlug)))
-            .thenReturn(Result.success(authorResponseDTO))
+        val remoteResult = Result.success(authorResponseDTO)
+
+        remoteDataSource.fetchAuthorCompletableDeferred
+            .complete(remoteResult)
 
         val useCase = createUseCase(this)
 
@@ -58,8 +58,9 @@ class GetAuthorUseCaseTest {
     fun given_NoAPIConnection_when_updateAuthor_then_ReturnFailure() = runTest {
         // given
         val authorSlug = "1"
-        whenever(remoteDataSource.fetch(FetchAuthorParams(slug = authorSlug)))
-            .thenReturn(Result.failure(IOException()))
+
+        remoteDataSource.fetchAuthorCompletableDeferred
+            .complete(Result.failure(IOException()))
 
         val useCase = createUseCase(this)
 
