@@ -9,7 +9,7 @@ import app.cash.turbine.test
 import com.example.quotableapp.MainCoroutineDispatcherRule
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.QuotesFactory
-import com.example.quotableapp.data.getTestdispatchersProvider
+import com.example.quotableapp.data.getTestDispatchersProvider
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
@@ -49,7 +49,7 @@ class AuthorViewModelTest {
         val savedStateHandle: SavedStateHandle = mock(),
         val quotesRepository: QuotesRepository = mock(),
         val authorsRepository: AuthorsRepository = mock(),
-        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider()
+        val dispatchersProvider: DispatchersProvider = getTestDispatchersProvider()
     ) {
 
         val viewModel: AuthorViewModel

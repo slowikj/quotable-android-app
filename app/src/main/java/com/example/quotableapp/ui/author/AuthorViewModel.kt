@@ -15,6 +15,8 @@ import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.UiStateManager
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
+import com.example.quotableapp.usecases.authors.GetAuthorUseCase
+import com.example.quotableapp.usecases.quotes.GetQuotesOfAuthorUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -30,8 +32,8 @@ typealias AuthorUiState = UiState<Author, AuthorViewModel.UiError>
 @HiltViewModel
 class AuthorViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val quotesRepository: QuotesRepository,
-    private val authorsRepository: AuthorsRepository,
+    private val getQuotesOfAuthorUseCase: GetQuotesOfAuthorUseCase,
+    private val getAuthorUseCase: GetAuthorUseCase,
     private val dispatchersProvider: DispatchersProvider
 ) : ViewModel(), QuotesProvider {
 
@@ -59,8 +61,8 @@ class AuthorViewModel @Inject constructor(
     val navigationActions = _navigationActions.asSharedFlow()
 
     override val quotes: Flow<PagingData<Quote>> =
-        quotesRepository
-            .fetchQuotesOfAuthor(authorSlug)
+        getQuotesOfAuthorUseCase
+            .getPagingFlow(authorSlug)
             .cachedIn(viewModelScope)
 
     private val _authorUiStateManager = UiStateManager<Author, UiError>(
@@ -75,7 +77,7 @@ class AuthorViewModel @Inject constructor(
 
     fun updateAuthor() {
         _authorUiStateManager.updateData(
-            requestFunc = { authorsRepository.updateAuthor(authorSlug) },
+            requestFunc = { getAuthorUseCase.update(authorSlug) },
             errorTransformer = { UiError.IOError() }
         )
     }
@@ -97,8 +99,8 @@ class AuthorViewModel @Inject constructor(
     }
 
     private fun startSyncingSavedStateHandleWithRepo() {
-        authorsRepository
-            .getAuthorFlow(authorSlug)
+        getAuthorUseCase
+            .getFlow(authorSlug)
             .onEach { author -> if (author == null) updateAuthor() }
             .filterNotNull()
             .onEach { savedStateHandle[AUTHOR_KEY] = it }

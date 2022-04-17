@@ -6,8 +6,8 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider
+import com.example.quotableapp.usecases.quotes.GetAllQuotesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @ExperimentalPagingApi
 @HiltViewModel
 class AllQuotesListViewModel @Inject constructor(
-    private val quotesRepository: QuotesRepository,
+    private val getAllQuotesUseCase: GetAllQuotesUseCase,
     private val savedStateHandle: SavedStateHandle,
     private val dispatchersProvider: DispatchersProvider
 ) : ViewModel(), QuotesProvider {
@@ -45,7 +45,7 @@ class AllQuotesListViewModel @Inject constructor(
             .asFlow()
             .debounce(SEARCH_VIEW_DEBOUNCE_TIME_MILLIS)
             .distinctUntilChanged()
-            .flatMapLatest { quotesRepository.fetchAllQuotes(it) }
+            .flatMapLatest { getAllQuotesUseCase.getPagingFlow(it) }
             .flowOn(dispatchersProvider.Default)
             .cachedIn(viewModelScope)
 

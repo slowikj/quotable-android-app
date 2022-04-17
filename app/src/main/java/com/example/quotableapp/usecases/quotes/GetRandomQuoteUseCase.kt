@@ -35,17 +35,19 @@ class GetRandomQuoteUseCase @Inject constructor(
 
     suspend fun update(): Result<Unit> {
         return withContext(dispatchersProvider.IO) {
-            quotesRemoteDataSource.fetchRandom()
+            quotesRemoteDataSource
+                .fetchRandom()
                 .mapSafeCatching { updateDatabaseWithRandomQuote(it) }
         }
     }
 
     suspend fun fetch(): Result<Quote> = withContext(dispatchersProvider.Default) {
-        val r = quotesRemoteDataSource.fetchRandom()
-        r.mapSafeCatching { quoteDTO ->
-            insertQuoteToDb(quoteDTO)
-            quoteDTO.toDomain()
-        }
+        quotesRemoteDataSource
+            .fetchRandom()
+            .mapSafeCatching { quoteDTO ->
+                insertQuoteToDb(quoteDTO)
+                quoteDTO.toDomain()
+            }
     }
 
     private suspend fun insertQuoteToDb(quoteDTO: QuoteDTO) {

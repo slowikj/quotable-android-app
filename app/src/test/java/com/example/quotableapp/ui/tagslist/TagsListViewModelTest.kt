@@ -6,7 +6,7 @@ import app.cash.turbine.test
 import com.example.quotableapp.MainCoroutineDispatcherRule
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.TagsFactory
-import com.example.quotableapp.data.getTestdispatchersProvider
+import com.example.quotableapp.data.getTestDispatchersProvider
 import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.google.common.truth.Truth.assertThat
@@ -36,7 +36,7 @@ class TagsListViewModelTest {
 
     class DependencyManager constructor(
         val tagsRepository: TagsRepository = mock(),
-        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider()
+        val dispatchersProvider: DispatchersProvider = getTestDispatchersProvider()
     ) {
         val viewModel: TagsListViewModel
             get() = TagsListViewModel(

@@ -9,7 +9,7 @@ import com.example.quotableapp.MainCoroutineDispatcherRule
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.AuthorsFactory
 import com.example.quotableapp.data.QuotesFactory
-import com.example.quotableapp.data.getTestdispatchersProvider
+import com.example.quotableapp.data.getTestDispatchersProvider
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.repository.authors.AuthorsRepository
@@ -44,7 +44,7 @@ class OneQuoteViewModelTest {
 
     class DependencyManager(
         val savedStateHandle: SavedStateHandle = mock(),
-        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
+        val dispatchersProvider: DispatchersProvider = getTestDispatchersProvider(),
         val oneQuoteRepository: OneQuoteRepository = mock(),
         val authorsRepository: AuthorsRepository = mock()
     ) {

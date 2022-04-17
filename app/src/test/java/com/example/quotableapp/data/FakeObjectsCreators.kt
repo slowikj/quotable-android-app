@@ -5,8 +5,8 @@ import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.remote.common.ApiResponseInterpreter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.TestScope
 import retrofit2.Response
 
 fun getFakeApiResponseInterpreter(): ApiResponseInterpreter {
@@ -20,8 +20,20 @@ fun getFakeApiResponseInterpreter(): ApiResponseInterpreter {
     }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
-fun getTestdispatchersProvider(testDispatcher: TestDispatcher = StandardTestDispatcher()): DispatchersProvider {
+@ExperimentalStdlibApi
+@ExperimentalCoroutinesApi
+fun TestScope.getTestDispatchersProvider(): DispatchersProvider {
+    return getTestDispatchersProvider(getTestDispatcher())
+}
+
+@ExperimentalStdlibApi
+@ExperimentalCoroutinesApi
+fun TestScope.getTestDispatcher(): TestDispatcher {
+    return this.coroutineContext[CoroutineDispatcher] as TestDispatcher
+}
+
+@ExperimentalCoroutinesApi
+fun getTestDispatchersProvider(testDispatcher: TestDispatcher): DispatchersProvider {
     return object : DispatchersProvider {
         override val Main: CoroutineDispatcher
             get() = testDispatcher

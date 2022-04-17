@@ -6,7 +6,7 @@ import com.example.quotableapp.data.TagsFactory
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.local.datasources.TagsLocalDataSource
 import com.example.quotableapp.data.local.entities.tag.TagOriginParams
-import com.example.quotableapp.data.getTestdispatchersProvider
+import com.example.quotableapp.data.getTestDispatchersProvider
 import com.example.quotableapp.data.model.Tag
 import com.example.quotableapp.data.remote.datasources.TagsRemoteDataSource
 import com.google.common.truth.Truth.assertThat
@@ -32,7 +32,7 @@ class DefaultTagRepositoryTest {
     class DependencyManager(
         val remoteService: TagsRemoteDataSource = mock(),
         val localDataSource: TagsLocalDataSource = mock(),
-        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
+        val dispatchersProvider: DispatchersProvider = getTestDispatchersProvider(),
     ) {
         val repository: DefaultTagRepository
             get() = DefaultTagRepository(

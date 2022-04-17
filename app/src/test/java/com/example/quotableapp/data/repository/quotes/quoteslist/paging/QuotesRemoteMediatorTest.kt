@@ -6,7 +6,7 @@ import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.QuotesFactory
 import com.example.quotableapp.common.Converter
 import com.example.quotableapp.data.local.entities.quote.QuoteEntity
-import com.example.quotableapp.data.getTestdispatchersProvider
+import com.example.quotableapp.data.getTestDispatchersProvider
 import com.example.quotableapp.data.remote.model.QuotesResponseDTO
 import com.example.quotableapp.data.paging.quotes.QuotesListPersistenceManager
 import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediator
@@ -32,7 +32,7 @@ class QuotesRemoteMediatorTest {
         val cacheTimeoutMillis: Long = 100,
         var remoteDataSource: IntPagedRemoteDataSource<QuotesResponseDTO>? = null,
         val dtoToEntityConverter: Converter<QuotesResponseDTO, List<QuoteEntity>> = mock(),
-        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider()
+        val dispatchersProvider: DispatchersProvider = getTestDispatchersProvider()
     ) {
         val mediator: QuotesRemoteMediator
             get() = QuotesRemoteMediator(

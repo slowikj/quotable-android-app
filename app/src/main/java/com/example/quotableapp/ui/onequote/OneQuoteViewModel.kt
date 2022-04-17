@@ -3,11 +3,12 @@ package com.example.quotableapp.ui.onequote
 import androidx.lifecycle.*
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.repository.authors.AuthorsRepository
-import com.example.quotableapp.data.repository.quotes.onequote.OneQuoteRepository
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.extensions.defaultSharingStarted
 import com.example.quotableapp.ui.common.formatters.formatToClipboard
+import com.example.quotableapp.usecases.authors.GetAuthorUseCase
+import com.example.quotableapp.usecases.quotes.GetQuoteUseCase
+import com.example.quotableapp.usecases.quotes.GetRandomQuoteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -41,8 +42,9 @@ data class QuoteUi(
 class OneQuoteViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val dispatchersProvider: DispatchersProvider,
-    private val oneQuoteRepository: OneQuoteRepository,
-    private val authorsRepository: AuthorsRepository
+    private val getQuoteUseCase: GetQuoteUseCase,
+    private val getAuthorUseCase: GetAuthorUseCase,
+    private val getRandomQuoteUseCase: GetRandomQuoteUseCase
 ) : ViewModel() {
 
     sealed class UiError : Throwable() {
@@ -66,12 +68,12 @@ class OneQuoteViewModel @Inject constructor(
     private val _authorPhotoUrlFlow: StateFlow<String?> = _quoteFlow
         .map { quote -> quote.authorSlug }
         .flatMapLatest { authorSlug ->
-            authorsRepository.getAuthorFlow(authorSlug)
+            getAuthorUseCase.getFlow(authorSlug)
                 .combine(flowOf(authorSlug)) { author, slug -> Pair(author, slug) }
         }
         .onEach { authorWithSlug ->
             if (authorWithSlug.first == null) viewModelScope.launch {
-                authorsRepository.updateAuthor(authorWithSlug.second)
+                getAuthorUseCase.update(authorWithSlug.second)
             }
         }
         .map { authorWithSlug -> authorWithSlug.first?.getPhotoUrl(AUTHOR_PHOTO_REQUEST_SIZE) }
@@ -108,7 +110,7 @@ class OneQuoteViewModel @Inject constructor(
         val quoteId = _quoteSavedStateHandleLiveData.value!!.id
         viewModelScope.launch(dispatchersProvider.Default) {
             _quoteIsLoadingFlow.value = true
-            val response = oneQuoteRepository.updateQuote(quoteId)
+            val response = getQuoteUseCase.update(quoteId)
             _quoteErrorFlow.value = response.exceptionOrNull()?.let { UiError.IOError() }
             _quoteIsLoadingFlow.value = false
         }
@@ -117,7 +119,7 @@ class OneQuoteViewModel @Inject constructor(
     fun randomizeQuote() {
         viewModelScope.launch(dispatchersProvider.Default) {
             _quoteIsLoadingFlow.value = true
-            val response = oneQuoteRepository.getRandomQuote()
+            val response = getRandomQuoteUseCase.fetch()
             response.fold(
                 onSuccess = { quote ->
                     startSyncingQuoteChangesFromRepository(quote.id)
@@ -137,8 +139,8 @@ class OneQuoteViewModel @Inject constructor(
 
     private fun startSyncingQuoteChangesFromRepository(quoteId: String) {
         quoteRepoSyncJob?.cancel()
-        quoteRepoSyncJob = oneQuoteRepository
-            .getQuoteFlow(quoteId)
+        quoteRepoSyncJob = getQuoteUseCase
+            .getFlow(quoteId)
             .filterNotNull()
             .onEach { quote -> updateSavedStateHandle(quote) }
             .launchIn(viewModelScope)

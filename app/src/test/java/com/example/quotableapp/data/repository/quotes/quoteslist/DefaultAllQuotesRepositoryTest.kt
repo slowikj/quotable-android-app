@@ -8,7 +8,7 @@ import com.example.quotableapp.data.QuotesFactory
 import com.example.quotableapp.data.local.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.local.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.getTestPagingConfig
-import com.example.quotableapp.data.getTestdispatchersProvider
+import com.example.quotableapp.data.getTestDispatchersProvider
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.remote.datasources.FetchQuotesListParams
 import com.example.quotableapp.data.remote.datasources.QuotesRemoteDataSource
@@ -41,7 +41,7 @@ class DefaultAllQuotesRepositoryTest {
         val localDataSource: QuotesLocalDataSource = mock(),
         val pagingConfig: PagingConfig = getTestPagingConfig(),
         val remoteDataSource: QuotesRemoteDataSource = mock(),
-        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
+        val dispatchersProvider: DispatchersProvider = getTestDispatchersProvider(),
     ) {
         val repository: DefaultAllQuotesRepository by lazy {
             DefaultAllQuotesRepository(

@@ -7,11 +7,12 @@ import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.data.repository.authors.AuthorsRepository
-import com.example.quotableapp.data.repository.quotes.QuotesRepository
-import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.UiStateManager
+import com.example.quotableapp.usecases.authors.GetExemplaryAuthorsUseCase
+import com.example.quotableapp.usecases.quotes.GetExemplaryQuotesUseCase
+import com.example.quotableapp.usecases.quotes.GetRandomQuoteUseCase
+import com.example.quotableapp.usecases.tags.GetExemplaryTagsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.plus
@@ -28,9 +29,10 @@ typealias RandomQuoteState = UiState<Quote, DashboardViewModel.UiError>
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val authorsRepository: AuthorsRepository,
-    private val quotesRepository: QuotesRepository,
-    private val tagsRepository: TagsRepository,
+    private val getExemplaryAuthorsUseCase: GetExemplaryAuthorsUseCase,
+    private val getExemplaryQuotesUseCase: GetExemplaryQuotesUseCase,
+    private val getExemplaryTagsUseCase: GetExemplaryTagsUseCase,
+    private val getRandomQuoteUseCase: GetRandomQuoteUseCase,
     private val dispatchersProvider: DispatchersProvider
 ) : ViewModel() {
 
@@ -40,25 +42,25 @@ class DashboardViewModel @Inject constructor(
 
     private val exemplaryAuthorsUiStateManager = UiStateManager<List<Author>, UiError>(
         coroutineScope = viewModelScope + dispatchersProvider.Default,
-        sourceDataFlow = authorsRepository.exemplaryAuthorsFlow
+        sourceDataFlow = getExemplaryAuthorsUseCase.flow
     )
     val exemplaryAuthorsState: StateFlow<AuthorListState> = exemplaryAuthorsUiStateManager.stateFlow
 
     private val exemplaryQuotesUiStateManager = UiStateManager<List<Quote>, UiError>(
         coroutineScope = viewModelScope + dispatchersProvider.Default,
-        sourceDataFlow = quotesRepository.exemplaryQuotes
+        sourceDataFlow = getExemplaryQuotesUseCase.flow
     )
     val exemplaryQuotesState: StateFlow<QuotesListState> = exemplaryQuotesUiStateManager.stateFlow
 
     private val exemplaryTagsUiStateManager = UiStateManager<List<Tag>, UiError>(
         coroutineScope = viewModelScope + dispatchersProvider.Default,
-        sourceDataFlow = tagsRepository.exemplaryTags
+        sourceDataFlow = getExemplaryTagsUseCase.flow
     )
     val exemplaryTagsState: StateFlow<TagsListState> = exemplaryTagsUiStateManager.stateFlow
 
     private val randomQuoteUiStateManager = UiStateManager<Quote, UiError>(
         coroutineScope = viewModelScope + dispatchersProvider.Default,
-        sourceDataFlow = quotesRepository.randomQuote
+        sourceDataFlow = getRandomQuoteUseCase.flow
     )
     val randomQuote: StateFlow<RandomQuoteState> = randomQuoteUiStateManager.stateFlow
 
@@ -75,28 +77,28 @@ class DashboardViewModel @Inject constructor(
 
     fun updateAuthors() {
         exemplaryAuthorsUiStateManager.updateData(
-            requestFunc = { authorsRepository.updateExemplaryAuthors() },
+            requestFunc = { getExemplaryAuthorsUseCase.update() },
             errorTransformer = { UiError.IOError }
         )
     }
 
     fun updateQuotes() {
         exemplaryQuotesUiStateManager.updateData(
-            requestFunc = { quotesRepository.updateExemplaryQuotes() },
+            requestFunc = { getExemplaryQuotesUseCase.update() },
             errorTransformer = { UiError.IOError }
         )
     }
 
     fun updateTags() {
         exemplaryTagsUiStateManager.updateData(
-            requestFunc = { tagsRepository.updateExemplaryTags() },
+            requestFunc = { getExemplaryTagsUseCase.update() },
             errorTransformer = { UiError.IOError }
         )
     }
 
     fun updateRandomQuote() {
         randomQuoteUiStateManager.updateData(
-            requestFunc = { quotesRepository.updateRandomQuote() },
+            requestFunc = { getRandomQuoteUseCase.update() },
             errorTransformer = { UiError.IOError }
         )
     }

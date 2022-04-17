@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.data.repository.tags.TagsRepository
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.UiStateManager
+import com.example.quotableapp.usecases.tags.GetAllTagsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -19,7 +19,7 @@ typealias TagsListState = UiState<List<Tag>, TagsListViewModel.UiError>
 
 @HiltViewModel
 class TagsListViewModel @Inject constructor(
-    private val tagsRepository: TagsRepository,
+    private val getAllTagsUseCase: GetAllTagsUseCase,
     private val dispatchersProvider: DispatchersProvider
 ) : ViewModel() {
 
@@ -29,8 +29,8 @@ class TagsListViewModel @Inject constructor(
 
     private val _tagsUiStateManager = UiStateManager<List<Tag>, UiError>(
         coroutineScope = viewModelScope + dispatchersProvider.Default,
-        sourceDataFlow = tagsRepository
-            .allTagsFlow
+        sourceDataFlow = getAllTagsUseCase
+            .flow
             .map { tags -> tags.ifEmpty { null } }
     )
     val tagsUiState: StateFlow<TagsListState> = _tagsUiStateManager.stateFlow
@@ -41,7 +41,7 @@ class TagsListViewModel @Inject constructor(
 
     fun updateTags() {
         _tagsUiStateManager.updateData(
-            requestFunc = { tagsRepository.updateAllTags() },
+            requestFunc = { getAllTagsUseCase.update() },
             errorTransformer = { UiError.IOError }
         )
     }
@@ -52,7 +52,7 @@ class TagsListViewModel @Inject constructor(
 
     private fun updateTagsIfNoData() {
         viewModelScope.launch(dispatchersProvider.Default) {
-            if (tagsRepository.allTagsFlow.first().isEmpty()) {
+            if (getAllTagsUseCase.flow.first().isEmpty()) {
                 updateTags()
             }
         }

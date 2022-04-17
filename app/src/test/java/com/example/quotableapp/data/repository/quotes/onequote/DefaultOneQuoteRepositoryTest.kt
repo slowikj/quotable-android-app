@@ -8,7 +8,7 @@ import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.local.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.local.entities.quote.QuoteEntity
 import com.example.quotableapp.data.local.entities.quote.QuoteOriginParams
-import com.example.quotableapp.data.getTestdispatchersProvider
+import com.example.quotableapp.data.getTestDispatchersProvider
 import com.example.quotableapp.data.remote.datasources.FetchQuoteParams
 import com.example.quotableapp.data.remote.datasources.QuotesRemoteDataSource
 import com.example.quotableapp.data.remote.model.QuoteDTO
@@ -34,7 +34,7 @@ class DefaultOneQuoteRepositoryTest {
     val mainCoroutineDispatcherRule = MainCoroutineDispatcherRule()
 
     class DependencyManager(
-        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
+        val dispatchersProvider: DispatchersProvider = getTestDispatchersProvider(),
         val remoteService: QuotesRemoteDataSource = mock(),
         val localDataSource: QuotesLocalDataSource = mock(),
     ) {
