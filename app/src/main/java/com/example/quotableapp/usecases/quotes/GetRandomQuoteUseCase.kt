@@ -15,16 +15,24 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetRandomQuoteUseCase @Inject constructor(
+interface GetRandomQuoteUseCase {
+    val flow: Flow<Quote?>
+
+    suspend fun update(): Result<Unit>
+
+    suspend fun fetch(): Result<Quote>
+}
+
+class DefaultGetRandomQuoteUseCase @Inject constructor(
     private val dispatchersProvider: DispatchersProvider,
     private val remoteDataSource: QuotesRemoteDataSource,
     private val localDataSource: QuotesLocalDataSource,
-) {
+) : GetRandomQuoteUseCase {
     companion object {
         private val originParams = QuoteOriginParams(type = QuoteOriginParams.Type.RANDOM)
     }
 
-    val flow: Flow<Quote?> = localDataSource
+    override val flow: Flow<Quote?> = localDataSource
         .getFirstQuotesSortedById(
             originParams = originParams,
             limit = 1
@@ -33,7 +41,7 @@ class GetRandomQuoteUseCase @Inject constructor(
         .map { it?.toDomain() }
         .flowOn(dispatchersProvider.Default)
 
-    suspend fun update(): Result<Unit> {
+    override suspend fun update(): Result<Unit> {
         return withContext(dispatchersProvider.IO) {
             remoteDataSource
                 .fetchRandom()
@@ -41,7 +49,7 @@ class GetRandomQuoteUseCase @Inject constructor(
         }
     }
 
-    suspend fun fetch(): Result<Quote> = withContext(dispatchersProvider.Default) {
+    override suspend fun fetch(): Result<Quote> = withContext(dispatchersProvider.Default) {
         remoteDataSource
             .fetchRandom()
             .mapSafeCatching { quoteDTO ->

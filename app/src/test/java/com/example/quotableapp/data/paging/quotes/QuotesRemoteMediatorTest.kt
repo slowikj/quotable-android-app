@@ -5,7 +5,7 @@ import com.example.quotableapp.MainCoroutineDispatcherRule
 import com.example.quotableapp.common.Converter
 import com.example.quotableapp.data.local.entities.quote.QuoteEntity
 import com.example.quotableapp.data.remote.model.QuotesResponseDTO
-import com.example.quotableapp.fakes.FakeIntPagedRemoteDataSource
+import com.example.quotableapp.fakes.remotedatasources.FakeIntPagedRemoteDataSource
 import com.example.quotableapp.fakes.factories.QuotesFactory
 import com.example.quotableapp.fakes.getTestDispatchersProvider
 import com.google.common.truth.Truth.assertThat

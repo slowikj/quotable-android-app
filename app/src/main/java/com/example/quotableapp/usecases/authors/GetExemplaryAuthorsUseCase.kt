@@ -13,25 +13,30 @@ import com.example.quotableapp.data.remote.model.AuthorsResponseDTO
 import com.example.quotableapp.data.remote.services.AuthorsRemoteService
 import com.example.quotableapp.di.ItemsLimit
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetExemplaryAuthorsUseCase @Inject constructor(
+interface GetExemplaryAuthorsUseCase {
+    val flow: Flow<List<Author>>
+
+    suspend fun update(): Result<Unit>
+}
+
+class DefaultGetExemplaryAuthorsUseCase @Inject constructor(
     private val localDataSource: AuthorsLocalDataSource,
     private val remoteDataSource: AuthorsRemoteDataSource,
     private val dispatchersProvider: DispatchersProvider,
     @ItemsLimit private val itemsLimit: Int
-) {
+) : GetExemplaryAuthorsUseCase {
     companion object {
 
         val originParams =
             AuthorOriginParams(type = AuthorOriginParams.Type.DASHBOARD_EXEMPLARY)
     }
 
-    val flow: Flow<List<Author>> = localDataSource
+    override val flow: Flow<List<Author>> = localDataSource
         .getAuthorsSortedByQuoteCountDesc(
             originParams = originParams,
             limit = itemsLimit
@@ -39,7 +44,7 @@ class GetExemplaryAuthorsUseCase @Inject constructor(
         .map { list -> list.map { it.toDomain() } }
         .flowOn(dispatchersProvider.Default)
 
-    suspend fun update(): Result<Unit> {
+    override suspend fun update(): Result<Unit> {
         return withContext(dispatchersProvider.Default) {
             remoteDataSource.fetch(
                 FetchAuthorsListParams(

@@ -4,7 +4,7 @@ import com.example.quotableapp.fakes.factories.QuotesFactory
 import com.example.quotableapp.data.local.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.local.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.fakes.FakeQuotesRemoteDataSource
+import com.example.quotableapp.fakes.remotedatasources.FakeQuotesRemoteDataSource
 import com.example.quotableapp.fakes.getTestDispatchersProvider
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
@@ -22,7 +22,7 @@ import java.io.IOException
 
 @ExperimentalCoroutinesApi
 @ExperimentalStdlibApi
-class GetExemplaryQuotesUseCaseTest {
+class DefaultGetExemplaryQuotesUseCaseTest {
 
     private lateinit var localDataSource: QuotesLocalDataSource
 
@@ -112,7 +112,7 @@ class GetExemplaryQuotesUseCaseTest {
     }
 
     private fun createUseCase(testScope: TestScope): GetExemplaryQuotesUseCase {
-        return GetExemplaryQuotesUseCase(
+        return DefaultGetExemplaryQuotesUseCase(
             localDataSource = localDataSource,
             remoteDataSource = remoteDataSource,
             dispatchersProvider = testScope.getTestDispatchersProvider(),

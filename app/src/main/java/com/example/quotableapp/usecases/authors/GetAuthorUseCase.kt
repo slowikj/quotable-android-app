@@ -14,18 +14,24 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetAuthorUseCase @Inject constructor(
+interface GetAuthorUseCase {
+    fun getFlow(slug: String): Flow<Author?>
+
+    suspend fun update(slug: String): Result<Unit>
+}
+
+class DefaultGetAuthorUseCase @Inject constructor(
     private val localDataSource: AuthorsLocalDataSource,
     private val remoteDataSource: AuthorsRemoteDataSource,
     private val dispatchersProvider: DispatchersProvider,
-) {
+) : GetAuthorUseCase {
 
-    fun getFlow(slug: String): Flow<Author?> = localDataSource
+    override fun getFlow(slug: String): Flow<Author?> = localDataSource
         .getAuthorFlow(slug)
         .map { it?.toDomain() }
         .flowOn(dispatchersProvider.Default)
 
-    suspend fun update(slug: String): Result<Unit> {
+    override suspend fun update(slug: String): Result<Unit> {
         return withContext(dispatchersProvider.Default) {
             remoteDataSource.fetch(FetchAuthorParams(slug = slug))
                 .mapSafeCatching { it.results.first() }

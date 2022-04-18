@@ -20,15 +20,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
+interface GetAllQuotesUseCase {
+    fun getPagingFlow(searchPhrase: String?): Flow<PagingData<Quote>>
+}
+
 @ExperimentalPagingApi
-class GetAllQuotesUseCase @Inject constructor(
+class DefaultGetAllQuotesUseCase @Inject constructor(
     private val remoteMediatorFactory: QuotesRemoteMediatorFactory,
     private val pagingConfig: PagingConfig,
     private val remoteDataSource: QuotesRemoteDataSource,
     private val dispatchersProvider: DispatchersProvider
-) {
+) : GetAllQuotesUseCase {
 
-    fun getPagingFlow(searchPhrase: String?): Flow<PagingData<Quote>> {
+    override fun getPagingFlow(searchPhrase: String?): Flow<PagingData<Quote>> {
         val remoteMediator = createAllQuotesRemoteMediator(searchPhrase)
         return Pager(
             config = pagingConfig,

@@ -93,6 +93,7 @@ class OneQuoteViewModel @Inject constructor(
             data = QuoteUi(quote = quote, authorPhotoUrl = authorPhotoUrl)
         )
     }.flowOn(dispatchersProvider.Default)
+        .distinctUntilChanged()
         .stateIn(
             initialValue = QuoteUiState(),
             scope = viewModelScope,

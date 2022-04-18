@@ -9,25 +9,29 @@ import com.example.quotableapp.common.mapInnerElements
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.local.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote
+import com.example.quotableapp.data.paging.common.IntPagedRemoteDataSource
+import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediator
+import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediatorFactory
 import com.example.quotableapp.data.remote.datasources.FetchQuotesOfTagParams
 import com.example.quotableapp.data.remote.datasources.QuotesRemoteDataSource
 import com.example.quotableapp.data.remote.model.QuotesResponseDTO
-import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediator
-import com.example.quotableapp.data.paging.quotes.QuotesRemoteMediatorFactory
-import com.example.quotableapp.data.paging.common.IntPagedRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
+interface GetQuotesOfTagUseCase {
+    fun getPagingFlow(tag: String): Flow<PagingData<Quote>>
+}
+
 @ExperimentalPagingApi
-class GetQuotesOfTagUseCase @Inject constructor(
+class DefaultGetQuotesOfTagUseCase @Inject constructor(
     private val remoteMediatorFactory: QuotesRemoteMediatorFactory,
     private val remoteDataSource: QuotesRemoteDataSource,
     private val pagingConfig: PagingConfig,
     private val dispatchersProvider: DispatchersProvider
-) {
+) : GetQuotesOfTagUseCase {
 
-    fun getPagingFlow(tag: String): Flow<PagingData<Quote>> {
+    override fun getPagingFlow(tag: String): Flow<PagingData<Quote>> {
         val remoteMediator = createRemoteMediator(tag)
         return Pager(
             config = pagingConfig,

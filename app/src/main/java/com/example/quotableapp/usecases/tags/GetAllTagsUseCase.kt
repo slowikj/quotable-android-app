@@ -15,21 +15,27 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetAllTagsUseCase @Inject constructor(
+interface GetAllTagsUseCase {
+    val flow: Flow<List<Tag>>
+
+    suspend fun update(): Result<Unit>
+}
+
+class DefaultGetAllTagsUseCase @Inject constructor(
     private val remoteDataSource: TagsRemoteDataSource,
     private val localDataSource: TagsLocalDataSource,
     private val dispatchersProvider: DispatchersProvider
-) {
+) : GetAllTagsUseCase {
     companion object {
         private val originParams = TagOriginParams(type = TagOriginParams.Type.ALL)
     }
 
-    val flow: Flow<List<Tag>> = localDataSource
+    override val flow: Flow<List<Tag>> = localDataSource
         .getTagsSortedByName(originParams = originParams)
         .map { list -> list.map { it.toDomain() } }
         .flowOn(dispatchersProvider.IO)
 
-    suspend fun update(): Result<Unit> {
+    override suspend fun update(): Result<Unit> {
         return withContext(dispatchersProvider.Default) {
             remoteDataSource.fetchAll()
                 .mapSafeCatching { tagsDTO ->

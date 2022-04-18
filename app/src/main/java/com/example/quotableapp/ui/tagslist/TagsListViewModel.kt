@@ -8,9 +8,7 @@ import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.UiStateManager
 import com.example.quotableapp.usecases.tags.GetAllTagsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import javax.inject.Inject
@@ -36,7 +34,7 @@ class TagsListViewModel @Inject constructor(
     val tagsUiState: StateFlow<TagsListState> = _tagsUiStateManager.stateFlow
 
     init {
-        updateTagsIfNoData()
+        observeTagsFlow()
     }
 
     fun updateTags() {
@@ -50,11 +48,12 @@ class TagsListViewModel @Inject constructor(
         _tagsUiStateManager.errorFlow.value = null
     }
 
-    private fun updateTagsIfNoData() {
-        viewModelScope.launch(dispatchersProvider.Default) {
-            if (getAllTagsUseCase.flow.first().isEmpty()) {
-                updateTags()
-            }
-        }
+    private fun observeTagsFlow() {
+        getAllTagsUseCase
+            .flow
+            .onEach { if(it.isEmpty()) updateTags() }
+            .flowOn(dispatchersProvider.Default)
+            .launchIn(viewModelScope)
     }
+
 }

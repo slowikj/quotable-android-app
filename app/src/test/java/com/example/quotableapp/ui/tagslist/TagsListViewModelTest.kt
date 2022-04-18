@@ -4,28 +4,26 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.viewModelScope
 import app.cash.turbine.test
 import com.example.quotableapp.MainCoroutineDispatcherRule
-import com.example.quotableapp.common.DispatchersProvider
-import com.example.quotableapp.data.TagsFactory
-import com.example.quotableapp.data.getTestDispatchersProvider
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.data.repository.tags.TagsRepository
+import com.example.quotableapp.fakes.factories.TagsFactory
+import com.example.quotableapp.fakes.getTestDispatchersProvider
+import com.example.quotableapp.fakes.usecases.tags.FakeGetAllTagsUseCase
 import com.google.common.truth.Truth.assertThat
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.stub
-import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.io.IOException
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
 @ExperimentalCoroutinesApi
+@ExperimentalStdlibApi
 class TagsListViewModelTest {
 
     @get:Rule
@@ -34,60 +32,61 @@ class TagsListViewModelTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    class DependencyManager constructor(
-        val tagsRepository: TagsRepository = mock(),
-        val dispatchersProvider: DispatchersProvider = getTestDispatchersProvider()
-    ) {
-        val viewModel: TagsListViewModel
-            get() = TagsListViewModel(
-                tagsRepository = tagsRepository,
-                dispatchersProvider = dispatchersProvider
-            )
+    private lateinit var getAllTagsUseCase: FakeGetAllTagsUseCase
 
-        fun setTagsLocalData(tags: List<Tag>) {
-            whenever(tagsRepository.allTagsFlow)
-                .thenReturn(flowOf(tags))
-        }
-
-        fun setRemoteAPI(result: Result<Unit>) {
-            tagsRepository.stub {
-                onBlocking { tagsRepository.updateAllTags() }
-                    .doReturn(result)
-            }
-        }
-    }
-
-    private lateinit var dependencyManager: DependencyManager
+    private lateinit var viewModel: TagsListViewModel
 
     @Before
     fun setUp() {
-        dependencyManager = DependencyManager()
+        getAllTagsUseCase = FakeGetAllTagsUseCase()
     }
 
     @After
     fun tearDown() {
-        dependencyManager.viewModel.viewModelScope.cancel()
+        viewModel.viewModelScope.cancel()
     }
 
     @Test
     fun given_AvailableLocalData_when_GetUiState_then_ReturnDefaultStateFollowedByStateWithData(): Unit =
         runTest {
             val localTags = TagsFactory.getTags(3)
-            dependencyManager.apply {
-                setTagsLocalData(localTags)
-            }
+            setTagsLocalData(localTags)
+            setRemoteAPI(Result.failure(IOException()))
 
             val expectedStates = listOf(
                 TagsListState(),
                 TagsListState(data = localTags, isLoading = false, error = null)
             )
 
-            dependencyManager.viewModel.tagsUiState.test {
-                expectedStates.forEach {
-                    assertThat(awaitItem()).isEqualTo(it)
+            viewModel = createViewModel(this)
+
+            val job = launch {
+                viewModel.tagsUiState.test {
+                    expectedStates.forEach {
+                        assertThat(awaitItem()).isEqualTo(it)
+                    }
+                    cancelAndConsumeRemainingEvents()
                 }
-                cancelAndConsumeRemainingEvents()
             }
+
+            job.join()
         }
+
+    private fun setTagsLocalData(tags: List<Tag>) {
+        getAllTagsUseCase.flowCompletableDeferred
+            .complete(tags)
+    }
+
+    private fun setRemoteAPI(result: Result<Unit>) {
+        getAllTagsUseCase.updateCompletableDeferred
+            .complete(result)
+    }
+
+    private fun createViewModel(testScope: TestScope): TagsListViewModel {
+        return TagsListViewModel(
+            getAllTagsUseCase = getAllTagsUseCase,
+            dispatchersProvider = testScope.getTestDispatchersProvider()
+        )
+    }
 
 }

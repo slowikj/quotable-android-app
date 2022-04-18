@@ -1,4 +1,4 @@
-package com.example.quotableapp.fakes
+package com.example.quotableapp.fakes.remotedatasources
 
 import com.example.quotableapp.data.paging.common.IntPagedRemoteDataSource
 import kotlinx.coroutines.CompletableDeferred

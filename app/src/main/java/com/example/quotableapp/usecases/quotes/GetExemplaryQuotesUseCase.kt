@@ -17,19 +17,26 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetExemplaryQuotesUseCase @Inject constructor(
+interface GetExemplaryQuotesUseCase {
+    val flow: Flow<List<Quote>>
+
+    suspend fun update(): Result<Unit>
+}
+
+class DefaultGetExemplaryQuotesUseCase @Inject constructor(
     private val localDataSource: QuotesLocalDataSource,
     private val remoteDataSource: QuotesRemoteDataSource,
     private val dispatchersProvider: DispatchersProvider,
     @ItemsLimit private val itemsLimit: Int
-) {
+) : GetExemplaryQuotesUseCase {
+
     companion object {
-        private val originParams: QuoteOriginParams = QuoteOriginParams(
+        val originParams: QuoteOriginParams = QuoteOriginParams(
             type = QuoteOriginParams.Type.DASHBOARD_EXEMPLARY
         )
     }
 
-    val flow: Flow<List<Quote>> = localDataSource
+    override val flow: Flow<List<Quote>> = localDataSource
         .getFirstQuotesSortedById(
             originParams = originParams,
             limit = itemsLimit
@@ -37,7 +44,7 @@ class GetExemplaryQuotesUseCase @Inject constructor(
         .map { quotes -> quotes.map { it.toDomain() } }
         .flowOn(dispatchersProvider.Default)
 
-    suspend fun update(): Result<Unit> = withContext(dispatchersProvider.Default) {
+    override suspend fun update(): Result<Unit> = withContext(dispatchersProvider.Default) {
         remoteDataSource.fetch(
             FetchQuotesListParams(
                 page = 1,

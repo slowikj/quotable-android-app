@@ -5,27 +5,31 @@ import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.local.entities.author.AuthorOriginParams
 import com.example.quotableapp.data.model.Author
+import com.example.quotableapp.data.paging.authors.AuthorsRemoteMediatorFactory
 import com.example.quotableapp.data.remote.datasources.AuthorsRemoteDataSource
 import com.example.quotableapp.data.remote.datasources.FetchAuthorsListParams
-import com.example.quotableapp.data.paging.authors.AuthorsRemoteMediatorFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
+interface GetAllAuthorsUseCase {
+    fun getPagingFlow(): Flow<PagingData<Author>>
+}
+
 @ExperimentalPagingApi
-class GetAllAuthorsUseCase @Inject constructor(
+class DefaultGetAllAuthorsUseCase @Inject constructor(
     private val remoteDataSource: AuthorsRemoteDataSource,
     private val remoteMediatorFactory: AuthorsRemoteMediatorFactory,
     private val dispatchersProvider: DispatchersProvider,
     private val pagingConfig: PagingConfig
-) {
+) : GetAllAuthorsUseCase {
     companion object {
         private val originParams =
             AuthorOriginParams(type = AuthorOriginParams.Type.ALL)
     }
 
-    fun getPagingFlow(): Flow<PagingData<Author>> {
+    override fun getPagingFlow(): Flow<PagingData<Author>> {
         val remoteMediator = remoteMediatorFactory.create(
             originParams = originParams
         ) { page: Int, limit: Int ->

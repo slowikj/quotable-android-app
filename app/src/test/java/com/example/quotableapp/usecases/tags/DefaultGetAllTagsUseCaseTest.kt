@@ -4,7 +4,7 @@ import com.example.quotableapp.fakes.factories.TagsFactory
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.local.datasources.TagsLocalDataSource
 import com.example.quotableapp.data.model.Tag
-import com.example.quotableapp.fakes.FakeTagsRemoteDataSource
+import com.example.quotableapp.fakes.remotedatasources.FakeTagsRemoteDataSource
 import com.example.quotableapp.fakes.getTestDispatchersProvider
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
@@ -22,13 +22,11 @@ import java.io.IOException
 
 @ExperimentalStdlibApi
 @ExperimentalCoroutinesApi
-class GetExemplaryTagsUseCaseTest {
+class DefaultGetAllTagsUseCaseTest {
 
     private lateinit var localDataSource: TagsLocalDataSource
 
     private lateinit var remoteDataSource: FakeTagsRemoteDataSource
-
-    private val exemplaryItemsLimit = 10
 
     @Before
     fun setUp() {
@@ -37,7 +35,7 @@ class GetExemplaryTagsUseCaseTest {
     }
 
     @Test
-    fun given_NoAPIConnection_when_updateExemplaryTags_then_ReturnFailure() = runTest {
+    fun given_NoAPIConnection_when_updateAllTags_then_ReturnFailure() = runTest {
         // given
         remoteDataSource.fetchAllCompletableDeferred
             .complete(Result.failure(IOException()))
@@ -52,7 +50,7 @@ class GetExemplaryTagsUseCaseTest {
     }
 
     @Test
-    fun given_WorkingAPIConnection_when_updateExemplaryTags_then_ReturnSuccess() {
+    fun given_WorkingAPIConnection_when_updateAllTags_then_ReturnSuccess() {
         runTest {
             // given
             remoteDataSource.fetchAllCompletableDeferred
@@ -71,7 +69,7 @@ class GetExemplaryTagsUseCaseTest {
     }
 
     @Test
-    fun given_LocalDataAvailable_when_GetExemplaryTags_then_ReturnFlowWithTags() =
+    fun given_LocalDataAvailable_when_GetAllTags_then_ReturnFlowWithTags() =
         runTest {
             // given
             val tagEntities = TagsFactory.getEntities(size = 10)
@@ -92,7 +90,7 @@ class GetExemplaryTagsUseCaseTest {
         }
 
     @Test
-    fun given_NoLocalDataAvailable_when_GetExemplaryData_then_ReturnFlowWithEmptyList() =
+    fun given_NoLocalDataAvailable_when_GetAllData_then_ReturnFlowWithEmptyList() =
         runTest {
             // given
             whenever(
@@ -111,13 +109,12 @@ class GetExemplaryTagsUseCaseTest {
             assertThat(resFlow.toList()).isEqualTo(listOf(emptyList<Tag>()))
         }
 
-
-    private fun createUseCase(testScope: TestScope): GetExemplaryTagsUseCase {
-        return GetExemplaryTagsUseCase(
+    private fun createUseCase(testScope: TestScope): GetAllTagsUseCase {
+        return DefaultGetAllTagsUseCase(
             remoteDataSource = remoteDataSource,
             localDataSource = localDataSource,
-            dispatchersProvider = testScope.getTestDispatchersProvider(),
-            itemsLimit = exemplaryItemsLimit
+            dispatchersProvider = testScope.getTestDispatchersProvider()
         )
     }
+
 }

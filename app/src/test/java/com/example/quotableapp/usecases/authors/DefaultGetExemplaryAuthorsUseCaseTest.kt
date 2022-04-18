@@ -5,7 +5,7 @@ import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.local.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.fakes.FakeAuthorsRemoteDataSource
+import com.example.quotableapp.fakes.remotedatasources.FakeAuthorsRemoteDataSource
 import com.example.quotableapp.fakes.getTestDispatchersProvider
 import com.google.common.truth.Truth
 import com.nhaarman.mockitokotlin2.*
@@ -22,7 +22,7 @@ import java.io.IOException
 
 @OptIn(ExperimentalStdlibApi::class)
 @ExperimentalCoroutinesApi
-class GetExemplaryAuthorsUseCaseTest {
+class DefaultGetExemplaryAuthorsUseCaseTest {
 
     private lateinit var localDataSource: AuthorsLocalDataSource
 
@@ -121,7 +121,7 @@ class GetExemplaryAuthorsUseCaseTest {
         }
 
     private fun createUseCase(testScope: TestScope): GetExemplaryAuthorsUseCase {
-        return GetExemplaryAuthorsUseCase(
+        return DefaultGetExemplaryAuthorsUseCase(
             localDataSource = localDataSource,
             remoteDataSource = remoteDataSource,
             dispatchersProvider = testScope.getTestDispatchersProvider(),

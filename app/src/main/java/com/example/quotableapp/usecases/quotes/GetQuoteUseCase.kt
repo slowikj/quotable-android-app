@@ -15,18 +15,24 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetQuoteUseCase @Inject constructor(
+interface GetQuoteUseCase {
+    fun getFlow(id: String): Flow<Quote?>
+
+    suspend fun update(id: String): Result<Unit>
+}
+
+class DefaultGetQuoteUseCase @Inject constructor(
     private val dispatchersProvider: DispatchersProvider,
     private val remoteDataSource: QuotesRemoteDataSource,
     private val localDataSource: QuotesLocalDataSource,
-) {
+) : GetQuoteUseCase {
 
-    fun getFlow(id: String): Flow<Quote?> = localDataSource
+    override fun getFlow(id: String): Flow<Quote?> = localDataSource
         .getQuoteFlow(id)
         .map { it?.toDomain() }
         .flowOn(dispatchersProvider.Default)
 
-    suspend fun update(id: String): Result<Unit> = withContext(dispatchersProvider.Default) {
+    override suspend fun update(id: String): Result<Unit> = withContext(dispatchersProvider.Default) {
         remoteDataSource.fetch(FetchQuoteParams(id = id))
             .mapSafeCatching { quoteDTO -> insertQuoteToDb(quoteDTO) }
     }
