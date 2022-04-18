@@ -1,8 +1,8 @@
 package com.example.quotableapp.data.converters
 
-import com.example.quotableapp.data.db.entities.author.AuthorEntity
+import com.example.quotableapp.data.local.entities.author.AuthorEntity
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.data.network.model.AuthorDTO
+import com.example.quotableapp.data.remote.model.AuthorDTO
 
 fun AuthorDTO.toDomain(): Author =
     Author(

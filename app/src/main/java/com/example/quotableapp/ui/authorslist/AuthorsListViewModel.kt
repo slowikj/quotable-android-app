@@ -8,7 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.data.repository.authors.AuthorsRepository
+import com.example.quotableapp.usecases.authors.GetAllAuthorsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -18,13 +18,13 @@ import javax.inject.Inject
 class AuthorsListViewModel
 @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val authorsRepository: AuthorsRepository,
+    private val getAllAuthorsUseCase: GetAllAuthorsUseCase,
     private val dispatchersProvider: DispatchersProvider
 ) : ViewModel() {
 
     val authors: Flow<PagingData<Author>> =
-        authorsRepository
-            .fetchAllAuthors()
+        getAllAuthorsUseCase
+            .getPagingFlow()
             .cachedIn(viewModelScope)
 
 }

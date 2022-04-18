@@ -6,29 +6,30 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import app.cash.turbine.test
 import com.example.quotableapp.MainCoroutineDispatcherRule
-import com.example.quotableapp.common.DispatchersProvider
-import com.example.quotableapp.data.AuthorsFactory
-import com.example.quotableapp.data.QuotesFactory
-import com.example.quotableapp.data.getTestdispatchersProvider
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.repository.authors.AuthorsRepository
-import com.example.quotableapp.data.repository.quotes.onequote.OneQuoteRepository
+import com.example.quotableapp.fakes.factories.AuthorsFactory
+import com.example.quotableapp.fakes.factories.QuotesFactory
+import com.example.quotableapp.fakes.getTestDispatchersProvider
+import com.example.quotableapp.fakes.usecases.authors.FakeGetAuthorUseCase
+import com.example.quotableapp.fakes.usecases.quotes.FakeGetQuoteUseCase
+import com.example.quotableapp.fakes.usecases.quotes.FakeGetRandomQuoteUseCase
 import com.google.common.truth.Truth.assertThat
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyString
 import java.io.IOException
 import kotlin.time.ExperimentalTime
 
+@ExperimentalStdlibApi
 @ExperimentalTime
 @ExperimentalCoroutinesApi
 class OneQuoteViewModelTest {
@@ -42,73 +43,35 @@ class OneQuoteViewModelTest {
     private val quote: Quote = QuotesFactory.getQuotes(1).first()
     private val author: Author = AuthorsFactory.getAuthors(1).first()
 
-    class DependencyManager(
-        val savedStateHandle: SavedStateHandle = mock(),
-        val dispatchersProvider: DispatchersProvider = getTestdispatchersProvider(),
-        val oneQuoteRepository: OneQuoteRepository = mock(),
-        val authorsRepository: AuthorsRepository = mock()
-    ) {
+    private lateinit var savedStateHandle: SavedStateHandle
 
-        val viewModel: OneQuoteViewModel
-            get() = OneQuoteViewModel(
-                savedStateHandle = savedStateHandle,
-                dispatchersProvider = dispatchersProvider,
-                oneQuoteRepository = oneQuoteRepository,
-                authorsRepository = authorsRepository
-            )
+    private lateinit var getQuoteUseCase: FakeGetQuoteUseCase
 
-        fun setQuoteInSavedStateHandle(quote: Quote) {
-            val quoteTag = OneQuoteViewModel.QUOTE_TAG
-            whenever(savedStateHandle.getLiveData<Quote>(quoteTag))
-                .thenReturn(MutableLiveData(quote))
+    private lateinit var getAuthorUseCase: FakeGetAuthorUseCase
 
-            whenever(savedStateHandle.get<Quote>(quoteTag))
-                .thenReturn(quote)
-        }
+    private lateinit var getRandomQuoteUseCase: FakeGetRandomQuoteUseCase
 
-        fun setQuoteFlow(quote: Quote?) {
-            whenever(oneQuoteRepository.getQuoteFlow(anyString()))
-                .thenReturn(flowOf(quote))
-        }
-
-        fun setAuthorFlow(author: Author?) {
-            whenever(authorsRepository.getAuthorFlow(any()))
-                .thenReturn(flowOf(author))
-        }
-
-        fun setAuthorRemoteAPI(result: Result<Unit>) {
-            authorsRepository.stub {
-                onBlocking { updateAuthor(any()) }.doReturn(result)
-            }
-        }
-
-        fun setQuoteRemoteAPI(result: Result<Unit>) {
-            oneQuoteRepository.stub {
-                onBlocking { updateQuote(any()) }.doReturn(result)
-            }
-        }
-    }
-
-    private lateinit var dependencyManager: DependencyManager
+    private lateinit var viewModel: OneQuoteViewModel
 
     @Before
     fun setUp() {
-        dependencyManager = DependencyManager()
+        savedStateHandle = mock()
+        getQuoteUseCase = FakeGetQuoteUseCase()
+        getAuthorUseCase = FakeGetAuthorUseCase()
+        getRandomQuoteUseCase = FakeGetRandomQuoteUseCase()
     }
 
     @After
     fun tearDown() {
-        dependencyManager.viewModel.viewModelScope.cancel()
+        viewModel.viewModelScope.cancel()
     }
 
     @Test
     fun given_AvailableLocalAuthor_when_getUiState_then_ReturnDefaultStateFollowedByTwoStatesWithData() =
         runTest {
-            dependencyManager.apply {
-                setAuthorFlow(author)
-                setQuoteInSavedStateHandle(quote)
-                setQuoteFlow(null)
-            }
+            setAuthorFlow(author)
+            setQuoteInSavedStateHandle(quote)
+            setQuoteFlow(null)
 
             val expectedStates = listOf(
                 QuoteUiState(),
@@ -126,28 +89,25 @@ class OneQuoteViewModelTest {
                 )
             )
 
-            dependencyManager.viewModel.quoteUiState.test {
+            viewModel = createViewModel(this)
+
+            viewModel.quoteUiState.test {
                 expectedStates.forEach {
                     assertThat(awaitItem()).isEqualTo(it)
                 }
                 cancelAndConsumeRemainingEvents()
             }
-
-            verify(dependencyManager.oneQuoteRepository, never())
-                .updateQuote(any())
-            verify(dependencyManager.authorsRepository, never())
-                .updateAuthor(any())
         }
 
     @Test
     fun given_NoLocalAuthorAndNotWorkingRemoteAPI_when_getUiState_then_ReturnDefaultStateFollowedByDataWithoutPhotoUrl(): Unit =
         runTest {
-            dependencyManager.apply {
-                setAuthorFlow(null)
-                setAuthorRemoteAPI(Result.failure(IOException()))
-                setQuoteInSavedStateHandle(quote)
-                setQuoteFlow(null)
-            }
+            setAuthorFlow(null)
+            setAuthorRemoteAPI(Result.failure(IOException()))
+            setQuoteInSavedStateHandle(quote)
+            setQuoteFlow(null)
+
+            viewModel = createViewModel(this)
 
             val expectedStates = listOf(
                 QuoteUiState(),
@@ -159,7 +119,7 @@ class OneQuoteViewModelTest {
                 )
             )
 
-            dependencyManager.viewModel.quoteUiState.test {
+            viewModel.quoteUiState.test {
                 expectedStates.forEach {
                     assertThat(awaitItem()).isEqualTo(it)
                 }
@@ -167,60 +127,241 @@ class OneQuoteViewModelTest {
         }
 
     @Test
-    fun given_LocalAuthorAndNotWorkingQuoteRemoteAPI_when_randomizeQuote_then_StateEmitsErrorWithOldData() = runTest {
-        given_LocalAuthorAndNotWorkingQuoteRemoteAPI_when_ACTION_then_StateEmitsErrorWithOldData {
-            this.randomizeQuote()
-        }
-    }
-
-    @Test
-    fun given_LocalAuthorAndNotWorkingQuoteRemoteAPI_when_updateQuoteUi_then_StateEmitsErrorWithOldData() = runTest {
-        given_LocalAuthorAndNotWorkingQuoteRemoteAPI_when_ACTION_then_StateEmitsErrorWithOldData {
-            this.updateQuoteUi()
-        }
-    }
-
-    private fun given_LocalAuthorAndNotWorkingQuoteRemoteAPI_when_ACTION_then_StateEmitsErrorWithOldData(action: OneQuoteViewModel.() -> Unit): Unit = runTest {
-        dependencyManager.apply {
-            setAuthorFlow(author)
-            setQuoteRemoteAPI(Result.failure(IOException()))
+    fun given_LocalAuthorAndNotWorkingQuoteRemoteAPI_when_randomizeQuote_then_StateEmitsErrorWithOldData() =
+        runTest {
             setQuoteInSavedStateHandle(quote)
             setQuoteFlow(quote)
-        }
 
-        val expectedStates = listOf(
-            QuoteUiState(),
-            QuoteUiState(
-                data = QuoteUi(
-                    quote = quote,
-                    authorPhotoUrl = null
-                )
-            ),
-            QuoteUiState(
-                data = QuoteUi(
-                    quote = quote,
-                    authorPhotoUrl = author.getPhotoUrl(OneQuoteViewModel.AUTHOR_PHOTO_REQUEST_SIZE)
-                )
-            ),
-            QuoteUiState(
-                data = QuoteUi(
-                    quote = quote,
-                    authorPhotoUrl = author.getPhotoUrl(OneQuoteViewModel.AUTHOR_PHOTO_REQUEST_SIZE)
+            viewModel = createViewModel(this)
+
+            val expectedStates = listOf(
+                QuoteUiState(),
+                QuoteUiState(
+                    data = QuoteUi(
+                        quote = quote,
+                        authorPhotoUrl = null
+                    )
                 ),
-                error = OneQuoteViewModel.UiError.IOError()
+                QuoteUiState(
+                    data = QuoteUi(
+                        quote = quote,
+                        authorPhotoUrl = author.getPhotoUrl(OneQuoteViewModel.AUTHOR_PHOTO_REQUEST_SIZE)
+                    )
+                ),
+                QuoteUiState(
+                    data = QuoteUi(
+                        quote = quote,
+                        authorPhotoUrl = author.getPhotoUrl(OneQuoteViewModel.AUTHOR_PHOTO_REQUEST_SIZE)
+                    ),
+                    isLoading = true
+                ),
+                QuoteUiState(
+                    data = QuoteUi(
+                        quote = quote,
+                        authorPhotoUrl = author.getPhotoUrl(OneQuoteViewModel.AUTHOR_PHOTO_REQUEST_SIZE)
+                    ),
+                    error = OneQuoteViewModel.UiError.IOError(),
+                    isLoading = false
+                )
             )
-        )
 
-        val job = launch {
-            dependencyManager.viewModel.quoteUiState.test {
-                expectedStates.forEach {
-                    assertThat(awaitItem()).isEqualTo(it)
+            val job = launch {
+                viewModel.quoteUiState.test {
+                    expectedStates.forEach {
+                        assertThat(awaitItem()).isEqualTo(it)
+                    }
+                    cancelAndConsumeRemainingEvents()
                 }
             }
+
+            testScheduler.advanceTimeBy(10)
+            setAuthorFlow(author)
+            testScheduler.advanceTimeBy(10)
+
+            viewModel.randomizeQuote()
+
+            testScheduler.advanceTimeBy(10)
+
+            initGetRandomQuoteUseCase(
+                localValue = null,
+                remoteResult = Result.failure(IOException()),
+                updateRemoteResult = Result.failure(IOException())
+            )
+
+            job.join()
         }
 
-        dependencyManager.viewModel.action()
+    @Test
+    fun given_LocalAuthorAndNotWorkingQuoteRemoteAPI_when_updateQuoteUi_then_StateEmitsErrorWithOldData() =
+        runTest {
+            setQuoteInSavedStateHandle(quote)
+            setQuoteFlow(quote)
 
-        job.join()
+            viewModel = createViewModel(this)
+
+            val expectedStates = listOf(
+                QuoteUiState(),
+                QuoteUiState(
+                    data = QuoteUi(
+                        quote = quote,
+                        authorPhotoUrl = null
+                    )
+                ),
+                QuoteUiState(
+                    data = QuoteUi(
+                        quote = quote,
+                        authorPhotoUrl = author.getPhotoUrl(OneQuoteViewModel.AUTHOR_PHOTO_REQUEST_SIZE)
+                    )
+                ),
+                QuoteUiState(
+                    data = QuoteUi(
+                        quote = quote,
+                        authorPhotoUrl = author.getPhotoUrl(OneQuoteViewModel.AUTHOR_PHOTO_REQUEST_SIZE)
+                    ),
+                    isLoading = true
+                ),
+                QuoteUiState(
+                    data = QuoteUi(
+                        quote = quote,
+                        authorPhotoUrl = author.getPhotoUrl(OneQuoteViewModel.AUTHOR_PHOTO_REQUEST_SIZE)
+                    ),
+                    error = OneQuoteViewModel.UiError.IOError(),
+                    isLoading = false
+                )
+            )
+
+            val job = launch {
+                viewModel.quoteUiState.test {
+                    expectedStates.forEach {
+                        assertThat(awaitItem()).isEqualTo(it)
+                    }
+                    cancelAndConsumeRemainingEvents()
+                }
+            }
+
+            testScheduler.advanceTimeBy(10)
+            setAuthorFlow(author)
+            testScheduler.advanceTimeBy(10)
+
+            viewModel.updateQuoteUi()
+
+            testScheduler.advanceTimeBy(10)
+            setQuoteRemoteAPI(Result.failure(IOException()))
+            testScheduler.runCurrent()
+
+            job.join()
+        }
+
+    @Test
+    fun given_LocalAuthorAnWorkingQuoteRemoteAPI_when_updateQuoteUi_then_StateEmitsConsecutiveValues(): Unit =
+        runTest {
+            setQuoteInSavedStateHandle(quote)
+            setQuoteFlow(quote)
+
+            viewModel = createViewModel(this)
+
+            val expectedStates = listOf(
+                QuoteUiState(),
+                QuoteUiState(
+                    data = QuoteUi(
+                        quote = quote,
+                        authorPhotoUrl = null
+                    )
+                ),
+                QuoteUiState(
+                    data = QuoteUi(
+                        quote = quote,
+                        authorPhotoUrl = author.getPhotoUrl(OneQuoteViewModel.AUTHOR_PHOTO_REQUEST_SIZE)
+                    )
+                ),
+                QuoteUiState(
+                    data = QuoteUi(
+                        quote = quote,
+                        authorPhotoUrl = author.getPhotoUrl(OneQuoteViewModel.AUTHOR_PHOTO_REQUEST_SIZE)
+                    ),
+                    isLoading = true,
+                    error = null
+                ),
+                QuoteUiState(
+                    data = QuoteUi(
+                        quote = quote,
+                        authorPhotoUrl = author.getPhotoUrl(OneQuoteViewModel.AUTHOR_PHOTO_REQUEST_SIZE)
+                    ),
+                    isLoading = false,
+                    error = null,
+                )
+            )
+
+            val job = launch {
+                viewModel.quoteUiState.test {
+                    expectedStates.forEach {
+                        assertThat(awaitItem()).isEqualTo(it)
+                    }
+                    cancelAndConsumeRemainingEvents()
+                }
+            }
+
+            setAuthorFlow(author)
+
+            testScheduler.advanceTimeBy(10)
+            viewModel.updateQuoteUi()
+
+            testScheduler.advanceTimeBy(10)
+            setQuoteRemoteAPI(Result.success(Unit))
+
+            testScheduler.runCurrent()
+
+            job.join()
+        }
+
+    private fun createViewModel(testScope: TestScope): OneQuoteViewModel {
+        return OneQuoteViewModel(
+            savedStateHandle = savedStateHandle,
+            dispatchersProvider = testScope.getTestDispatchersProvider(),
+            getQuoteUseCase = getQuoteUseCase,
+            getAuthorUseCase = getAuthorUseCase,
+            getRandomQuoteUseCase = getRandomQuoteUseCase
+        )
+    }
+
+    private fun setQuoteInSavedStateHandle(quote: Quote) {
+        val quoteTag = OneQuoteViewModel.QUOTE_TAG
+        whenever(savedStateHandle.getLiveData<Quote>(quoteTag))
+            .thenReturn(MutableLiveData(quote))
+
+        whenever(savedStateHandle.get<Quote>(quoteTag))
+            .thenReturn(quote)
+    }
+
+    private fun setQuoteFlow(quote: Quote?) {
+        getQuoteUseCase.getFlowCompletableDeferred
+            .complete(quote)
+    }
+
+    private fun setAuthorFlow(author: Author?) {
+        getAuthorUseCase.flowCompletableDeferred
+            .complete(author)
+    }
+
+    private fun setAuthorRemoteAPI(result: Result<Unit>) {
+        getAuthorUseCase.updateCompletableDeferred
+            .complete(result)
+    }
+
+    private fun setQuoteRemoteAPI(result: Result<Unit>) {
+        getQuoteUseCase.updateCompletableDeferred
+            .complete(result)
+    }
+
+    private fun initGetRandomQuoteUseCase(
+        localValue: Quote?,
+        remoteResult: Result<Quote>,
+        updateRemoteResult: Result<Unit>
+    ) {
+        getRandomQuoteUseCase.apply {
+            flowCompletableDeferred.complete(localValue)
+            fetchCompletableDeferred.complete(remoteResult)
+            updateCompletableDeferred.complete(updateRemoteResult)
+        }
     }
 }
