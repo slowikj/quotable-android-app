@@ -1,6 +1,6 @@
 package com.example.quotableapp.usecases.tags
 
-import com.example.quotableapp.data.TagsFactory
+import com.example.quotableapp.fakes.factories.TagsFactory
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.local.datasources.TagsLocalDataSource
 import com.example.quotableapp.data.model.Tag

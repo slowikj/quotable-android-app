@@ -1,6 +1,6 @@
 package com.example.quotableapp.usecases.quotes
 
-import com.example.quotableapp.data.QuotesFactory
+import com.example.quotableapp.fakes.factories.QuotesFactory
 import com.example.quotableapp.data.local.datasources.QuotesLocalDataSource
 import com.example.quotableapp.data.local.entities.quote.QuoteOriginParams
 import com.example.quotableapp.data.model.Quote

@@ -1,4 +1,4 @@
-package com.example.quotableapp.data
+package com.example.quotableapp.fakes.factories
 
 import com.example.quotableapp.data.local.entities.tag.TagEntity
 import com.example.quotableapp.data.model.Tag

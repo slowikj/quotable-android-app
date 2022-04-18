@@ -10,8 +10,6 @@ import androidx.paging.cachedIn
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Author
 import com.example.quotableapp.data.model.Quote
-import com.example.quotableapp.data.repository.authors.AuthorsRepository
-import com.example.quotableapp.data.repository.quotes.QuotesRepository
 import com.example.quotableapp.ui.common.UiState
 import com.example.quotableapp.ui.common.UiStateManager
 import com.example.quotableapp.ui.common.quoteslist.QuotesProvider

@@ -1,6 +1,6 @@
 package com.example.quotableapp.usecases.authors
 
-import com.example.quotableapp.data.AuthorsFactory
+import com.example.quotableapp.fakes.factories.AuthorsFactory
 import com.example.quotableapp.data.converters.toDb
 import com.example.quotableapp.data.converters.toDomain
 import com.example.quotableapp.data.local.datasources.AuthorsLocalDataSource

@@ -8,7 +8,6 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.quotableapp.common.DispatchersProvider
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.data.repository.authors.AuthorsRepository
 import com.example.quotableapp.usecases.authors.GetAllAuthorsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
