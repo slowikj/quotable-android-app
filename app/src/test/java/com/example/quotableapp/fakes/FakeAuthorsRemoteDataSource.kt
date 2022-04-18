@@ -1,4 +1,4 @@
-package com.example.quotableapp.usecases.fakes
+package com.example.quotableapp.fakes
 
 import com.example.quotableapp.data.remote.datasources.AuthorsRemoteDataSource
 import com.example.quotableapp.data.remote.datasources.FetchAuthorParams

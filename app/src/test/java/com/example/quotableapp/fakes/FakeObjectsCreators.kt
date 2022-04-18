@@ -1,4 +1,4 @@
-package com.example.quotableapp.data
+package com.example.quotableapp.fakes
 
 import androidx.paging.PagingConfig
 import com.example.quotableapp.common.DispatchersProvider

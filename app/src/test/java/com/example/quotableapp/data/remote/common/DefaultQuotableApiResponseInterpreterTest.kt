@@ -1,8 +1,8 @@
 package com.example.quotableapp.data.remote.common
 
 import com.example.quotableapp.MainCoroutineDispatcherRule
-import com.example.quotableapp.data.getTestDispatchersProvider
 import com.example.quotableapp.data.remote.model.QuoteDTO
+import com.example.quotableapp.fakes.getTestDispatchersProvider
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

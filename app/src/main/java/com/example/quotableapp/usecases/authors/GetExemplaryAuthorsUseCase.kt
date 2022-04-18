@@ -36,7 +36,6 @@ class GetExemplaryAuthorsUseCase @Inject constructor(
             originParams = originParams,
             limit = itemsLimit
         )
-        .filterNot { it.isEmpty() }
         .map { list -> list.map { it.toDomain() } }
         .flowOn(dispatchersProvider.Default)
 

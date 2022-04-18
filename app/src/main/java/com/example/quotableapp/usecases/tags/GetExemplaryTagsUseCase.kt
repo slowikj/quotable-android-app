@@ -17,8 +17,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GetExemplaryTagsUseCase @Inject constructor(
-    private val tagsRemoteDataSource: TagsRemoteDataSource,
-    private val tagsLocalDataSource: TagsLocalDataSource,
+    private val remoteDataSource: TagsRemoteDataSource,
+    private val localDataSource: TagsLocalDataSource,
     private val dispatchersProvider: DispatchersProvider,
     @ItemsLimit private val itemsLimit: Int
 ) {
@@ -27,7 +27,7 @@ class GetExemplaryTagsUseCase @Inject constructor(
             TagOriginParams(type = TagOriginParams.Type.DASHBOARD_EXEMPLARY)
     }
 
-    val flow: Flow<List<Tag>> = tagsLocalDataSource
+    val flow: Flow<List<Tag>> = localDataSource
         .getTagsSortedByName(
             originParams = originParams,
             limit = itemsLimit
@@ -36,7 +36,7 @@ class GetExemplaryTagsUseCase @Inject constructor(
         .flowOn(dispatchersProvider.Default)
 
     suspend fun update(): Result<Unit> = withContext(dispatchersProvider.Default) {
-        tagsRemoteDataSource.fetchAll()
+        remoteDataSource.fetchAll()
             .map { it.take(itemsLimit) }
             .mapSafeCatching { tagsDTO ->
                 refreshEntitiesInLocal(tagsDTO)
@@ -44,7 +44,7 @@ class GetExemplaryTagsUseCase @Inject constructor(
     }
 
     private suspend fun refreshEntitiesInLocal(tagsDTO: TagsResponseDTO) {
-        tagsLocalDataSource.refresh(
+        localDataSource.refresh(
             originParams = originParams,
             entities = tagsDTO.map { it.toDb() }
         )

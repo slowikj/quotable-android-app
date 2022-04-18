@@ -2,11 +2,11 @@ package com.example.quotableapp.usecases.authors
 
 import com.example.quotableapp.data.AuthorsFactory
 import com.example.quotableapp.data.converters.toDb
-import com.example.quotableapp.data.getTestDispatchersProvider
 import com.example.quotableapp.data.local.datasources.AuthorsLocalDataSource
 import com.example.quotableapp.data.local.entities.author.AuthorEntity
 import com.example.quotableapp.data.model.Author
-import com.example.quotableapp.usecases.fakes.FakeAuthorsRemoteDataSource
+import com.example.quotableapp.fakes.FakeAuthorsRemoteDataSource
+import com.example.quotableapp.fakes.getTestDispatchersProvider
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -17,14 +17,14 @@ import javax.inject.Inject
 
 class GetRandomQuoteUseCase @Inject constructor(
     private val dispatchersProvider: DispatchersProvider,
-    private val quotesRemoteDataSource: QuotesRemoteDataSource,
-    private val quotesLocalDataSource: QuotesLocalDataSource,
+    private val remoteDataSource: QuotesRemoteDataSource,
+    private val localDataSource: QuotesLocalDataSource,
 ) {
     companion object {
         private val originParams = QuoteOriginParams(type = QuoteOriginParams.Type.RANDOM)
     }
 
-    val flow: Flow<Quote?> = quotesLocalDataSource
+    val flow: Flow<Quote?> = localDataSource
         .getFirstQuotesSortedById(
             originParams = originParams,
             limit = 1
@@ -35,14 +35,14 @@ class GetRandomQuoteUseCase @Inject constructor(
 
     suspend fun update(): Result<Unit> {
         return withContext(dispatchersProvider.IO) {
-            quotesRemoteDataSource
+            remoteDataSource
                 .fetchRandom()
                 .mapSafeCatching { updateDatabaseWithRandomQuote(it) }
         }
     }
 
     suspend fun fetch(): Result<Quote> = withContext(dispatchersProvider.Default) {
-        quotesRemoteDataSource
+        remoteDataSource
             .fetchRandom()
             .mapSafeCatching { quoteDTO ->
                 insertQuoteToDb(quoteDTO)
@@ -51,11 +51,11 @@ class GetRandomQuoteUseCase @Inject constructor(
     }
 
     private suspend fun insertQuoteToDb(quoteDTO: QuoteDTO) {
-        quotesLocalDataSource.insert(listOf(quoteDTO.toDb()))
+        localDataSource.insert(listOf(quoteDTO.toDb()))
     }
 
     private suspend fun updateDatabaseWithRandomQuote(quoteDTO: QuoteDTO): Unit {
-        quotesLocalDataSource.refresh(
+        localDataSource.refresh(
             entities = listOf(quoteDTO.toDb()),
             originParams = originParams
         )
