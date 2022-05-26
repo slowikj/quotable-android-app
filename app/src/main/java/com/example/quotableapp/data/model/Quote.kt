@@ -1,7 +1,7 @@
 package com.example.quotableapp.data.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Quote(
@@ -10,5 +10,5 @@ data class Quote(
     val author: String = "",
     val authorSlug: String = "",
     val tags: List<String> = emptyList()
-): Parcelable {
+) : Parcelable {
 }
