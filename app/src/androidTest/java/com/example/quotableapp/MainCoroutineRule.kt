@@ -1,4 +1,4 @@
-package com.example.quotableapp.data
+package com.example.quotableapp
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
