@@ -14,11 +14,13 @@ import com.example.quotableapp.data.launchFragmentInHiltContainer
 import com.example.quotableapp.data.model.Quote
 import com.example.quotableapp.ui.common.rvAdapters.QuoteTagsAdapter
 import com.google.common.truth.Truth
-import com.nhaarman.mockitokotlin2.mock
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -31,7 +33,7 @@ class OneQuoteFragmentTest {
     val hiltRule = HiltAndroidRule(this)
 
     @BindValue
-    val mockViewModel = mock<OneQuoteViewModel>()
+    val mockViewModel = mockk<OneQuoteViewModel>()
 
     @Before
     fun setUp() {
@@ -40,6 +42,7 @@ class OneQuoteFragmentTest {
 
     @Test
     fun test_quoteContentIsDisplayed() {
+        // given
         val quote = Quote(
             id = "123",
             content = "XXX",
@@ -47,15 +50,34 @@ class OneQuoteFragmentTest {
             authorSlug = "yyy",
             tags = listOf()
         )
+        mockViewModelToReturnAQuote(quote)
+
+        // when
         val scenario = launchFragmentInHiltContainer<OneQuoteFragment>(
             fragmentArgs = bundleOf("quote" to quote)
         ) {
         }
 
+        // then
         onView(withId(R.id.tv_content)).check(matches(isDisplayed()))
         onView(withId(R.id.tv_content)).check(matches(withText(quote.content)))
         onView(withId(R.id.tv_author)).check(matches(isDisplayed()))
         onView(withId(R.id.tv_author)).check(matches(withText(quote.author)))
+    }
+
+    private fun mockViewModelToReturnAQuote(quote: Quote) {
+        val quoteUi = QuoteUi(
+            quote = quote,
+            authorPhotoUrl = null
+        )
+
+        every { mockViewModel.quoteUiState } returns MutableStateFlow(
+            QuoteUiState(
+                isLoading = false,
+                error = null,
+                data = quoteUi
+            )
+        )
     }
 
     @Test
